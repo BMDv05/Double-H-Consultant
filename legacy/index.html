@@ -1,0 +1,169 @@
+<!DOCTYPE html>
+<html lang="en" dir="ltr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Double H — Consultation Platform</title>
+<meta name="description" content="Double H consultation platform — Architecture, Civil Engineering, Medical, Law, Electricity, Management, BD. First consultation free.">
+<link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;700;900&family=Poppins:wght@400;600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="assets/style.css">
+<link rel="alternate" hreflang="ar" href="#/ar/home"><link rel="alternate" hreflang="tr" href="#/tr/home"><link rel="alternate" hreflang="en" href="#/en/home"><link rel="alternate" hreflang="fr" href="#/fr/home">
+</head>
+<body>
+<div id="intro" aria-hidden="true"><div class="intro-inner">
+<div class="intro-logo">Double H</div>
+<div class="intro-rule"><span></span></div>
+<div class="intro-sub">CONSULTING</div>
+<div class="intro-bar"><i></i></div>
+</div></div>
+<div id="progress"></div>
+<div class="cursor-dot" id="cDot"></div><div class="cursor-ring" id="cRing"></div><div class="cursor-cross" id="cCross"></div>
+<div id="fx"></div>
+
+<nav class="nav"><div class="nav-inner">
+<a class="brand" href="#/en/home" onclick="nav('home');return false">
+<div class="logo-mark">H</div>
+<div class="logo-word">Double H<small>CONSULTING</small></div></a>
+<div class="nav-links" id="navLinks">
+<button data-r="home" onclick="nav('home')" data-i="nav_home">Home</button>
+<button data-r="categories" onclick="nav('categories')" data-i="nav_cats">Categories</button>
+<button data-r="consultants" onclick="nav('consultants')" data-i="nav_cons">Consultants</button>
+<button data-r="contact" onclick="nav('contact')" data-i="nav_contact">Contact</button>
+<button data-r="request" onclick="nav('request')" style="background:var(--deep1);color:#fff" data-i="book">Book a Consultation</button>
+</div>
+<div class="lang-switch" id="langSw">
+<button data-l="ar" onclick="applyLang('ar')">العربية</button><button data-l="tr" onclick="applyLang('tr')">Türkçe</button><button data-l="en" onclick="applyLang('en')">English</button><button data-l="fr" onclick="applyLang('fr')">Français</button>
+</div>
+<button class="burger" onclick="document.getElementById('navLinks').classList.toggle('open')">☰</button>
+</div></nav>
+
+<!-- HOME -->
+<section id="v-home" class="view">
+<div class="hero"><div class="blob b1"></div><div class="blob b2"></div><div class="grid-bg"></div>
+<div class="hero-inner" id="heroInner">
+<div>
+<span class="free-badge"><span class="dot"></span><span data-i="first_free">First Consultation Free</span></span>
+<h1><span data-i="hero_t">Double H Consulting</span><br><span class="stroke">H × H</span></h1>
+<p data-i="hero_s">Engineering • Architecture • Technology</p>
+<p data-i="hero_p" style="opacity:.85"></p>
+<div style="display:flex;gap:10px;flex-wrap:wrap;margin-top:18px">
+<a class="btn btn-primary" href="#" onclick="nav('categories');return false" data-i="cta">Start now</a>
+<a class="btn btn-ghost" href="#" onclick="nav('categories');return false" data-i="explore">Explore categories</a>
+</div>
+<div style="display:flex;gap:22px;margin-top:22px;color:#fff">
+<div><b style="font-size:28px" data-count="248">0</b><br><small data-i="stats_req">Requests</small></div>
+<div><b style="font-size:28px" data-count="12">0</b><br><small data-i="stats_cons">Consultants</small></div>
+<div><b style="font-size:28px" data-count="7">0</b><br><small data-i="stats_cats">Categories</small></div>
+</div>
+</div>
+<div class="hero-card">
+<div class="row"><span>Double H ARCHITECTURE</span><span>●</span></div>
+<div class="row"><span>Double H CIVIL ENGINEERING</span><span>●</span></div>
+<div class="row"><span>Double H MEDICAL · LAW</span><span>●</span></div>
+<div class="row"><span>Double H ELECTRICITY · MANAGEMENT</span><span>●</span></div>
+<div class="row"><span>Double H BD</span><span>●</span></div>
+<p class="notice" style="background:rgba(255,255,255,.12);border-color:rgba(255,255,255,.3);color:#fff">🎁 <span class="free-note"></span></p>
+</div>
+</div></div>
+<div class="marquee"><span>Double H ARCHITECTURE — Double H CIVIL ENGINEERING — Double H MEDICAL — Double H LAW — Double H ELECTRICITY — Double H MANAGEMENT — Double H BD —&nbsp;</span><span>Double H ARCHITECTURE — Double H CIVIL ENGINEERING — Double H MEDICAL — Double H LAW — Double H ELECTRICITY — Double H MANAGEMENT — Double H BD —&nbsp;</span></div>
+<div class="section">
+<div class="eyebrow">Double H</div><h2 data-i="how">How it works</h2>
+<div class="cards">
+<div class="card reveal tilt" style="--d:0ms"><div class="icon">1</div><h3 data-i="s1">Pick a category</h3><p data-i="s1d"></p></div>
+<div class="card reveal tilt" style="--d:90ms"><div class="icon">2</div><h3 data-i="s2">Send request</h3><p data-i="s2d"></p></div>
+<div class="card reveal tilt" style="--d:180ms"><div class="icon">3</div><h3 data-i="s3">We contact you</h3><p data-i="s3d"></p></div>
+</div></div>
+</section>
+
+<!-- CATEGORIES -->
+<section id="v-categories" class="view"><div class="section">
+<div class="eyebrow">Double H</div><h2 data-i="cats_t">Consultation Categories</h2><p data-i="cats_d"></p>
+<p class="notice">🎁 <b data-i="first_free"></b> — <span class="free-note"></span></p>
+<div class="cards" id="catGrid"></div></div></section>
+
+<!-- CONSULTANTS -->
+<section id="v-consultants" class="view"><div class="section">
+<div class="eyebrow">Double H</div><h2 data-i="cons_t">Our Consultants</h2><p data-i="cons_d"></p>
+<div class="consult-grid" id="consGrid"></div></div></section>
+
+<!-- REQUEST -->
+<section id="v-request" class="view"><div class="section">
+<div class="eyebrow">Double H</div><h2 data-i="form_t">Consultation Request</h2>
+<p class="notice">🎁 <b data-i="first_free"></b> — <span class="free-note"></span></p>
+<div class="form-wrap">
+<form id="reqForm" novalidate>
+<label><span data-i="cat">Category</span></label>
+<select id="f-cat" onchange="selectedCat=this.value;document.getElementById('reqCatName').textContent=ct(selectedCat).title"></select>
+<p>Selected: <b id="reqCatName"></b></p>
+<label data-i="name">Full Name *</label><input id="f-name" autocomplete="name"><div class="err" id="e-name"></div>
+<label data-i="email">Email *</label><input id="f-email" type="email" dir="ltr" autocomplete="email"><div class="err" id="e-email"></div>
+<label data-i="phone">Phone Number *</label><input id="f-phone" type="tel" dir="ltr" autocomplete="tel"><div class="err" id="e-phone"></div>
+<label data-i="note">Note *</label><textarea id="f-note" rows="5" maxlength="2000" data-ph="note_ph"></textarea><div class="err" id="e-note"></div>
+<input id="f-honey" class="honey" tabindex="-1" autocomplete="off">
+<p class="notice"><span data-i="privacy"></span></p>
+<label style="font-weight:400"><input type="checkbox" id="f-consent" style="width:auto"> <span data-i="consent"></span></label>
+<button class="btn btn-dark" type="submit" style="margin-top:12px" data-i="submit">Submit request</button>
+</form>
+<div id="reqOk" style="display:none;text-align:center;padding:20px">
+<h3 data-i="ok_t">Request received ✓</h3><p data-i="ok_d"></p>
+<div id="okMeta"></div><br><button class="btn btn-dark" onclick="document.getElementById('reqForm').style.display='block';document.getElementById('reqOk').style.display='none'" data-i="new_req">Make another request</button>
+</div></div></div></section>
+
+<!-- CONTACT -->
+<section id="v-contact" class="view"><div class="section">
+<div class="eyebrow">Double H</div><h2 data-i="contact_t">Contact</h2>
+<div class="form-wrap"><p>📧 info@doubleh.com<br><span dir="ltr">📞 +90 555 000 00 00</span></p>
+<form id="contactForm">
+<label data-i="c_name">Name *</label><input id="c-name" required>
+<label data-i="c_email">Email *</label><input id="c-email" type="email" dir="ltr" required>
+<label data-i="c_sub">Subject *</label><input id="c-sub" required>
+<label data-i="c_msg">Message *</label><textarea id="c-msg" rows="5" required></textarea>
+<input id="c-honey" class="honey" tabindex="-1">
+<button class="btn btn-dark" style="margin-top:12px" data-i="send">Send message</button>
+</form></div></div></section>
+
+<!-- ADMIN (hidden from nav) -->
+<section id="v-admin" class="view"><div class="section">
+<div class="eyebrow">Restricted</div><h2>Admin Dashboard</h2>
+<p class="notice">Admins only — email + password. Not linked in public navigation.</p>
+<div id="adminLogin" class="form-wrap"><form id="adminForm">
+<label>Email</label><input id="a-email" type="email" value="admin@doubleh.com" dir="ltr">
+<label>Password</label><input id="a-pass" type="password" value="Admin123!" dir="ltr">
+<div class="err" id="a-err"></div><button class="btn btn-dark">Login</button>
+</form></div>
+<div id="adminApp" style="display:none">
+<div class="admin-shell" style="padding:0;max-width:none">
+<div class="side">
+<button class="active" onclick="adminTab('req',this)">📥 Requests</button>
+<button onclick="adminTab('msg',this)">✉️ Inquiries</button>
+<button onclick="adminTab('audit',this)">📜 Audit</button>
+<button onclick="adminTab('trans',this)">🌍 Translations</button>
+<button onclick="exportReqs()">⬇ Export</button>
+<button onclick="adminLogout()">⏻ Logout</button>
+</div>
+<div class="panel">
+<div class="kpi-grid" id="kpi"></div>
+<div style="display:flex;gap:8px;margin:14px 0;flex-wrap:wrap">
+<select id="fltStatus"><option value="">All statuses</option><option>New</option><option>Contacted</option><option>Scheduled</option><option>Completed</option><option>Cancelled</option><option>Rejected</option></select>
+<select id="fltCat"><option value="">All categories</option><option value="arch">Architecture</option><option value="civil">Civil Engineering</option><option value="medical">Medical</option><option value="law">Law</option><option value="elec">Electricity</option><option value="mgmt">Management</option><option value="bd">BD</option></select>
+<input id="fltQ" placeholder="Search name/email/phone…" style="max-width:260px">
+</div>
+<div id="tab-req"><div id="reqTable"></div></div>
+<div id="tab-msg" style="display:none"><div id="msgTable"></div></div>
+<div id="tab-audit" style="display:none"><div id="auditTable"></div></div>
+<div id="tab-trans" style="display:none"><p id="transMiss"></p><p class="notice">Edit via SiteContent table (all 4 langs). Missing → EN fallback enforced in API + frontend.</p></div>
+</div></div></div>
+<script>function adminTab(k,btn){document.querySelectorAll('.side button').forEach(b=>b.classList.remove('active'));btn.classList.add('active');['req','msg','audit','trans'].forEach(x=>document.getElementById('tab-'+x).style.display=x===k?'block':'none')}</script>
+</div></section>
+
+<footer><div class="foot">
+<div><b style="color:#fff">Double H</b> — <span data-i="footer"></span> <span id="year"></span></div>
+<div><a href="#" onclick="nav('admin');return false">Admin</a> · <span data-i="missing" style="font-size:12px;opacity:.7"></span></div>
+</div></footer>
+
+<div class="modal" id="modal"><div class="modal-box"><h3 id="mTitle"></h3><div id="mBody"></div><div style="display:flex;gap:8px;margin-top:14px"><a class="btn btn-dark" href="#" id="mCta">Request</a><button class="btn" onclick="closeModal()">✕</button></div></div></div>
+<div class="toast" id="toast"></div>
+<script src="assets/app.js"></script>
+</body>
+</html>

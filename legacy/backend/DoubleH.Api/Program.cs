@@ -1,0 +1,10 @@
+using Microsoft.AspNetCore.Builder; using Microsoft.Extensions.DependencyInjection; using Microsoft.Extensions.FileProviders;
+var b = WebApplication.CreateBuilder(args);
+b.Services.AddControllers(); b.Services.AddEndpointsApiExplorer();
+b.Services.AddCors(o=>o.AddDefaultPolicy(p=>p.AllowAnyHeader().AllowAnyMethod().WithOrigins("http://localhost:3000","http://localhost:5000")));
+var app = b.Build();
+app.UseDefaultFiles(); app.UseStaticFiles();
+app.UseCors();
+app.MapControllers(); app.MapGet("/health",()=>"healthy");
+app.MapFallbackToFile("index.html");
+app.Run();

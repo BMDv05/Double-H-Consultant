@@ -1,0 +1,35 @@
+# dependencies
+node_modules/
+
+# .NET build output (legacy reference project)
+bin/
+obj/
+
+
+# build output (rebuilt via `npm run build` in frontend/)
+frontend/dist/
+
+# local database (auto-created + seeded on first run)
+server/data/
+*.db
+*.db-journal
+*.sqlite
+*.sqlite-journal
+
+# env + secrets (never commit)
+.env
+.env.*
+!.env.example
+
+# logs + OS junk
+*.log
+npm-debug.log*
+.DS_Store
+Thumbs.db
+desktop.ini
+
+# editor / tooling
+.vscode/
+.idea/
+.freebuff/
+*.swp
