@@ -1,6 +1,7 @@
 import { useEffect, useState } from 'react';
 import { useLang } from '../LangContext.jsx';
 import { Counter } from '../App.jsx';
+import Words from '../Words.jsx';
 import Icon from '../Icon.jsx';
 
 const DIVISIONS = [
@@ -40,7 +41,7 @@ export default function Home({ onBook }) {
     <>
       {/* ================= HERO (clean — no blobs, no grid) ================= */}
       <div className="hero">
-        <div className="hero-inner" id="heroInner">
+        <div className="hero-inner" id="heroInner" data-par>
           <div>
             <span className="free-badge">
               {t('hero_badge')}
@@ -77,6 +78,12 @@ export default function Home({ onBook }) {
             </div>
           </div>
         </div>
+        {/* scroll cue — fades away once you start scrolling */}
+        <div className="scroll-cue" aria-hidden="true">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+            <path d="M12 5v14M5 12l7 7 7-7" />
+          </svg>
+        </div>
       </div>
 
       {/* ================= MARQUEE ================= */}
@@ -93,12 +100,24 @@ export default function Home({ onBook }) {
 
       {/* ================= ABOUT ================= */}
       <section className="section" id="about">
-        <div className="eyebrow">Double H</div>
-        <h2>{t('about_title')}</h2>
+        <i className="orn orn-ring orn-tr" aria-hidden="true" />
+        <div className="orn orn-dots orn-bl" aria-hidden="true">
+          <i />
+          <i />
+          <i />
+        </div>
+        <div className="eyebrow reveal">Double H</div>
+        <h2 className="w3d">
+          <Words text={t('about_title')} />
+        </h2>
         <div className="about-grid">
-          <div className="about-text reveal">
-            <p>{t('about_p1')}</p>
-            <p>{t('about_p2')}</p>
+          <div className="about-text">
+            <p className="w3d">
+              <Words text={t('about_p1')} cap={30} />
+            </p>
+            <p className="w3d">
+              <Words text={t('about_p2')} cap={30} />
+            </p>
           </div>
           <div className="about-points">
             {[
@@ -123,9 +142,15 @@ export default function Home({ onBook }) {
 
       {/* ================= AMERICAN CERTIFICATES ================= */}
       <section className="section certs-section" id="certificates">
-        <div className="eyebrow">Double H</div>
-        <h2>{t('certs_title')}</h2>
-        <p className="section-lead">{t('certs_desc')}</p>
+        <i className="orn orn-ring solid orn-tl" aria-hidden="true" />
+        <i className="orn orn-corner orn-br" aria-hidden="true" />
+        <div className="eyebrow reveal">Double H</div>
+        <h2 className="w3d">
+          <Words text={t('certs_title')} />
+        </h2>
+        <p className="section-lead w3d">
+          <Words text={t('certs_desc')} cap={30} />
+        </p>
         <div className="cards">
           {(certs.length
             ? certs
@@ -152,9 +177,14 @@ export default function Home({ onBook }) {
 
       {/* ================= POSITIVE VALUES ================= */}
       <section className="section values-section">
-        <div className="eyebrow">Double H</div>
-        <h2>{t('values_title')}</h2>
-        <p className="section-lead">{t('values_desc')}</p>
+        <i className="orn orn-ring orn-tr" aria-hidden="true" />
+        <div className="eyebrow reveal">Double H</div>
+        <h2 className="w3d">
+          <Words text={t('values_title')} />
+        </h2>
+        <p className="section-lead w3d">
+          <Words text={t('values_desc')} cap={30} />
+        </p>
         <div className="cards">
           {[
             ['gem', 'value_1', 'value_1d'],
@@ -175,9 +205,19 @@ export default function Home({ onBook }) {
 
       {/* ================= DIVISIONS ================= */}
       <section className="section">
-        <div className="eyebrow">Double H</div>
-        <h2>{t('div_title')}</h2>
-        <p className="section-lead">{t('div_desc')}</p>
+        <i className="orn orn-ring solid orn-tl" aria-hidden="true" />
+        <div className="orn orn-dots orn-br" aria-hidden="true">
+          <i />
+          <i />
+          <i />
+        </div>
+        <div className="eyebrow reveal">Double H</div>
+        <h2 className="w3d">
+          <Words text={t('div_title')} />
+        </h2>
+        <p className="section-lead w3d">
+          <Words text={t('div_desc')} cap={30} />
+        </p>
         <div className="cards">
           {DIVISIONS.map((d, i) => (
             <div className="card reveal" key={d.key} style={{ '--d': `${i * 60}ms` }}>
@@ -198,8 +238,12 @@ export default function Home({ onBook }) {
           <span className="free-badge small">
             {t('consult_free_badge')}
           </span>
-          <h2>{t('cta_title')}</h2>
-          <p>{t('cta_desc')}</p>
+          <h2 className="w3d">
+            <Words text={t('cta_title')} />
+          </h2>
+          <p className="w3d">
+            <Words text={t('cta_desc')} cap={30} />
+          </p>
           <div className="cta-actions">
             <button className="btn btn-primary" onClick={onBook}>
               {t('cta_primary')}

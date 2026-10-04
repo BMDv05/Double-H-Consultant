@@ -219,10 +219,45 @@ the certificates "renewed on schedule" notice, the hero-card division list
 ## 12. Visual Effects & Animation
 
 Plain single-column hero (the 3D magnifier experiment was removed on request).
-Staggered hero entrance · pulsing "First Consultation Free" badge ·
-button shine sweep on hover · card lift + top-border draw + pill invert on hover ·
-CTA band light sweep · scroll progress bar · reveal-on-scroll · animated counters ·
-marquee · modal animations. `prefers-reduced-motion` disables them all.
+
+**Scroll-driven motion**
+- Slim glowing scroll-progress bar (top) that fills as you read.
+- Hero content parallax (`data-par`) — the hero text lags gently behind the scroll.
+- 3D word-scroll titles & descriptions (`Words.jsx` + `.w3d`): every section
+  title and every descriptive paragraph (About text, Certificates, Values,
+  Divisions, CTA, Contact header) flips in word-by-word in 3D
+  (`rotateX(82°) → 0` with a per-word stagger) instead of sitting as static
+  text. The About left-column paragraphs use it instead of a plain description.
+- Reveal-on-scroll on every eyebrow, card, and info row (staggered per group
+  via the `--d` CSS variable).
+- The eyebrow line draws itself in (scaleX) when its section enters the view.
+- Sticky nav compacts + gains a shadow after 24px of scroll.
+- "Back to top" button fades in past 600px.
+- Hero scroll cue (bouncing chevron) fades out as soon as you scroll.
+- `IntersectionObserver` in `App.jsx` (`ScrollFX`) drives all of the above,
+  backed by a synchronous rect check on every scroll (so reveals never lag,
+  even if animation frames are throttled) and a `MutationObserver` that picks
+  up targets rendered later (e.g. fetched certificates).
+
+**Ambient motion in empty space**
+- Decorative dashed/solid rings, rotating rounded squares, and pulsing dot
+  triplets placed in the empty corners of each section (`<i class="orn">`).
+  They rotate, float, and pulse slowly; hidden below 900px viewport width so
+  they never collide with text.
+- Marquee band, CTA band light sweep, pulsing "First Consultation Free" badge.
+
+**Pointer motion**
+- 3D tilt on cards / feature points / contact cards (`--rx`, `--ry` custom
+  properties set by a delegated `mousemove` listener — works for dynamically
+  rendered certificate cards too), combined with the existing lift +
+  top-border draw + pill invert on hover.
+- Button shine sweep, icon-line pop + tilt on hover.
+
+**Other**
+- Staggered hero entrance · animated counters · modal open/close animations.
+- `prefers-reduced-motion: reduce` disables all of it: CSS animations and
+  transitions collapse to 0.01ms, smooth scrolling becomes instant, and the
+  JS side skips parallax and tilt entirely.
 
 ---
 

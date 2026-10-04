@@ -76,8 +76,46 @@ a {
   left: 0;
   height: 3px;
   width: 0;
-  background: linear-gradient(90deg, var(--deep2), var(--sage));
+  background: linear-gradient(90deg, var(--deep2), var(--sage), #9fd0cb);
+  background-size: 200% 100%;
+  animation: progFlow 2.6s linear infinite;
   z-index: 200;
+  box-shadow: 0 0 10px rgba(70, 118, 111, 0.65);
+}
+@keyframes progFlow {
+  to {
+    background-position: 200% 0;
+  }
+}
+/* back-to-top */
+#toTop {
+  position: fixed;
+  bottom: 22px;
+  inset-inline-end: 22px;
+  width: 44px;
+  height: 44px;
+  border-radius: 50%;
+  border: 1px solid rgba(255, 255, 255, 0.35);
+  background: var(--deep1);
+  color: #fff;
+  display: grid;
+  place-items: center;
+  cursor: pointer;
+  z-index: 300;
+  opacity: 0;
+  transform: translateY(18px) scale(0.8);
+  pointer-events: none;
+  transition: opacity 0.35s var(--ease), transform 0.35s var(--ease-out),
+    background 0.25s var(--ease);
+}
+#toTop.show {
+  opacity: 1;
+  transform: none;
+  pointer-events: auto;
+}
+#toTop:hover {
+  background: var(--sage);
+  transform: translateY(-3px);
 }
 
 /* ---------- nav ---------- */
@@ -88,6 +126,7 @@ a {
   backdrop-filter: blur(14px);
   background: rgba(230, 236, 236, 0.82);
   border-bottom: 1px solid var(--line);
+  transition: box-shadow 0.35s var(--ease);
 }
 .nav-inner {
   max-width: 1200px;
@@ -96,6 +135,20 @@ a {
   align-items: center;
   gap: 16px;
   padding: 12px 20px;
+  transition: padding 0.35s var(--ease);
+}
+.brand-logo {
+  transition: height 0.35s var(--ease);
+}
+/* compact nav after scrolling */
+body.scrolled .nav {
+  box-shadow: 0 12px 34px rgba(18, 57, 58, 0.1);
+}
+body.scrolled .nav-inner {
+  padding: 6px 20px;
+}
+body.scrolled .brand-logo {
+  height: 30px;
 }
 .brand {
   display: flex;
@@ -319,7 +372,8 @@ a {
   display: grid;
   place-items: center;
   margin-bottom: 12px;
-  transition: background 0.3s var(--ease), color 0.3s var(--ease), border-color 0.3s var(--ease);
+  transition: background 0.3s var(--ease), color 0.3s var(--ease), border-color 0.3s var(--ease),
+    transform 0.4s var(--ease-out);
 }
 .card:hover .icon-line,
 .point:hover .icon-line,
@@ -327,6 +381,7 @@ a {
   background: var(--deep1);
   border-color: var(--deep1);
   color: #fff;
+  transform: translateY(-3px) rotate(-6deg) scale(1.06);
 }
 .point .icon-line {
   min-width: 46px;
@@ -422,6 +477,9 @@ a {
   margin: auto;
   padding: 64px 20px;
   scroll-margin-top: 80px;
+  position: relative;
+  /* clip ornaments that bleed past the section edge (never scrolls horizontally) */
+  overflow-x: clip;
 }
 .eyebrow {
   display: flex;
@@ -439,6 +497,18 @@ a {
   height: 2px;
   background: var(--sage);
   border-radius: 2px;
+}
+/* the little line draws itself in when the eyebrow scrolls into view */
+.eyebrow.reveal::before {
+  transform: scaleX(0);
+  transform-origin: left;
+  transition: transform 0.7s var(--ease-out) 0.25s;
+}
+html[dir='rtl'] .eyebrow.reveal::before {
+  transform-origin: right;
+}
+.eyebrow.reveal.visible::before {
+  transform: scaleX(1);
 }
 .section-lead {
   color: #3d4a4a;
@@ -459,7 +529,8 @@ a {
   position: relative;
   overflow: hidden;
   transform-style: preserve-3d;
-  transition: transform 0.35s var(--ease), box-shadow 0.35s var(--ease), border-color 0.35s var(--ease);
+  transition: transform 0.16s var(--ease-out), box-shadow 0.35s var(--ease),
+    border-color 0.35s var(--ease);
 }
 .card::before {
   content: '';
@@ -477,9 +548,16 @@ html[dir='rtl'] .card::before {
 .card:hover::before {
   transform: scaleX(1);
 }
+/* shared tilt vars — driven by the pointer in App.jsx ScrollFX */
+.card,
+.point,
+.info-card {
+  transform: perspective(900px) rotateX(var(--rx, 0deg)) rotateY(var(--ry, 0deg))
+    translateY(var(--ty, 0px));
+}
 .card:hover {
+  --ty: -6px;
   box-shadow: var(--shadow);
-  transform: translateY(-6px);
   border-color: rgba(70, 118, 111, 0.4);
 }
 .card .icon {
@@ -542,11 +620,12 @@ html[dir='rtl'] .card::before {
   border: 1px solid var(--line);
   border-radius: 18px;
   padding: 16px;
-  transition: transform 0.3s var(--ease), box-shadow 0.3s var(--ease);
+  transition: transform 0.3s var(--ease), box-shadow 0.3s var(--ease), border-color 0.3s var(--ease);
 }
 .point:hover {
-  transform: translateY(-3px);
+  --ty: -3px;
   box-shadow: var(--shadow);
+  border-color: rgba(70, 118, 111, 0.35);
 }
 .point .icon {
   min-width: 46px;
@@ -633,11 +712,12 @@ html[dir='rtl'] .card::before {
   display: flex;
   gap: 14px;
   align-items: center;
-  transition: transform 0.3s var(--ease), box-shadow 0.3s var(--ease);
+  transition: transform 0.3s var(--ease), box-shadow 0.3s var(--ease), border-color 0.3s var(--ease);
 }
 .info-card:hover {
-  transform: translateY(-3px);
+  --ty: -3px;
   box-shadow: var(--shadow);
+  border-color: rgba(70, 118, 111, 0.35);
 }
 .info-card .icon {
   min-width: 46px;
@@ -1000,18 +1080,196 @@ td button:hover {
 /* ---------- reveal on scroll ---------- */
 .reveal {
   opacity: 0;
-  transform: translateY(30px);
-  transition: opacity 0.8s var(--ease), transform 0.8s var(--ease-out);
+  translate: 0 30px;
+  transition: opacity 0.8s var(--ease), translate 0.8s var(--ease-out);
   transition-delay: var(--d, 0s);
-  will-change: opacity, transform;
+  will-change: opacity, translate;
 }
 .reveal.visible {
+  opacity: 1;
+  translate: 0 0;
+}
+
+/* ---------- 3D word-scroll titles & descriptions ---------- */
+/* parent carries .w3d (observed by ScrollFX like .reveal); each word
+   flips up out of the page with an index-based stagger */
+.w3d {
+  perspective: 700px;
+}
+.w3d .w-wrap {
+  display: inline;
+}
+.w3d .w {
+  display: inline-block;
+  opacity: 0;
+  transform: rotateX(82deg) translateY(16px);
+  transform-origin: 50% 100%;
+  transition: opacity 0.55s var(--ease), transform 0.7s var(--ease-out);
+  transition-delay: calc(var(--i, 0) * var(--step, 26ms));
+  will-change: opacity, transform;
+}
+.w3d.visible .w {
   opacity: 1;
   transform: none;
 }
 
+/* ---------- scroll parallax (hero content lags slightly behind) ---------- */
+[data-par] {
+  will-change: transform;
+}
+#heroInner[data-par] {
+  transform: translateY(calc(var(--par, 0) * -46px));
+}
+
+/* ---------- ambient ornaments in empty areas ---------- */
+.orn {
+  position: absolute;
+  pointer-events: none;
+  z-index: 0;
+}
+/* keep real content painted above the ornaments */
+.section > *:not(.orn) {
+  position: relative;
+  z-index: 1;
+}
+.orn-ring {
+  width: 170px;
+  height: 170px;
+  border: 1.5px dashed rgba(70, 118, 111, 0.35);
+  border-radius: 50%;
+  animation: ornSpin 55s linear infinite, ornFloat 9s ease-in-out infinite;
+}
+.orn-ring.solid {
+  width: 90px;
+  height: 90px;
+  border-style: solid;
+  border-color: rgba(70, 118, 111, 0.28);
+  animation-duration: 70s, 11s;
+  animation-delay: 0s, -4s;
+}
+.orn-dots {
+  display: flex;
+  gap: 10px;
+}
+.orn-dots i {
+  width: 7px;
+  height: 7px;
+  border-radius: 50%;
+  background: var(--sage);
+  opacity: 0.5;
+  animation: dotPulse 3.4s ease-in-out infinite;
+}
+.orn-dots i:nth-child(2) {
+  animation-delay: 0.55s;
+}
+.orn-dots i:nth-child(3) {
+  animation-delay: 1.1s;
+}
+.orn-corner {
+  width: 120px;
+  height: 120px;
+  border: 1.5px solid rgba(70, 118, 111, 0.3);
+  border-radius: 26px;
+  transform: rotate(45deg);
+  animation: ornCorner 14s ease-in-out infinite;
+}
+/* placement — alternating sides, kept inside/at the section edge */
+.orn-tr {
+  top: 46px;
+  inset-inline-end: -8px;
+}
+.orn-bl {
+  bottom: 40px;
+  inset-inline-start: -8px;
+}
+.orn-br {
+  bottom: 60px;
+  inset-inline-end: -6px;
+}
+.orn-tl {
+  top: 54px;
+  inset-inline-start: -6px;
+}
+@keyframes ornSpin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+@keyframes ornFloat {
+  0%,
+  100% {
+    translate: 0 0;
+  }
+  50% {
+    translate: 0 -18px;
+  }
+}
+@keyframes ornCorner {
+  0%,
+  100% {
+    transform: rotate(45deg) translateY(0);
+  }
+  50% {
+    transform: rotate(63deg) translateY(-16px);
+  }
+}
+@keyframes dotPulse {
+  0%,
+  100% {
+    opacity: 0.28;
+    scale: 0.85;
+  }
+  50% {
+    opacity: 0.9;
+    scale: 1.25;
+  }
+}
+
+/* ---------- hero scroll cue ---------- */
+.scroll-cue {
+  position: absolute;
+  bottom: 20px;
+  left: 50%;
+  transform: translateX(-50%);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 6px;
+  color: rgba(255, 255, 255, 0.6);
+  font-size: 11px;
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+  opacity: 1;
+  transition: opacity 0.4s var(--ease);
+  z-index: 3;
+}
+body.scrolled .scroll-cue {
+  opacity: 0;
+}
+.scroll-cue svg {
+  animation: cueBounce 1.9s ease-in-out infinite;
+}
+@keyframes cueBounce {
+  0%,
+  100% {
+    translate: 0 0;
+    opacity: 0.5;
+  }
+  50% {
+    translate: 0 7px;
+    opacity: 1;
+  }
+}
+
 /* ---------- responsive ---------- */
 @media (max-width: 900px) {
+  /* ornaments would collide with text on small screens */
+  .orn {
+    display: none;
+  }
+  .scroll-cue {
+    display: none;
+  }
   .about-grid {
     grid-template-columns: 1fr;
   }
