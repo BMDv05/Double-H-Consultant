@@ -1,7 +1,6 @@
 import { useEffect, useState } from 'react';
 import { useLang } from '../LangContext.jsx';
-import Words from '../Words.jsx';
-import Icon from '../Icon.jsx';
+import { IconMail, IconPhone, IconClock, IconPin } from '../icons.jsx';
 
 const validEmail = (e) => /^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/.test(e);
 
@@ -81,36 +80,44 @@ export default function Contact() {
   };
 
   return (
-    <section className="section">
-      <div className="eyebrow reveal">Double H</div>
-      <h2 className="w3d">
-        <Words text={t('contact_title')} />
-      </h2>
-      <p className="section-lead w3d">
-        <Words text={t('contact_desc')} cap={30} />
-      </p>
+    <section className="section contact-page">
+      <div className="eyebrow">Double H</div>
+      <h2>{t('contact_title')}</h2>
+      <p className="section-lead">{t('contact_desc')}</p>
+      <p className="notice book-note">{t('free_note')}</p>
 
-      <div className="contact-grid">
-        <div className="contact-info">
-          {[
-            ['mail', 'contact_email', info?.email || 'info@doubleh.com', true],
-            ['phone', 'contact_phone', info?.phone || '+1 (555) 000-0000', true],
-            ['clock', 'contact_hours', t('contact_hours_v'), false],
-            ['globe', 'contact_location', info?.address || t('contact_location_v'), false],
-          ].map(([icon, key, value, ltr], i) => (
-            <div className="info-card reveal" key={key} style={{ '--d': `${i * 90}ms` }}>
-              <div className="icon-line">
-                <Icon name={icon} size={22} />
-              </div>
-              <div>
-                <h3>{t(key)}</h3>
-                <p dir={ltr ? 'ltr' : undefined}>{value}</p>
-              </div>
+      <div className="contact-info contact-info-row reveal">
+          <div className="info-card">
+            <div className="icon">
+              <IconMail />
             </div>
-          ))}
+            <h3>{t('contact_email')}</h3>
+            <p dir="ltr">{info?.email || 'info@doubleh.com'}</p>
+          </div>
+          <div className="info-card">
+            <div className="icon">
+              <IconPhone />
+            </div>
+            <h3>{t('contact_phone')}</h3>
+            <p dir="ltr">{info?.phone || '+1 (555) 000-0000'}</p>
+          </div>
+          <div className="info-card">
+            <div className="icon">
+              <IconClock />
+            </div>
+            <h3>{t('contact_hours')}</h3>
+            <p>{t('contact_hours_v')}</p>
+          </div>
+          <div className="info-card">
+            <div className="icon">
+              <IconPin />
+            </div>
+            <h3>{t('contact_location')}</h3>
+            <p>{info?.address || t('contact_location_v')}</p>
+          </div>
         </div>
 
-        <div className="form-wrap reveal">
+        <div className="form-wrap form-centered reveal">
           {state === 'ok' ? (
             <div className="ok-box">
               <h3>{t('form_ok_t')}</h3>
@@ -159,7 +166,6 @@ export default function Contact() {
             </form>
           )}
         </div>
-      </div>
     </section>
   );
 }

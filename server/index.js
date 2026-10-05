@@ -9,9 +9,7 @@ import path from 'node:path';
 import { fileURLToPath } from 'node:url';
 import {
   verifyAdmin, createMessage, listMessages, getMessage,
-  updateMessageStatus, messageStats, addAudit, recentAudit,
-  isConsultationFree, createConsultation, listConsultations,
-  updateConsultationStatus, consultationStats
+  updateMessageStatus, deleteMessage, messageStats, addAudit, recentAudit
 } from './db.js';
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
@@ -83,32 +81,6 @@ app.get('/api/company', (req, res) => {
   });
 });
 
-/* ---------- consultation request (first one free per client) ---------- */
-app.post('/api/consultations', (req, res) => {
-  const ip = req.ip || 'unknown';
-  if (!rateLimit(`consult:${ip}`, 5, 10 * 60 * 1000)) {
-    return res.status(429).json({ error: 'Too many attempts — try again later.' });
-  }
-  const fullName = str(req.body?.fullName);
-  const email = str(req.body?.email);
-  const phone = str(req.body?.phone);
-  const note = str(req.body?.note);
-  const lang = ['ar', 'tr', 'en', 'fr'].includes(req.body?.lang) ? req.body.lang : 'en';
-  const honeypot = str(req.body?.honeypot);
-
-  if (honeypot) return res.json({ ok: true }); // bot — silently accept
-  if (fullName.length < 2) return res.status(400).json({ error: 'Full name is required (min 2 chars).' });
-  if (!isEmail(email)) return res.status(400).json({ error: 'A valid email is required.' });
-  if (!/^\+?[0-9\s\-()]{7,18}$/.test(phone)) return res.status(400).json({ error: 'A valid phone number is required.' });
-  if (note.length < 10 || note.length > 2000) return res.status(400).json({ error: 'Note must be 10–2000 characters.' });
-
-  const free = isConsultationFree(email, phone); // first consultation free (Rejected ignored)
-  const id = createConsultation({ fullName, email, phone, note, lang, isFirstFree: free });
-  addAudit('public', free ? 'create-free' : 'create-paid', 'consultation', id);
-  console.log(`[consultation] #${id} ${email} ${free ? '🎁 FREE (first)' : 'standard'}`);
-  res.status(201).json({ ok: true, id, isFirstFree: free, status: 'New' });
-});
-
 app.get('/api/certificates', (req, res) => {
   res.json([
     { id: 'pe', name: 'Professional Engineer (PE)', issuer: 'State Boards of Professional Engineering — USA', year: 'Active' },
@@ -129,7 +101,7 @@ app.post('/api/contact', (req, res) => {
   const email = str(req.body?.email);
   const subject = str(req.body?.subject);
   const message = str(req.body?.message);
-  const lang = ['ar', 'tr', 'en', 'fr'].includes(req.body?.lang) ? req.body.lang : 'en';
+  const lang = ['ar', 'en'].includes(req.body?.lang) ? req.body.lang : 'en';
   const honeypot = str(req.body?.honeypot);
 
   if (honeypot) return res.json({ ok: true }); // bot filled hidden field — silently accept
@@ -173,7 +145,9 @@ app.get('/api/admin/messages', requireAuth, (req, res) => {
 app.patch('/api/admin/messages/:id', requireAuth, (req, res) => {
   const id = Number(req.params.id);
   const status = str(req.body?.status);
-  if (!['New', 'Handled'].includes(status)) return res.status(400).json({ error: 'Status must be New or Handled' });
+  if (!['Not Processed', 'Processed'].includes(status)) {
+    return res.status(400).json({ error: 'Status must be Not Processed or Processed' });
+  }
   const msg = getMessage(id);
   if (!msg) return res.status(404).json({ error: 'Message not found' });
   updateMessageStatus(id, status);
@@ -181,27 +155,23 @@ app.patch('/api/admin/messages/:id', requireAuth, (req, res) => {
   res.json({ ok: true });
 });
 
+app.get('/api/admin/messages/:id', requireAuth, (req, res) => {
+  const msg = getMessage(Number(req.params.id));
+  if (!msg) return res.status(404).json({ error: 'Message not found' });
+  res.json({ message: msg });
+});
+
+app.delete('/api/admin/messages/:id', requireAuth, (req, res) => {
+  const id = Number(req.params.id);
+  const msg = getMessage(id);
+  if (!msg) return res.status(404).json({ error: 'Message not found' });
+  deleteMessage(id);
+  addAudit(req.admin.email, 'delete', 'message', id);
+  res.json({ ok: true });
+});
+
 app.get('/api/admin/audit', requireAuth, (req, res) => {
   res.json({ audit: recentAudit(50) });
-});
-
-/* ---------- admin: consultations ---------- */
-app.get('/api/admin/consultations', requireAuth, (req, res) => {
-  const { status = '', q = '' } = req.query;
-  res.json({ consultations: listConsultations({ status: str(status), q: str(q) }), stats: consultationStats() });
-});
-
-app.patch('/api/admin/consultations/:id', requireAuth, (req, res) => {
-  const id = Number(req.params.id);
-  const status = str(req.body?.status);
-  if (!['New', 'Contacted', 'Scheduled', 'Completed', 'Cancelled', 'Rejected'].includes(status)) {
-    return res.status(400).json({ error: 'Invalid status' });
-  }
-  const exists = listConsultations({}).some((c) => c.id === id);
-  if (!exists) return res.status(404).json({ error: 'Consultation not found' });
-  updateConsultationStatus(id, status);
-  addAudit(req.admin.email, `status:${status}`, 'consultation', id);
-  res.json({ ok: true });
 });
 
 /* =======================================================================

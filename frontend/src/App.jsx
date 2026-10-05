@@ -1,97 +1,58 @@
-import { useEffect, useRef, useState } from 'react';
-import { Routes, Route, NavLink, useLocation, Link, useNavigate } from 'react-router-dom';
+import { createContext, useCallback, useContext, useEffect, useRef, useState } from 'react';
+import { Routes, Route, NavLink, useLocation, useNavigate, Link } from 'react-router-dom';
 import { useLang } from './LangContext.jsx';
-import { LANGS } from './i18n.js';
 import Home from './pages/Home.jsx';
 import Contact from './pages/Contact.jsx';
 import Admin from './pages/Admin.jsx';
-import ConsultModal from './ConsultModal.jsx';
-import logoDark from './assets/logo-dark.png';
+import { IconPhoneCall } from './icons.jsx';
+
+/* ---------- cursor FX disabled — normal system cursor ---------- */
+function CursorFX() {
+  return null;
+}
+
+/* ---------- booking transition (zoom into the handset, then go to booking) ---------- */
+const BookCtx = createContext(() => {});
+export const useBook = () => useContext(BookCtx);
+
+export function BookButton({ to = '/contact', className = '', children }) {
+  const book = useBook();
+  return (
+    <a
+      href={`#${to}`}
+      className={`btn btn-book ${className}`}
+      onClick={(e) => {
+        e.preventDefault();
+        book(to);
+      }}
+    >
+      <span className="book-ic">
+        <IconPhoneCall />
+      </span>
+      <span>{children}</span>
+    </a>
+  );
+}
 
 /* ---------- scroll progress + reveal-on-scroll ---------- */
 function ScrollFX() {
   const barRef = useRef(null);
-  const toTopRef = useRef(null);
   const { pathname } = useLocation();
 
   useEffect(() => {
-    let raf = 0;
-    let cur = null;
-    const reduce = matchMedia('(prefers-reduced-motion: reduce)').matches;
-    const par = [...document.querySelectorAll('[data-par]')];
-    // delegated 3D tilt (works for cards added later, e.g. fetched certificates)
-    const onMove = reduce
-      ? null
-      : (e) => {
-          const el = e.target instanceof Element ? e.target.closest('.card, .point, .info-card') : null;
-          if (el !== cur) {
-            if (cur) {
-              cur.style.setProperty('--rx', '0deg');
-              cur.style.setProperty('--ry', '0deg');
-            }
-            cur = el;
-          }
-          if (!el) return;
-          const r = el.getBoundingClientRect();
-          const x = (e.clientX - r.left) / r.width - 0.5;
-          const y = (e.clientY - r.top) / r.height - 0.5;
-          el.style.setProperty('--rx', `${(-y * 6).toFixed(2)}deg`);
-          el.style.setProperty('--ry', `${(x * 8).toFixed(2)}deg`);
-        };
-    // rect-based reveal (also covers elements IO may miss,
-    // e.g. cards rendered after an async fetch)
-    const revealCheck = () => {
-      const vh0 = window.innerHeight;
-      document
-        .querySelectorAll('.reveal:not(.visible), .w3d:not(.visible)')
-        .forEach((el) => {
-          const r = el.getBoundingClientRect();
-          if (r.top < vh0 * 0.9 && r.bottom > vh0 * 0.06) el.classList.add('visible');
-        });
-    };
-    const run = () => {
-      raf = 0;
-      const h = document.documentElement;
-      const y = h.scrollTop;
-      document.body.classList.toggle('scrolled', y > 24);
-      const p = (y / Math.max(1, h.scrollHeight - h.clientHeight)) * 100;
-      if (barRef.current) barRef.current.style.width = p + '%';
-      if (toTopRef.current) toTopRef.current.classList.toggle('show', y > 600);
-      revealCheck();
-      if (reduce) return;
-      const vh = window.innerHeight;
-      for (const el of par) {
-        const r = el.getBoundingClientRect();
-        if (r.bottom < -80 || r.top > vh + 80) continue;
-        // +1 (below viewport center) → 0 (centered) → -1 (above)
-        const d = (r.top + r.height / 2 - vh / 2) / (vh / 2 + r.height / 2);
-        el.style.setProperty('--par', d.toFixed(3));
-      }
-    };
     const onScroll = () => {
-      // synchronous so reveals never lag behind, even if rAF is throttled
-      revealCheck();
-      if (!raf) raf = requestAnimationFrame(run);
+      const h = document.documentElement;
+      const p = (h.scrollTop / (h.scrollHeight - h.clientHeight)) * 100;
+      if (barRef.current) barRef.current.style.width = p + '%';
     };
     addEventListener('scroll', onScroll, { passive: true });
-    addEventListener('resize', onScroll, { passive: true });
-    if (onMove) document.addEventListener('mousemove', onMove, { passive: true });
-    run();
-    return () => {
-      removeEventListener('scroll', onScroll);
-      removeEventListener('resize', onScroll);
-      if (raf) cancelAnimationFrame(raf);
-      if (onMove) document.removeEventListener('mousemove', onMove);
-      if (cur) {
-        cur.style.setProperty('--rx', '0deg');
-        cur.style.setProperty('--ry', '0deg');
-      }
-    };
-  }, [pathname]);
+    onScroll();
+    return () => removeEventListener('scroll', onScroll);
+  }, []);
 
   useEffect(() => {
     window.scrollTo({ top: 0 });
-    const els = [...document.querySelectorAll('.reveal, .w3d')];
+    const els = [...document.querySelectorAll('.reveal')];
     const io = new IntersectionObserver(
       (entries) =>
         entries.forEach((x) => {
@@ -103,29 +64,10 @@ function ScrollFX() {
       { threshold: 0.12 }
     );
     els.forEach((el) => io.observe(el));
-    // pick up reveal targets rendered later (e.g. fetched certificates)
-    const mo = new MutationObserver(() => {
-      document
-        .querySelectorAll('.reveal:not(.visible), .w3d:not(.visible)')
-        .forEach((el) => io.observe(el));
-    });
-    mo.observe(document.body, { childList: true, subtree: true });
-    return () => {
-      io.disconnect();
-      mo.disconnect();
-    };
+    return () => io.disconnect();
   }, [pathname]);
 
-  return (
-    <>
-      <div id="progress" ref={barRef} />
-      <button id="toTop" ref={toTopRef} onClick={() => scrollTo({ top: 0, behavior: 'smooth' })} aria-label="Back to top">
-        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round">
-          <path d="M12 19V5M5 12l7-7 7 7" />
-        </svg>
-      </button>
-    </>
-  );
+  return <div id="progress" ref={barRef} />;
 }
 
 /* ---------- animated counters ---------- */
@@ -156,8 +98,50 @@ export function Counter({ to, suffix = '' }) {
   return <b ref={ref}>0{suffix}</b>;
 }
 
-/* ---------- navigation ---------- */
-function Nav({ onBook }) {
+/* ---------- welcome intro (per session) ---------- */
+function Intro() {
+  const { t } = useLang();
+  const [done, setDone] = useState(() => !!sessionStorage.getItem('dh-intro'));
+  const [gone, setGone] = useState(() => !!sessionStorage.getItem('dh-intro'));
+
+  useEffect(() => {
+    if (gone) return;
+    const finish = () => {
+      setDone(true);
+      sessionStorage.setItem('dh-intro', '1');
+      setTimeout(() => setGone(true), 800);
+    };
+    const timer = setTimeout(finish, 2200);
+    const onClick = () => {
+      clearTimeout(timer);
+      finish();
+    };
+    addEventListener('click', onClick, { once: true });
+    return () => {
+      clearTimeout(timer);
+      removeEventListener('click', onClick);
+    };
+  }, [gone]);
+
+  if (gone) return null;
+  return (
+    <div id="intro" className={done ? 'done' : ''} aria-hidden="true">
+      <div className="intro-inner">
+        <img className="intro-logo-img" src="/logo-light.png" alt="Double H" />
+        <div className="intro-rule">
+          <span />
+        </div>
+        <div className="intro-sub">{t('brand_sub')}</div>
+        <div className="intro-bar">
+          <i />
+        </div>
+      </div>
+    </div>
+  );
+}
+
+/* ---------- navigation (no contact button — booking goes through the free-call CTAs) ---------- */
+function Nav() {
   const { t, lang, setLang } = useLang();
   const [open, setOpen] = useState(false);
   const location = useLocation();
@@ -168,6 +152,7 @@ function Nav({ onBook }) {
     e.preventDefault();
     const scroll = () => document.getElementById(id)?.scrollIntoView({ behavior: 'smooth' });
     if (location.pathname !== '/') {
+      // navigate home first, then scroll
       window.location.hash = '#/';
       setTimeout(scroll, 120);
     } else {
@@ -179,12 +164,8 @@ function Nav({ onBook }) {
     <nav className="nav">
       <div className="nav-inner">
         <Link className="brand" to="/">
-          <img className="brand-logo" src={logoDark} alt="Double H" />
-          <span className="brand-sub">
-            <i />
-            {t('brand_sub')}
-            <i />
-          </span>
+          <img className="brand-logo" src="/logo-dark.png" alt="Double H" />
+          <span className="logo-tag">{t('brand_sub')}</span>
         </Link>
         <div className={`nav-links${open ? ' open' : ''}`}>
           <NavLink to="/" end>
@@ -196,22 +177,26 @@ function Nav({ onBook }) {
           <a href="#certificates" onClick={homeAnchor('certificates')}>
             {t('nav_certificates')}
           </a>
-          <button className="btn-nav" onClick={onBook}>
-            {t('nav_book')}
-          </button>
         </div>
-        {/* compact AR / EN toggle */}
-        <div className="lang-toggle" role="group" aria-label="Language">
-          {Object.entries(LANGS).map(([code, l]) => (
+        <div className="lang-toggle-wrap">
+          <div className="lang-switch" role="group" aria-label="Language">
             <button
-              key={code}
-              className={lang === code ? 'active' : ''}
-              onClick={() => setLang(code)}
-              title={l.name}
+              type="button"
+              className={lang === 'en' ? 'on' : ''}
+              onClick={() => setLang('en')}
+              aria-pressed={lang === 'en'}
             >
-              {l.short}
+              EN
             </button>
-          ))}
+            <button
+              type="button"
+              className={lang === 'ar' ? 'on' : ''}
+              onClick={() => setLang('ar')}
+              aria-pressed={lang === 'ar'}
+            >
+              ع
+            </button>
+          </div>
         </div>
         <button className="burger" onClick={() => setOpen(!open)} aria-label="Menu">
           ☰
@@ -222,33 +207,77 @@ function Nav({ onBook }) {
 }
 
 export default function App() {
-  const [consultOpen, setConsultOpen] = useState(false);
+  const { t } = useLang();
+  const year = new Date().getFullYear();
   const navigate = useNavigate();
-  const location = useLocation();
+  const [veil, setVeil] = useState(null);
+  const bookId = useRef(0);
 
-  const openConsult = () => {
-    if (location.pathname !== '/') {
-      navigate('/');
-      // let home mount, then open the modal
-      setTimeout(() => setConsultOpen(true), 150);
-    } else {
-      setConsultOpen(true);
-    }
-  };
+  /* every booking remounts a fresh veil (new key) so the zoom always replays,
+     centered on screen */
+  const book = useCallback(
+    (to) => {
+      if (window.matchMedia?.('(prefers-reduced-motion: reduce)').matches) {
+        navigate(to);
+        return;
+      }
+      bookId.current += 1;
+      setVeil({ to, phase: 'in', id: bookId.current });
+    },
+    [navigate]
+  );
+
+  /* zoom in → navigate → fade out revealing the booking page */
+  useEffect(() => {
+    if (!veil || veil.phase !== 'in') return;
+    const t = setTimeout(() => {
+      navigate(veil.to);
+      window.scrollTo(0, 0);
+      setVeil((v) => (v && v.id === veil.id ? { ...v, phase: 'out' } : v));
+    }, 850);
+    return () => clearTimeout(t);
+  }, [veil, navigate]);
+
+  /* unmount after the fade so the next booking starts clean */
+  useEffect(() => {
+    if (!veil || veil.phase !== 'out') return;
+    const t = setTimeout(() => {
+      setVeil((v) => (v && v.id === veil.id ? null : v));
+    }, 550);
+    return () => clearTimeout(t);
+  }, [veil]);
 
   return (
-    <>
+    <BookCtx.Provider value={book}>
+      <CursorFX />
       <ScrollFX />
-      <Nav onBook={openConsult} />
+      <Intro />
+      <Nav />
       <main>
         <Routes>
-          <Route path="/" element={<Home onBook={openConsult} />} />
+          <Route path="/" element={<Home />} />
           <Route path="/contact" element={<Contact />} />
           <Route path="/admin" element={<Admin />} />
-          <Route path="*" element={<Home onBook={openConsult} />} />
+          <Route path="*" element={<Home />} />
         </Routes>
       </main>
-      <ConsultModal open={consultOpen} onClose={() => setConsultOpen(false)} />
-    </>
+      <footer>
+        <div className="foot foot-centered">
+          <div className="foot-brand">Double H Consulting</div>
+          <p className="foot-note">{t('footer_about')}</p>
+          <div className="foot-rights">
+            © {year} {t('footer_rights')}
+          </div>
+        </div>
+      </footer>
+      {veil && (
+        <div key={veil.id} className={`book-veil ${veil.phase}`} aria-hidden="true">
+          <div className="book-circle" />
+          <div className="book-phone">
+            <IconPhoneCall />
+          </div>
+        </div>
+      )}
+    </BookCtx.Provider>
   );
 }

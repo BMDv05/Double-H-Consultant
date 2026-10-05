@@ -1,21 +1,37 @@
 import { useEffect, useState } from 'react';
 import { useLang } from '../LangContext.jsx';
-import { Counter } from '../App.jsx';
-import Words from '../Words.jsx';
-import Icon from '../Icon.jsx';
+import { Counter, BookButton } from '../App.jsx';
+import {
+  IconArch,
+  IconCivil,
+  IconBIM,
+  IconMedical,
+  IconLaw,
+  IconElec,
+  IconMgmt,
+  IconBD,
+  IconCheck,
+  IconBadge,
+  IconClock,
+  IconUsers,
+  IconStar,
+} from '../icons.jsx';
 
 const DIVISIONS = [
-  { key: 'arch', icon: 'building' },
-  { key: 'bim', icon: 'cube' },
-  { key: 'civil', icon: 'bridge' },
-  { key: 'medical', icon: 'med' },
-  { key: 'law', icon: 'scale' },
-  { key: 'elec', icon: 'bolt' },
-  { key: 'mgmt', icon: 'chart' },
-  { key: 'bd', icon: 'ruler' },
+  { key: 'arch', Icon: IconArch },
+  { key: 'civil', Icon: IconCivil },
+  { key: 'bim', Icon: IconBIM },
+  { key: 'medical', Icon: IconMedical },
+  { key: 'law', Icon: IconLaw },
+  { key: 'elec', Icon: IconElec },
+  { key: 'mgmt', Icon: IconMgmt },
+  { key: 'bd', Icon: IconBD },
 ];
 
-export default function Home({ onBook }) {
+const ABOUT_ICONS = [IconCheck, IconBadge, IconClock, IconUsers];
+const VALUE_ICONS = [IconCheck, IconStar, IconClock, IconUsers];
+
+export default function Home() {
   const { t } = useLang();
   const [certs, setCerts] = useState([]);
   const [company, setCompany] = useState(null);
@@ -39,20 +55,24 @@ export default function Home({ onBook }) {
 
   return (
     <>
-      {/* ================= HERO (clean — no blobs, no grid) ================= */}
+      {/* ================= HERO ================= */}
       <div className="hero">
-        <div className="hero-inner" id="heroInner" data-par>
+        <div className="hero-wash" aria-hidden="true" />
+        <div className="hero-inner" id="heroInner">
           <div>
-            <span className="free-badge">
-              {t('hero_badge')}
-            </span>
+            <div className="hero-kicker">
+              <span className="free-badge">{t('hero_badge')}</span>
+            </div>
             <h1>{t('hero_title')}</h1>
             <p className="hero-sub">{t('hero_subtitle')}</p>
-            <p style={{ opacity: 0.85 }}>{t('hero_desc')}</p>
+            <p className="hero-desc">{t('hero_desc')}</p>
             <div className="hero-btns">
-              <button className="btn btn-primary" onClick={onBook}>
+              <BookButton to="/contact" className="btn-primary">
+                {t('free_btn')}
+              </BookButton>
+              <a className="btn btn-ghost" href="#free-call">
                 {t('cta_primary')}
-              </button>
+              </a>
             </div>
             <div className="hero-stats">
               <div>
@@ -77,73 +97,101 @@ export default function Home({ onBook }) {
               </div>
             </div>
           </div>
-        </div>
-        {/* scroll cue — fades away once you start scrolling */}
-        <div className="scroll-cue" aria-hidden="true">
-          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-            <path d="M12 5v14M5 12l7 7 7-7" />
-          </svg>
+          <div className="hero-card">
+            <div className="row">
+              <span>Double H ARCHITECTURE</span>
+            </div>
+            <div className="row">
+              <span>Double H CIVIL ENGINEERING</span>
+            </div>
+            <div className="row">
+              <span>Double H BIM</span>
+            </div>
+            <div className="row">
+              <span>Double H MEDICAL · LAW</span>
+            </div>
+            <div className="row">
+              <span>Double H ELECTRICITY · MANAGEMENT</span>
+            </div>
+            <div className="row">
+              <span>Double H BD</span>
+            </div>
+            <p
+              className="notice"
+              style={{ background: 'rgba(255,255,255,.12)', borderColor: 'rgba(255,255,255,.3)', color: '#fff' }}
+            >
+              {t('free_note')}
+            </p>
+          </div>
         </div>
       </div>
+
+      {/* ================= FIRST FREE CALL — ticket offer ================= */}
+      <section className="section" id="free-call">
+        <div className="free-call reveal">
+          <div className="free-call-inner">
+            <span className="free-pill">{t('free_badge')}</span>
+            <h2>{t('free_title')}</h2>
+            <p>{t('free_desc')}</p>
+            <BookButton to="/contact" className="btn-light">
+              {t('free_btn')}
+            </BookButton>
+            <div className="free-note">{t('free_note')}</div>
+          </div>
+        </div>
+      </section>
 
       {/* ================= MARQUEE ================= */}
       <div className="marquee">
         <span>
-          Double H ARCHITECTURE — Double H CIVIL ENGINEERING — Double H MEDICAL — Double H LAW — Double H ELECTRICITY —
-          Double H MANAGEMENT — Double H BD —&nbsp;
+          Double H ARCHITECTURE — Double H CIVIL ENGINEERING — Double H BIM — Double H MEDICAL — Double H LAW — Double H
+          ELECTRICITY — Double H MANAGEMENT — Double H BD —&nbsp;
         </span>
         <span>
-          Double H ARCHITECTURE — Double H CIVIL ENGINEERING — Double H MEDICAL — Double H LAW — Double H ELECTRICITY —
-          Double H MANAGEMENT — Double H BD —&nbsp;
+          Double H ARCHITECTURE — Double H CIVIL ENGINEERING — Double H BIM — Double H MEDICAL — Double H LAW — Double H
+          ELECTRICITY — Double H MANAGEMENT — Double H BD —&nbsp;
         </span>
       </div>
 
       {/* ================= ABOUT ================= */}
       <section className="section" id="about">
-        <div className="eyebrow reveal">Double H</div>
-        <h2 className="w3d">
-          <Words text={t('about_title')} />
-        </h2>
+        <div className="eyebrow">Double H</div>
+        <h2>{t('about_title')}</h2>
         <div className="about-grid">
-          <div className="about-text">
-            <p className="w3d">
-              <Words text={t('about_p1')} cap={30} />
-            </p>
-            <p className="w3d">
-              <Words text={t('about_p2')} cap={30} />
-            </p>
+          <div className="about-text reveal">
+            <p>{t('about_p1')}</p>
+            <p>{t('about_p2')}</p>
           </div>
           <div className="about-points">
             {[
-              ['check', 'about_point_1', 'about_point_1d'],
-              ['users', 'about_point_2', 'about_point_2d'],
-              ['clock', 'about_point_3', 'about_point_3d'],
-              ['heart', 'about_point_4', 'about_point_4d'],
-            ].map(([icon, tk, dk], i) => (
-              <div className="point reveal" key={tk} style={{ '--d': `${i * 80}ms` }}>
-                <div className="icon-line">
-                  <Icon name={icon} size={22} />
+              ['about_point_1', 'about_point_1d'],
+              ['about_point_2', 'about_point_2d'],
+              ['about_point_3', 'about_point_3d'],
+              ['about_point_4', 'about_point_4d'],
+            ].map(([tk, dk], i) => {
+              const Icon = ABOUT_ICONS[i];
+              return (
+                <div className="point reveal tilt" key={tk} style={{ '--d': `${i * 80}ms` }}>
+                  <div className="icon">
+                    <Icon />
+                  </div>
+                  <div>
+                    <h3>{t(tk)}</h3>
+                    <p>{t(dk)}</p>
+                  </div>
                 </div>
-                <div>
-                  <h3>{t(tk)}</h3>
-                  <p>{t(dk)}</p>
-                </div>
-              </div>
-            ))}
+              );
+            })}
           </div>
         </div>
       </section>
 
       {/* ================= AMERICAN CERTIFICATES ================= */}
       <section className="section certs-section" id="certificates">
-        <div className="eyebrow reveal">Double H</div>
-        <h2 className="w3d">
-          <Words text={t('certs_title')} />
-        </h2>
-        <p className="section-lead w3d">
-          <Words text={t('certs_desc')} cap={30} />
-        </p>
-        <div className="cards">
+        <div className="eyebrow">Double H</div>
+        <h2>{t('certs_title')}</h2>
+        <p className="section-lead">{t('certs_desc')}</p>
+        <div className="cert-list">
           {(certs.length
             ? certs
             : [
@@ -155,12 +203,14 @@ export default function Home({ onBook }) {
                 { id: 'autodesk', name: 'Autodesk Certified Professional', issuer: 'Autodesk — USA' },
               ]
           ).map((c, i) => (
-            <div className="card reveal" key={c.id} style={{ '--d': `${i * 70}ms` }}>
-              <div className="icon-line">
-                <Icon name="award" size={24} />
+            <div className="cert-row reveal" key={c.id} style={{ '--d': `${i * 70}ms` }}>
+              <div className="cert-icon">
+                <IconBadge />
               </div>
-              <h3>{c.name}</h3>
-              <p>{c.issuer}</p>
+              <div className="cert-text">
+                <h3>{c.name}</h3>
+                <p>{c.issuer}</p>
+              </div>
               <div className="pill">USA</div>
             </div>
           ))}
@@ -169,71 +219,66 @@ export default function Home({ onBook }) {
 
       {/* ================= POSITIVE VALUES ================= */}
       <section className="section values-section">
-        <div className="eyebrow reveal">Double H</div>
-        <h2 className="w3d">
-          <Words text={t('values_title')} />
-        </h2>
-        <p className="section-lead w3d">
-          <Words text={t('values_desc')} cap={30} />
-        </p>
-        <div className="cards">
+        <div className="eyebrow">Double H</div>
+        <h2>{t('values_title')}</h2>
+        <p className="section-lead">{t('values_desc')}</p>
+        <div className="value-grid">
           {[
-            ['gem', 'value_1', 'value_1d'],
-            ['trophy', 'value_2', 'value_2d'],
-            ['target', 'value_3', 'value_3d'],
-            ['sprout', 'value_4', 'value_4d'],
-          ].map(([icon, tk, dk], i) => (
-            <div className="card reveal" key={tk} style={{ '--d': `${i * 80}ms` }}>
-              <div className="icon-line">
-                <Icon name={icon} size={24} />
+            ['value_1', 'value_1d'],
+            ['value_2', 'value_2d'],
+            ['value_3', 'value_3d'],
+            ['value_4', 'value_4d'],
+          ].map(([tk, dk], i) => {
+            const Icon = VALUE_ICONS[i];
+            return (
+              <div className="value-item reveal" key={tk} style={{ '--d': `${i * 80}ms` }}>
+                <span className="value-index">{String(i + 1).padStart(2, '0')}</span>
+                <div className="icon">
+                  <Icon />
+                </div>
+                <h3>{t(tk)}</h3>
+                <p>{t(dk)}</p>
               </div>
-              <h3>{t(tk)}</h3>
-              <p>{t(dk)}</p>
-            </div>
-          ))}
+            );
+          })}
         </div>
       </section>
 
       {/* ================= DIVISIONS ================= */}
       <section className="section">
-        <div className="eyebrow reveal">Double H</div>
-        <h2 className="w3d">
-          <Words text={t('div_title')} />
-        </h2>
-        <p className="section-lead w3d">
-          <Words text={t('div_desc')} cap={30} />
-        </p>
-        <div className="cards">
-          {DIVISIONS.map((d, i) => (
-            <div className="card reveal" key={d.key} style={{ '--d': `${i * 60}ms` }}>
-              <div className="icon-line">
-                <Icon name={d.icon} size={24} />
+        <div className="eyebrow">Double H</div>
+        <h2>{t('div_title')}</h2>
+        <p className="section-lead">{t('div_desc')}</p>
+        <div className="div-list">
+          {DIVISIONS.map((d, i) => {
+            const Icon = d.Icon;
+            return (
+              <div className="div-row reveal" key={d.key} style={{ '--d': `${i * 60}ms` }}>
+                <span className="div-index">{String(i + 1).padStart(2, '0')}</span>
+                <div className="div-icon">
+                  <Icon />
+                </div>
+                <div className="div-text">
+                  <h3>{t(`div_${d.key}`)}</h3>
+                  <p>{t(`div_${d.key}d`)}</p>
+                </div>
+                <span className="div-pill">Double H</span>
               </div>
-              <h3>{t(`div_${d.key}`)}</h3>
-              <p>{t(`div_${d.key}d`)}</p>
-              <div className="pill">Double H</div>
-            </div>
-          ))}
+            );
+          })}
         </div>
       </section>
 
       {/* ================= CTA ================= */}
       <section className="section">
         <div className="cta-band reveal">
-          <span className="free-badge small">
-            {t('consult_free_badge')}
-          </span>
-          <h2 className="w3d">
-            <Words text={t('cta_title')} />
-          </h2>
-          <p className="w3d">
-            <Words text={t('cta_desc')} cap={30} />
-          </p>
-          <div className="cta-actions">
-            <button className="btn btn-primary" onClick={onBook}>
-              {t('cta_primary')}
-            </button>
-          </div>
+          <span className="free-pill">{t('free_badge')}</span>
+          <h2>{t('cta_title')}</h2>
+          <p>{t('cta_desc')}</p>
+          <BookButton to="/contact" className="btn-primary">
+            {t('cta_btn')}
+          </BookButton>
+          <div className="free-note">{t('free_note')}</div>
         </div>
       </section>
     </>
