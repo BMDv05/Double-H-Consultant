@@ -82,8 +82,6 @@ export default function Contact() {
 
   return (
     <section className="section">
-      <i className="orn orn-ring orn-tr" aria-hidden="true" />
-      <i className="orn orn-corner orn-bl" aria-hidden="true" />
       <div className="eyebrow reveal">Double H</div>
       <h2 className="w3d">
         <Words text={t('contact_title')} />

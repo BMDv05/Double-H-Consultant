@@ -239,11 +239,7 @@ Plain single-column hero (the 3D magnifier experiment was removed on request).
   even if animation frames are throttled) and a `MutationObserver` that picks
   up targets rendered later (e.g. fetched certificates).
 
-**Ambient motion in empty space**
-- Decorative dashed/solid rings, rotating rounded squares, and pulsing dot
-  triplets placed in the empty corners of each section (`<i class="orn">`).
-  They rotate, float, and pulse slowly; hidden below 900px viewport width so
-  they never collide with text.
+**Ambient motion**
 - Marquee band, CTA band light sweep, pulsing "First Consultation Free" badge.
 
 **Pointer motion**

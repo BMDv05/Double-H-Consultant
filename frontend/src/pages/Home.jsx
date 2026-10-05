@@ -100,12 +100,6 @@ export default function Home({ onBook }) {
 
       {/* ================= ABOUT ================= */}
       <section className="section" id="about">
-        <i className="orn orn-ring orn-tr" aria-hidden="true" />
-        <div className="orn orn-dots orn-bl" aria-hidden="true">
-          <i />
-          <i />
-          <i />
-        </div>
         <div className="eyebrow reveal">Double H</div>
         <h2 className="w3d">
           <Words text={t('about_title')} />
@@ -142,8 +136,6 @@ export default function Home({ onBook }) {
 
       {/* ================= AMERICAN CERTIFICATES ================= */}
       <section className="section certs-section" id="certificates">
-        <i className="orn orn-ring solid orn-tl" aria-hidden="true" />
-        <i className="orn orn-corner orn-br" aria-hidden="true" />
         <div className="eyebrow reveal">Double H</div>
         <h2 className="w3d">
           <Words text={t('certs_title')} />
@@ -177,7 +169,6 @@ export default function Home({ onBook }) {
 
       {/* ================= POSITIVE VALUES ================= */}
       <section className="section values-section">
-        <i className="orn orn-ring orn-tr" aria-hidden="true" />
         <div className="eyebrow reveal">Double H</div>
         <h2 className="w3d">
           <Words text={t('values_title')} />
@@ -205,12 +196,6 @@ export default function Home({ onBook }) {
 
       {/* ================= DIVISIONS ================= */}
       <section className="section">
-        <i className="orn orn-ring solid orn-tl" aria-hidden="true" />
-        <div className="orn orn-dots orn-br" aria-hidden="true">
-          <i />
-          <i />
-          <i />
-        </div>
         <div className="eyebrow reveal">Double H</div>
         <h2 className="w3d">
           <Words text={t('div_title')} />

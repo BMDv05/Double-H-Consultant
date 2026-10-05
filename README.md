@@ -78,7 +78,7 @@ cd ../server && npm start        # → http://localhost:3001 (serves the React b
 - Palette: `#12393a` `#134c4b` `#e6ecec` `#46766f` `#161919`
 - Fonts: **Cairo** (headings/AR) · **Poppins** (body) — loaded from Google Fonts
 - Logo: official **Double H Logos.pdf** wordmark — dark PNG in nav, `H`-glyph favicon; sub-line `— CONSULTANT —`
-- Effects: scroll progress bar, hero parallax, 3D word-scroll titles/descriptions, reveal-on-scroll (staggered cards), 3D card tilt, ambient section ornaments (rings/dots), compact sticky nav, back-to-top, marquee, badge pulse, CTA sheen (custom cursor, hero blobs & grid background removed; no footer)
+- Effects: scroll progress bar, hero parallax, 3D word-scroll titles/descriptions, reveal-on-scroll (staggered cards), 3D card tilt, compact sticky nav, back-to-top, marquee, badge pulse, CTA sheen (custom cursor, hero blobs & grid background removed; no footer)
 
 ## Structure
 ```
