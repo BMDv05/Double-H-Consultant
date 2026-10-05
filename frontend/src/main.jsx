@@ -5,6 +5,13 @@ import App from './App.jsx';
 import { LangProvider } from './LangContext.jsx';
 import './styles.css';
 
+// The server returns index.html for every path, so a typed /admin or /contact
+// lands here without a hash. Move the path into the hash route HashRouter reads.
+const { pathname, hash } = window.location;
+if (pathname !== '/' && !hash) {
+  window.history.replaceState(null, '', `/#${pathname.replace(/\/+$/, '')}`);
+}
+
 createRoot(document.getElementById('root')).render(
   <StrictMode>
     <HashRouter>

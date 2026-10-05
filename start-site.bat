@@ -45,6 +45,6 @@ echo.
 echo Starting Double H Consulting on http://localhost:3001 ...
 echo Keep this window open. Press CTRL+C to stop the site.
 echo.
-start "" "http://localhost:3001/#/en/home"
+start "" "http://localhost:3001/#/"
 call npm start
 pause

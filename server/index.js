@@ -1,7 +1,7 @@
 /**
  * Double H Consulting — Express API
  * Public: GET /api/health, GET /api/company, GET /api/certificates, POST /api/contact
- * Admin:  POST /api/admin/login|logout, GET /api/admin/messages, PATCH /api/admin/messages/:id, GET /api/admin/audit
+ * Admin:  POST /api/admin/login|logout, GET /api/admin/messages, GET|PATCH|DELETE /api/admin/messages/:id, GET /api/admin/audit
  */
 import express from 'express';
 import crypto from 'node:crypto';
@@ -77,7 +77,7 @@ app.get('/api/company', (req, res) => {
     email: 'info@doubleh.com',
     phone: '+1 (555) 000-0000',
     address: 'New York, NY — serving clients worldwide',
-    stats: { years: 18, projects: 450, clients: 300, divisions: 8 }
+    stats: { years: 18, projects: 450, clients: 300, divisions: 9 }
   });
 });
 
@@ -112,7 +112,7 @@ app.post('/api/contact', (req, res) => {
 
   const id = createMessage({ name, email, subject, message, lang });
   addAudit('public', 'create', 'message', id);
-  console.log(`[contact] new message #${id} from ${email}`);
+  console.log(`[contact] new message #${id}`);
   res.status(201).json({ ok: true, id });
 });
 
@@ -125,7 +125,7 @@ app.post('/api/admin/login', (req, res) => {
     return res.status(429).json({ error: 'Too many attempts — try again later.' });
   }
   const admin = verifyAdmin(str(req.body?.email), str(req.body?.password));
-  if (!admin) return res.status(401).json({ error: 'Invalid credentials (demo: admin@doubleh.com / Admin123!)' });
+  if (!admin) return res.status(401).json({ error: 'Invalid email or password.' });
   const token = issueToken(admin);
   addAudit(admin.email, 'login', 'admin', admin.email);
   res.json({ token, name: admin.name, email: admin.email });
@@ -185,6 +185,12 @@ app.get(/^(?!\/api).*/, (req, res, next) => {
 
 /* ---------- error handler ---------- */
 app.use((err, req, res, next) => {
+  // express.json() flags bad bodies (malformed JSON, too large) with a 4xx status
+  if (err.status >= 400 && err.status < 500) {
+    return res.status(err.status).json({
+      error: err.status === 413 ? 'Request body too large.' : 'Invalid request body.'
+    });
+  }
   console.error('[error]', err.message);
   res.status(500).json({ error: 'Internal server error' });
 });
