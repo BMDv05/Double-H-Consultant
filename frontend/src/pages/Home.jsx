@@ -1,62 +1,55 @@
 import { useEffect, useState } from 'react';
-import { Link } from 'react-router-dom';
 import { useLang } from '../LangContext.jsx';
 import { Counter, BookButton } from '../App.jsx';
-import {
-  IconArch,
-  IconCivil,
-  IconBIM,
-  IconStartups,
-  IconMedical,
-  IconLaw,
-  IconElec,
-  IconMgmt,
-  IconBD,
-  IconCheck,
-  IconBadge,
-  IconClock,
-  IconUsers,
-  IconStar,
-} from '../icons.jsx';
+
+const hideImg = (e) => {
+  e.currentTarget.style.display = 'none';
+};
 
 const DIVISIONS = [
-  { key: 'bim', Icon: IconBIM },
-  { key: 'arch', Icon: IconArch },
-  { key: 'civil', Icon: IconCivil },
-  { key: 'medical', Icon: IconMedical },
-  { key: 'law', Icon: IconLaw },
-  { key: 'elec', Icon: IconElec },
-  { key: 'mgmt', Icon: IconMgmt },
-  { key: 'bd', Icon: IconBD },
-  { key: 'startups', Icon: IconStartups },
+  { key: 'bim', img: '/div-bim.jpg' },
+  { key: 'arch', img: '/div-arch.jpg' },
+  { key: 'civil', img: '/div-civil.jpg' },
+  { key: 'medical', img: '/div-medical.jpg' },
+  { key: 'law', img: '/div-law.jpg' },
+  { key: 'elec', img: '/div-elec.jpg' },
+  { key: 'mgmt', img: '/div-mgmt.jpg' },
+  { key: 'bd', img: '/div-bd.jpg' },
+  { key: 'startup', img: '/div-startup.jpg' },
 ];
 
-const ABOUT_ICONS = [IconCheck, IconBadge, IconClock, IconUsers];
-const VALUE_ICONS = [IconCheck, IconStar, IconClock, IconUsers];
+const ABOUT_PHOTOS = [
+  '/pic-about-standards.jpg',
+  '/pic-about-experts.jpg',
+  '/pic-about-ontime.jpg',
+  '/pic-about-people.jpg',
+];
+const VALUE_PHOTOS = [
+  '/pic-value-integrity.jpg',
+  '/pic-value-excellence.jpg',
+  '/pic-value-fast.jpg',
+  '/pic-value-longterm.jpg',
+];
+const CERT_PHOTOS = {
+  pe: '/pic-cert-pe.jpg',
+  iso: '/pic-cert-iso.jpg',
+  leed: '/pic-cert-leed.jpg',
+  osha: '/pic-cert-osha.jpg',
+  pmp: '/pic-cert-pmp.jpg',
+  autodesk: '/pic-cert-autodesk.jpg',
+};
 
 export default function Home() {
-  const { t, lang } = useLang();
+  const { t } = useLang();
   const [certs, setCerts] = useState([]);
-  const [certState, setCertState] = useState('loading');
   const [company, setCompany] = useState(null);
 
   useEffect(() => {
     let alive = true;
     fetch('/api/certificates')
-      .then((r) => {
-        if (!r.ok) throw new Error('Certificates unavailable');
-        return r.json();
-      })
-      .then((d) => {
-        if (!Array.isArray(d)) throw new Error('Invalid certificate response');
-        if (alive) {
-          setCerts(d);
-          setCertState('ready');
-        }
-      })
-      .catch(() => {
-        if (alive) setCertState('error');
-      });
+      .then((r) => (r.ok ? r.json() : []))
+      .then((d) => alive && setCerts(Array.isArray(d) ? d : []))
+      .catch(() => {});
     fetch('/api/company')
       .then((r) => (r.ok ? r.json() : null))
       .then((d) => alive && d && setCompany(d))
@@ -66,12 +59,7 @@ export default function Home() {
     };
   }, []);
 
-  const stats = company?.stats || {
-    years: 18,
-    projects: 450,
-    clients: 300,
-    divisions: DIVISIONS.length,
-  };
+  const stats = company?.stats || { years: 18, projects: 450, clients: 300, divisions: 9 };
 
   return (
     <>
@@ -90,13 +78,9 @@ export default function Home() {
               <BookButton to="/contact" className="btn-primary">
                 {t('free_btn')}
               </BookButton>
-              <Link
-                className="btn btn-ghost"
-                to="/"
-                state={{ section: 'about' }}
-              >
+              <a className="btn btn-ghost" href="#free-call">
                 {t('cta_primary')}
-              </Link>
+              </a>
             </div>
             <div className="hero-stats">
               <div>
@@ -138,9 +122,17 @@ export default function Home() {
               <span>Double H ELECTRICITY · MANAGEMENT</span>
             </div>
             <div className="row">
-              <span>Double H BD · STARTUPS</span>
+              <span>Double H BD</span>
             </div>
-            <p className="notice">{t('free_note')}</p>
+            <div className="row">
+              <span>Double H STARTUPS</span>
+            </div>
+            <p
+              className="notice"
+              style={{ background: 'rgba(255,255,255,.12)', borderColor: 'rgba(255,255,255,.3)', color: '#fff' }}
+            >
+              {t('free_note')}
+            </p>
           </div>
         </div>
       </div>
@@ -161,21 +153,19 @@ export default function Home() {
       </section>
 
       {/* ================= MARQUEE ================= */}
-      <div className="marquee" aria-hidden="true">
+      <div className="marquee">
         <span>
-          Double H BIM — Double H ARCHITECTURE — Double H CIVIL ENGINEERING —
-          Double H MEDICAL — Double H LAW — Double H ELECTRICITY — Double H
-          MANAGEMENT — Double H BD — Double H STARTUPS —&nbsp;
+          Double H BIM — Double H ARCHITECTURE — Double H CIVIL ENGINEERING — Double H MEDICAL — Double H LAW — Double H
+          ELECTRICITY — Double H MANAGEMENT — Double H BD — Double H STARTUPS —&nbsp;
         </span>
         <span>
-          Double H BIM — Double H ARCHITECTURE — Double H CIVIL ENGINEERING —
-          Double H MEDICAL — Double H LAW — Double H ELECTRICITY — Double H
-          MANAGEMENT — Double H BD — Double H STARTUPS —&nbsp;
+          Double H BIM — Double H ARCHITECTURE — Double H CIVIL ENGINEERING — Double H MEDICAL — Double H LAW — Double H
+          ELECTRICITY — Double H MANAGEMENT — Double H BD — Double H STARTUPS —&nbsp;
         </span>
       </div>
 
       {/* ================= ABOUT ================= */}
-      <section className="section" id="about" tabIndex={-1}>
+      <section className="section" id="about">
         <div className="eyebrow">Double H</div>
         <h2>{t('about_title')}</h2>
         <div className="about-grid">
@@ -190,15 +180,10 @@ export default function Home() {
               ['about_point_3', 'about_point_3d'],
               ['about_point_4', 'about_point_4d'],
             ].map(([tk, dk], i) => {
-              const Icon = ABOUT_ICONS[i];
               return (
-                <div
-                  className="point reveal tilt"
-                  key={tk}
-                  style={{ '--d': `${i * 80}ms` }}
-                >
-                  <div className="icon">
-                    <Icon />
+                <div className="point reveal tilt" key={tk} style={{ '--d': `${i * 80}ms` }}>
+                  <div className="point-photo">
+                    <img src={ABOUT_PHOTOS[i]} alt="" loading="lazy" onError={hideImg} />
                   </div>
                   <div>
                     <h3>{t(tk)}</h3>
@@ -212,50 +197,30 @@ export default function Home() {
       </section>
 
       {/* ================= AMERICAN CERTIFICATES ================= */}
-      <section
-        className="section certs-section"
-        id="certificates"
-        tabIndex={-1}
-      >
+      <section className="section certs-section" id="certificates">
         <div className="eyebrow">Double H</div>
         <h2>{t('certs_title')}</h2>
         <p className="section-lead">{t('certs_desc')}</p>
-        <div aria-live="polite" aria-busy={certState === 'loading'}>
-          {certState === 'loading' && (
-            <p role="status">
-              {lang === 'ar' ? 'جارٍ تحميل الشهادات…' : 'Loading certificates…'}
-            </p>
-          )}
-          {certState === 'error' && (
-            <p className="notice" role="status">
-              {lang === 'ar'
-                ? 'تفاصيل الشهادات غير متاحة حالياً. يرجى المحاولة لاحقاً.'
-                : 'Certificate details are temporarily unavailable. Please try again later.'}
-            </p>
-          )}
-          {certState === 'ready' && !certs.length && (
-            <p className="notice">
-              {lang === 'ar'
-                ? 'ستُنشر تفاصيل الشهادات هنا.'
-                : 'Certificate details will be published here.'}
-            </p>
-          )}
-        </div>
         <div className="cert-list">
-          {certs.map((c, i) => (
-            <div
-              className="cert-row reveal"
-              key={c.id}
-              style={{ '--d': `${i * 70}ms` }}
-            >
-              <div className="cert-icon">
-                <IconBadge />
+          {(certs.length
+            ? certs
+            : [
+                { id: 'pe', name: 'Professional Engineer (PE)', issuer: 'State Boards of Professional Engineering — USA' },
+                { id: 'iso', name: 'ISO 9001 — Quality Management', issuer: 'International / US-accredited registrars' },
+                { id: 'leed', name: 'LEED Accredited Professional', issuer: 'GBCI — USA' },
+                { id: 'osha', name: 'OSHA Safety Certification', issuer: 'Occupational Safety and Health Administration — USA' },
+                { id: 'pmp', name: 'PMP — Project Management Professional', issuer: 'Project Management Institute — USA' },
+                { id: 'autodesk', name: 'Autodesk Certified Professional', issuer: 'Autodesk — USA' },
+              ]
+          ).map((c, i) => (
+            <div className="cert-row reveal" key={c.id} style={{ '--d': `${i * 70}ms` }}>
+              <div className="cert-photo">
+                <img src={CERT_PHOTOS[c.id]} alt="" loading="lazy" onError={hideImg} />
               </div>
               <div className="cert-text">
                 <h3>{c.name}</h3>
                 <p>{c.issuer}</p>
               </div>
-              <div className="pill">USA</div>
             </div>
           ))}
         </div>
@@ -273,18 +238,11 @@ export default function Home() {
             ['value_3', 'value_3d'],
             ['value_4', 'value_4d'],
           ].map(([tk, dk], i) => {
-            const Icon = VALUE_ICONS[i];
             return (
-              <div
-                className="value-item reveal"
-                key={tk}
-                style={{ '--d': `${i * 80}ms` }}
-              >
-                <span className="value-index">
-                  {String(i + 1).padStart(2, '0')}
-                </span>
-                <div className="icon">
-                  <Icon />
+              <div className="value-item reveal" key={tk} style={{ '--d': `${i * 80}ms` }}>
+                <span className="value-index">{String(i + 1).padStart(2, '0')}</span>
+                <div className="value-photo">
+                  <img src={VALUE_PHOTOS[i]} alt="" loading="lazy" onError={hideImg} />
                 </div>
                 <h3>{t(tk)}</h3>
                 <p>{t(dk)}</p>
@@ -301,24 +259,23 @@ export default function Home() {
         <p className="section-lead">{t('div_desc')}</p>
         <div className="div-list">
           {DIVISIONS.map((d, i) => {
-            const Icon = d.Icon;
             return (
-              <div
-                className="div-row reveal"
-                key={d.key}
-                style={{ '--d': `${i * 60}ms` }}
-              >
-                <span className="div-index">
-                  {String(i + 1).padStart(2, '0')}
-                </span>
+              <div className="div-row reveal" key={d.key} style={{ '--d': `${i * 60}ms` }}>
+                <span className="div-index">{String(i + 1).padStart(2, '0')}</span>
                 <div className="div-icon">
-                  <Icon />
+                  <img
+                    src={d.img}
+                    alt={t(`div_${d.key}`)}
+                    loading="lazy"
+                    onError={(e) => {
+                      e.currentTarget.style.display = 'none';
+                    }}
+                  />
                 </div>
                 <div className="div-text">
                   <h3>{t(`div_${d.key}`)}</h3>
                   <p>{t(`div_${d.key}d`)}</p>
                 </div>
-                <span className="div-pill">Double H</span>
               </div>
             );
           })}
