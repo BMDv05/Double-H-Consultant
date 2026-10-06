@@ -81,21 +81,54 @@ function hashPassword(password, salt) {
   return crypto.pbkdf2Sync(password, salt, 100000, 64, 'sha256').toString('hex');
 }
 
-/* ---------------- seed admin (env override for production) ---------------- */
+/* ---------------- seed admin (env override for production) ----------------
+   Priority:
+     1. ADMIN_PASSWORD env  → used as-is
+     2. production (NODE_ENV=production) → strong random password, printed ONCE
+     3. development         → known demo password (never use publicly)        */
 const seedEmail = (process.env.ADMIN_EMAIL || 'admin@doubleh.com').toLowerCase().trim();
-const seedPassword = process.env.ADMIN_PASSWORD || 'Admin123!';
+const isProduction = process.env.NODE_ENV === 'production';
+let seedPassword = process.env.ADMIN_PASSWORD;
+let seedSource = 'env';
+if (!seedPassword && isProduction) {
+  seedPassword = crypto.randomBytes(18).toString('base64url');
+  seedSource = 'generated';
+} else if (!seedPassword) {
+  seedPassword = 'Admin123!';
+  seedSource = 'demo';
+}
 const existingAdmin = db.prepare('SELECT id FROM admins WHERE email = ?').get(seedEmail);
 if (!existingAdmin) {
   const salt = crypto.randomBytes(16).toString('hex');
   db.prepare('INSERT INTO admins (name, email, password_hash, salt) VALUES (?, ?, ?, ?)')
     .run('Administrator', seedEmail, hashPassword(seedPassword, salt), salt);
-  console.log(`[db] seeded admin: ${seedEmail}${process.env.ADMIN_PASSWORD ? ' (from env)' : ' (demo default — set ADMIN_EMAIL/ADMIN_PASSWORD)'}`);
+  if (seedSource === 'generated') {
+    console.log('──────────────────────────────────────────────');
+    console.log(`[db] ADMIN seeded: ${seedEmail}`);
+    console.log(`[db] ONE-TIME password: ${seedPassword}`);
+    console.log('[db] Store it now — it is not printed again.');
+    console.log('──────────────────────────────────────────────');
+  } else if (seedSource === 'demo') {
+    console.warn(`[db] WARNING: seeded demo admin ${seedEmail} with the PUBLIC demo password.`);
+    console.warn('[db] Set ADMIN_EMAIL / ADMIN_PASSWORD before exposing this server.');
+  } else {
+    console.log(`[db] seeded admin: ${seedEmail} (from env)`);
+  }
 }
+
+/* dummy hash used to equalise timing when an email does not exist */
+const DUMMY_SALT = crypto.randomBytes(16).toString('hex');
+const DUMMY_HASH = hashPassword(crypto.randomBytes(24).toString('base64url'), DUMMY_SALT);
 
 /* ---------------- queries ---------------- */
 export function verifyAdmin(email, password) {
   const row = db.prepare('SELECT * FROM admins WHERE email = ?').get(String(email || '').toLowerCase().trim());
-  if (!row) return null;
+  if (!row) {
+    /* burn the same PBKDF2 work so response time does not reveal whether the account exists */
+    crypto.timingSafeEqual(Buffer.from(DUMMY_HASH, 'utf8'), Buffer.from(DUMMY_HASH, 'utf8'));
+    hashPassword(String(password || ''), DUMMY_SALT);
+    return null;
+  }
   const candidate = hashPassword(String(password || ''), row.salt);
   const a = Buffer.from(candidate, 'utf8');
   const b = Buffer.from(row.password_hash, 'utf8');
@@ -115,7 +148,12 @@ export function listMessages({ status = '', q = '' } = {}) {
   const where = [];
   const params = [];
   if (status) { where.push('status = ?'); params.push(status); }
-  if (q) { where.push('(name LIKE ? OR email LIKE ? OR subject LIKE ? OR message LIKE ?)'); const like = `%${q}%`; params.push(like, like, like, like); }
+  if (q) {
+    /* escape LIKE wildcards so user input is matched literally, not as patterns */
+    const like = `%${q.replace(/[\\%_]/g, (c) => `\\${c}`)}%`;
+    where.push(`(name LIKE ? ESCAPE '\\' OR email LIKE ? ESCAPE '\\' OR subject LIKE ? ESCAPE '\\' OR message LIKE ? ESCAPE '\\')`);
+    params.push(like, like, like, like);
+  }
   const sql = `SELECT * FROM messages ${where.length ? 'WHERE ' + where.join(' AND ') : ''} ORDER BY datetime(created_at) DESC LIMIT 500`;
   return db.prepare(sql).all(...params);
 }

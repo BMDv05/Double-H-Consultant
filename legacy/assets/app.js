@@ -191,7 +191,7 @@ window.editReq=function(id){
   store.set('dh-requests',reqs); audit(reason?'override-free':'update-status','request',id+(reason?(' reason:'+reason):'')); renderAdmin();
 };
 window.handleMsg=function(id){const a=store.get('dh-msgs',[]);const m=a.find(x=>x.id===id);if(m){m.status='Handled';store.set('dh-msgs',a);audit('handle','message',id);renderAdmin();}};
-window.adminLogin=function(e){e.preventDefault();const em=$('#a-email').value,pw=$('#a-pass').value;if(em==='admin@doubleh.com'&&pw==='Admin123!'){sessionStorage.setItem('dh-admin',em);audit('login','admin',em);renderAdmin();}else{$('#a-err').textContent='Invalid credentials (demo: admin@doubleh.com / Admin123!)';}};
+window.adminLogin=function(e){e.preventDefault();const em=$('#a-email').value,pw=$('#a-pass').value;if(em==='admin@doubleh.com'&&pw==='Admin123!'){sessionStorage.setItem('dh-admin',em);audit('login','admin',em);renderAdmin();}else{$('#a-err').textContent='Invalid email or password.';}};
 window.adminLogout=function(){audit('logout','admin','-');sessionStorage.removeItem('dh-admin');renderAdmin();};
 window.exportReqs=function(){const b=new Blob([JSON.stringify(store.get('dh-requests',[]),null,2)],{type:'application/json'});const a=document.createElement('a');a.href=URL.createObjectURL(b);a.download='requests.json';a.click();};
 

@@ -18,21 +18,60 @@ const PORT = process.env.PORT || 3001;
 
 app.use(express.json({ limit: '50kb' }));
 
-/* ---------- security headers + basic hardening ---------- */
+/* behind nginx / a load balancer set TRUST_PROXY=1 so req.ip (and the rate
+   limiter) sees the real client instead of the proxy's address            */
+const trustProxy = Number(process.env.TRUST_PROXY || 0);
+if (trustProxy > 0) app.set('trust proxy', trustProxy);
+
+/* ---------- security headers ---------- */
+const CSP = [
+  "default-src 'self'",
+  "base-uri 'self'",
+  "object-src 'none'",
+  "frame-ancestors 'none'",
+  "form-action 'self'",
+  "script-src 'self'",
+  /* React writes inline style attributes; Google Fonts serves the CSS */
+  "style-src 'self' 'unsafe-inline' https://fonts.googleapis.com",
+  "font-src 'self' https://fonts.gstatic.com",
+  "img-src 'self' data: blob:",
+  "connect-src 'self'",
+  "manifest-src 'self'",
+  "upgrade-insecure-requests"
+].join('; ');
 app.use((req, res, next) => {
+  res.setHeader('Content-Security-Policy', CSP);
   res.setHeader('X-Content-Type-Options', 'nosniff');
   res.setHeader('X-Frame-Options', 'DENY');
   res.setHeader('Referrer-Policy', 'no-referrer');
+  res.setHeader('Permissions-Policy', 'camera=(), microphone=(), geolocation=(), payment=(), usb=()');
+  res.setHeader('X-DNS-Prefetch-Control', 'off');
+  res.setHeader('Cross-Origin-Opener-Policy', 'same-origin');
+  res.setHeader('Cross-Origin-Resource-Policy', 'same-origin');
+  if (req.secure) {
+    res.setHeader('Strict-Transport-Security', 'max-age=31536000; includeSubDomains');
+  }
   next();
 });
 
 /* ---------- tiny in-memory rate limiter (per IP) ---------- */
 const buckets = new Map();
+const BUCKET_MAX = 5000;
 function rateLimit(key, max, windowMs) {
   const now = Date.now();
   const arr = (buckets.get(key) || []).filter((t) => now - t < windowMs);
-  if (arr.length >= max) return false;
+  if (arr.length >= max) {
+    buckets.set(key, arr);
+    return false;
+  }
   arr.push(now);
+  /* drop idle keys so a flood of distinct IPs cannot grow memory forever */
+  if (buckets.size > BUCKET_MAX) {
+    for (const [k, v] of buckets) {
+      if (!v.length || v[v.length - 1] < now - windowMs) buckets.delete(k);
+      if (buckets.size <= BUCKET_MAX) break;
+    }
+  }
   buckets.set(key, arr);
   return true;
 }
@@ -105,9 +144,9 @@ app.post('/api/contact', (req, res) => {
   const honeypot = str(req.body?.honeypot);
 
   if (honeypot) return res.json({ ok: true }); // bot filled hidden field — silently accept
-  if (name.length < 2) return res.status(400).json({ error: 'Name is required (min 2 chars).' });
-  if (!isEmail(email)) return res.status(400).json({ error: 'A valid email is required.' });
-  if (subject.length < 2) return res.status(400).json({ error: 'Subject is required.' });
+  if (name.length < 2 || name.length > 120) return res.status(400).json({ error: 'Name is required (2–120 chars).' });
+  if (!isEmail(email) || email.length > 254) return res.status(400).json({ error: 'A valid email is required.' });
+  if (subject.length < 2 || subject.length > 200) return res.status(400).json({ error: 'Subject must be 2–200 characters.' });
   if (message.length < 10 || message.length > 3000) return res.status(400).json({ error: 'Message must be 10–3000 characters.' });
 
   const id = createMessage({ name, email, subject, message, lang });
@@ -125,7 +164,8 @@ app.post('/api/admin/login', (req, res) => {
     return res.status(429).json({ error: 'Too many attempts — try again later.' });
   }
   const admin = verifyAdmin(str(req.body?.email), str(req.body?.password));
-  if (!admin) return res.status(401).json({ error: 'Invalid credentials (demo: admin@doubleh.com / Admin123!)' });
+  /* generic message — never disclose which field is wrong or any demo credentials */
+  if (!admin) return res.status(401).json({ error: 'Invalid email or password.' });
   const token = issueToken(admin);
   addAudit(admin.email, 'login', 'admin', admin.email);
   res.json({ token, name: admin.name, email: admin.email });
@@ -185,8 +225,10 @@ app.get(/^(?!\/api).*/, (req, res, next) => {
 
 /* ---------- error handler ---------- */
 app.use((err, req, res, next) => {
-  console.error('[error]', err.message);
-  res.status(500).json({ error: 'Internal server error' });
+  /* body-parser marks its own errors: 400 = malformed JSON, 413 = payload too large */
+  const status = Number(err.status) || 500;
+  if (status >= 500) console.error('[error]', err.message);
+  res.status(status).json({ error: status >= 500 ? 'Internal server error' : 'Invalid request.' });
 });
 
 app.listen(PORT, () => {

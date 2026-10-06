@@ -7,7 +7,8 @@ const fmtDate = (s) => (s || '').slice(0, 16).replace('T', ' ');
 export default function Admin() {
   const { t, lang } = useLang();
   const [token, setToken] = useState(() => sessionStorage.getItem('dh-admin-token'));
-  const [creds, setCreds] = useState({ email: 'admin@doubleh.com', password: 'Admin123!' });
+  /* never prefill credentials — they would ship inside the public JS bundle */
+  const [creds, setCreds] = useState({ email: '', password: '' });
   const [loginErr, setLoginErr] = useState('');
   const [tab, setTab] = useState('messages');
   const [data, setData] = useState({ messages: [], stats: { total: 0, open: 0, processed: 0 } });
@@ -72,7 +73,11 @@ export default function Admin() {
       });
       const body = await res.json().catch(() => ({}));
       if (!res.ok) {
-        setLoginErr(body.error || t('admin_err'));
+        /* localise auth + rate-limit responses; fall back to the API message */
+        const msg = res.status === 401 ? t('admin_err')
+          : res.status === 429 ? t('err_rate')
+          : (body.error || t('admin_err'));
+        setLoginErr(msg);
         return;
       }
       sessionStorage.setItem('dh-admin-token', body.token);
@@ -171,6 +176,7 @@ export default function Admin() {
             <input
               type="email"
               dir="ltr"
+              autoComplete="username"
               value={creds.email}
               onChange={(e) => setCreds({ ...creds, email: e.target.value })}
             />
@@ -178,6 +184,7 @@ export default function Admin() {
             <input
               type="password"
               dir="ltr"
+              autoComplete="current-password"
               value={creds.password}
               onChange={(e) => setCreds({ ...creds, password: e.target.value })}
             />

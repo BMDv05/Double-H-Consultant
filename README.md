@@ -63,7 +63,10 @@ cd ../server && npm start        # → http://localhost:3001 (serves the React b
 | DELETE | `/api/admin/messages/:id` | Bearer | delete a request (audit-logged) |
 | GET | `/api/admin/audit` | Bearer | audit trail |
 
-**Demo admin:** `admin@doubleh.com` / `Admin123!` (seeded on first run — change in production).
+**Admin sign-in:** development seeds `admin@doubleh.com` / `Admin123!` (local only).
+With `NODE_ENV=production` a **random password is generated and printed once** on the first
+run, or set `ADMIN_EMAIL` / `ADMIN_PASSWORD` yourself — see `.env.example`.
+Failed logins always return the generic `Invalid email or password.` (no credential hints).
 
 ## Admin requests — acceptance criteria
 | # | Criterion | How it is met |
@@ -105,6 +108,18 @@ README.md
 ## Notes
 - Node.js LTS (v24) required — installed via winget if missing.
 - SQLite uses Node's built-in `node:sqlite` — **no native modules, no SQL Server needed**.
-- Security: rate limiting (per IP), honeypot, input validation, PBKDF2 password hashing,
-  bearer tokens with expiry, security headers, parameterized queries.
-- Production checklist: HTTPS, real secrets via env, set a strong admin password via `ADMIN_EMAIL` / `ADMIN_PASSWORD` env vars (used on first run), daily DB backups.
+- `legacy/` is **reference-only**: it is never served by the Express app and uses
+  client-side-only demo auth. **Do not deploy it** — real authentication lives in
+  `server/index.js` + `server/db.js` (PBKDF2, hashed + salted, bearer tokens).
+- Security: per-IP rate limiting (login + contact), honeypot, strict field validation with
+  length caps, PBKDF2 password hashing with per-user salt, constant-time compare plus a
+  dummy hash on unknown accounts (no user enumeration), bearer tokens with 8 h expiry,
+  audit trail, parameterized queries with `LIKE` wildcard escaping.
+- Security headers on every response: `Content-Security-Policy`, `X-Content-Type-Options`,
+  `X-Frame-Options: DENY`, `Referrer-Policy: no-referrer`, `Permissions-Policy`,
+  `Cross-Origin-Opener-Policy`, `Cross-Origin-Resource-Policy`, and HSTS when served over TLS.
+- Login failures never reveal which credential was wrong, and no demo credentials ship in
+  the API response or the frontend bundle.
+- Behind nginx set `TRUST_PROXY=1` so rate limiting keys on the real client IP.
+- Production checklist: HTTPS, `NODE_ENV=production` (random admin password on first run
+  or `ADMIN_EMAIL` / `ADMIN_PASSWORD` via env — see `.env.example`), daily DB backups.
