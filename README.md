@@ -2,7 +2,7 @@
 
 Corporate site rebuilt with **React 19 + Vite** frontend and **Node.js + Express + SQLite** backend.
 The consultation booking flow has been removed — the **Home page now presents the company**, its
-**American certificates**, and a positive description of the firm. 4 languages (AR/TR/EN/FR, RTL-ready).
+**American certificates**, and a positive description of the firm. 2 languages (AR/EN, RTL-ready).
 
 ## What's new vs the old build
 | | Old (legacy) | New (current) |
@@ -44,9 +44,11 @@ cd ../server && npm start        # → http://localhost:3001 (serves the React b
 - **CTA** → Contact page
 
 ## Pages & routes (HashRouter)
-- `#/en/home` — company presentation (also `ar`, `tr`, `fr`; `ar` switches `dir="rtl"` automatically)
-- `#/en/contact` — contact info + inquiry form (validated, honeypot, rate-limited 5/10 min)
-- `#/en/admin` — hidden admin (footer "Admin" link only): messages, KPIs, mark-handled, audit log
+- `#/` — company presentation (language switcher in the nav: **AR / EN**; AR switches `dir="rtl"` automatically)
+- `#/contact` — contact info + inquiry form (validated, honeypot, rate-limited 5/10 min)
+- `#/admin` — hidden admin (footer "Admin" link only): messages, KPIs, mark-handled, audit log
+
+> There is **no language segment in the URL** — the language lives in `localStorage` (`dh-lang`).
 
 ## API
 | Method | Endpoint | Auth | Purpose |
@@ -91,7 +93,7 @@ frontend/               → React app (Vite)
   index.html
   src/main.jsx          → entry (HashRouter + LangProvider)
   src/App.jsx           → nav, footer, cursor FX, intro, counters, routes
-  src/i18n.js           → 4-language dictionary (AR/TR/EN/FR)
+  src/i18n.js           → bilingual dictionary (AR/EN)
   src/LangContext.jsx   → language state + RTL switching (persists to localStorage)
   src/pages/Home.jsx    → company + certificates + values (consultation removed)
   src/pages/Contact.jsx → inquiry form → POST /api/contact
