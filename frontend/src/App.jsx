@@ -4,47 +4,33 @@ import { useLang } from './LangContext.jsx';
 import Home from './pages/Home.jsx';
 import Contact from './pages/Contact.jsx';
 import Admin from './pages/Admin.jsx';
+import {
+  IconArrow,
+  IconMenu,
+  IconClose,
+  IconShield,
+  IconPhoneCall,
+  IconLock,
+} from './icons.jsx';
 
-/* ---------- cursor FX disabled — normal system cursor ---------- */
-function CursorFX() {
-  return null;
-}
-
-/* ---------- booking transition (zoom into the handset, then go to booking) ---------- */
+/* ---------- booking context ---------- */
 const BookCtx = createContext(() => {});
 export const useBook = () => useContext(BookCtx);
 
 export function BookButton({ to = '/contact', className = '', children }) {
   const book = useBook();
-  const [ringing, setRinging] = useState(false);
-  const timer = useRef(null);
-  useEffect(() => () => clearTimeout(timer.current), []);
   return (
-    <a
-      href={`#${to}`}
-      className={`btn btn-book ${className}${ringing ? ' ringing' : ''}`}
+    <button
+      type="button"
+      className={`btn btn-book ${className}`}
       onClick={(e) => {
         e.preventDefault();
-        setRinging(true);
-        clearTimeout(timer.current);
-        timer.current = setTimeout(() => setRinging(false), 750);
         book(to);
       }}
     >
-      <svg
-        className="btn-phone"
-        viewBox="0 0 24 24"
-        fill="none"
-        stroke="currentColor"
-        strokeWidth="2"
-        strokeLinecap="round"
-        strokeLinejoin="round"
-        aria-hidden="true"
-      >
-        <path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72c.127.96.361 1.903.7 2.81a2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45c.907.339 1.85.573 2.81.7A2 2 0 0 1 22 16.92z" />
-      </svg>
+      <IconPhoneCall className="btn-icon" size={18} />
       <span className="btn-label">{children}</span>
-    </a>
+    </button>
   );
 }
 
@@ -75,7 +61,7 @@ function ScrollFX() {
             io.unobserve(x.target);
           }
         }),
-      { threshold: 0.12 }
+      { threshold: 0.1 }
     );
     els.forEach((el) => io.observe(el));
     return () => io.disconnect();
@@ -95,7 +81,7 @@ export function Counter({ to, suffix = '' }) {
         if (!x.isIntersecting) return;
         io.unobserve(x.target);
         let s = 0;
-        const step = Math.max(1, Math.round(to / 40));
+        const step = Math.max(1, Math.round(to / 35));
         const iv = setInterval(() => {
           s += step;
           if (s >= to) {
@@ -112,88 +98,70 @@ export function Counter({ to, suffix = '' }) {
   return <b ref={ref}>0{suffix}</b>;
 }
 
-/* ---------- welcome intro (per session) ---------- */
-function Intro() {
-  const { t } = useLang();
-  const [done, setDone] = useState(() => !!sessionStorage.getItem('dh-intro'));
-  const [gone, setGone] = useState(() => !!sessionStorage.getItem('dh-intro'));
-
-  useEffect(() => {
-    if (gone) return;
-    const finish = () => {
-      setDone(true);
-      sessionStorage.setItem('dh-intro', '1');
-      setTimeout(() => setGone(true), 800);
-    };
-    const timer = setTimeout(finish, 2200);
-    const onClick = () => {
-      clearTimeout(timer);
-      finish();
-    };
-    addEventListener('click', onClick, { once: true });
-    return () => {
-      clearTimeout(timer);
-      removeEventListener('click', onClick);
-    };
-  }, [gone]);
-
-  if (gone) return null;
-  return (
-    <div id="intro" className={done ? 'done' : ''} aria-hidden="true">
-      <div className="intro-inner">
-        <img className="intro-logo-img" src="/logo-light.png" alt="Double H" />
-        <div className="intro-rule">
-          <span />
-        </div>
-        <div className="intro-sub">{t('brand_sub')}</div>
-        <div className="intro-bar">
-          <i />
-        </div>
-      </div>
-    </div>
-  );
-}
-
-/* ---------- navigation (no contact button — booking goes through the free-call CTAs) ---------- */
+/* ---------- executive navigation ---------- */
 function Nav() {
   const { t, lang, setLang } = useLang();
   const [open, setOpen] = useState(false);
+  const [scrolled, setScrolled] = useState(false);
   const location = useLocation();
+  const navigate = useNavigate();
 
   useEffect(() => setOpen(false), [location.pathname, location.hash]);
 
-  const homeAnchor = (id) => (e) => {
+  useEffect(() => {
+    const handleScroll = () => {
+      setScrolled(window.scrollY > 20);
+    };
+    window.addEventListener('scroll', handleScroll, { passive: true });
+    return () => window.removeEventListener('scroll', handleScroll);
+  }, []);
+
+  const handleAnchor = (id) => (e) => {
     e.preventDefault();
-    const scroll = () => document.getElementById(id)?.scrollIntoView({ behavior: 'smooth' });
+    setOpen(false);
+    const scroll = () => {
+      const el = document.getElementById(id);
+      if (el) el.scrollIntoView({ behavior: 'smooth' });
+    };
+
     if (location.pathname !== '/') {
-      // navigate home first, then scroll
-      window.location.hash = '#/';
-      setTimeout(scroll, 120);
+      navigate('/');
+      setTimeout(scroll, 180);
     } else {
       scroll();
     }
   };
 
   return (
-    <nav className="nav">
-      <div className="nav-inner">
-        <Link className="brand" to="/">
+    <header className={`nav-header ${scrolled ? 'scrolled' : ''}`}>
+      <div className="nav-container">
+        <Link className="brand" to="/" aria-label="Double H Consulting">
           <img className="brand-logo" src="/logo-dark.png" alt="Double H" />
           <span className="logo-tag">{t('brand_sub')}</span>
         </Link>
-        <div className={`nav-links${open ? ' open' : ''}`}>
-          <NavLink to="/" end>
+
+        {/* Desktop Navigation */}
+        <nav className={`nav-links ${open ? 'open' : ''}`} aria-label="Main Navigation">
+          <NavLink to="/" end onClick={() => setOpen(false)}>
             {t('nav_home')}
           </NavLink>
-          <a href="#about" onClick={homeAnchor('about')}>
+          <a href="#about" onClick={handleAnchor('about')}>
             {t('nav_about')}
           </a>
-          <a href="#certificates" onClick={homeAnchor('certificates')}>
+          <a href="#divisions" onClick={handleAnchor('divisions')}>
+            {t('nav_divisions')}
+          </a>
+          <a href="#certificates" onClick={handleAnchor('certificates')}>
             {t('nav_certificates')}
           </a>
-        </div>
-        <div className="lang-toggle-wrap">
-          <div className="lang-switch" role="group" aria-label="Language">
+          <NavLink to="/contact" onClick={() => setOpen(false)}>
+            {t('nav_contact')}
+          </NavLink>
+        </nav>
+
+        {/* Actions / CTA & Language */}
+        <div className="nav-actions">
+          <div className="lang-switch" role="group" aria-label="Language selector">
             <button
               type="button"
               className={lang === 'en' ? 'on' : ''}
@@ -211,12 +179,24 @@ function Nav() {
               AR
             </button>
           </div>
+
+          <Link to="/contact" className="btn btn-nav-cta">
+            <span>{t('nav_book_cta')}</span>
+            <IconArrow size={16} />
+          </Link>
+
+          <button
+            type="button"
+            className="burger-btn"
+            onClick={() => setOpen(!open)}
+            aria-label="Toggle navigation menu"
+            aria-expanded={open}
+          >
+            {open ? <IconClose size={24} /> : <IconMenu size={24} />}
+          </button>
         </div>
-        <button className="burger" onClick={() => setOpen(!open)} aria-label="Menu">
-          ☰
-        </button>
       </div>
-    </nav>
+    </header>
   );
 }
 
@@ -224,50 +204,20 @@ export default function App() {
   const { t } = useLang();
   const year = new Date().getFullYear();
   const navigate = useNavigate();
-  const [veil, setVeil] = useState(null);
-  const bookId = useRef(0);
 
-  /* every booking remounts a fresh veil (new key) so the zoom always replays,
-     centered on screen */
   const book = useCallback(
     (to) => {
-      if (window.matchMedia?.('(prefers-reduced-motion: reduce)').matches) {
-        navigate(to);
-        return;
-      }
-      bookId.current += 1;
-      setVeil({ to, phase: 'in', id: bookId.current });
+      navigate(to);
+      window.scrollTo({ top: 0, behavior: 'smooth' });
     },
     [navigate]
   );
 
-  /* zoom in → navigate → fade out revealing the booking page */
-  useEffect(() => {
-    if (!veil || veil.phase !== 'in') return;
-    const t = setTimeout(() => {
-      navigate(veil.to);
-      window.scrollTo(0, 0);
-      setVeil((v) => (v && v.id === veil.id ? { ...v, phase: 'out' } : v));
-    }, 850);
-    return () => clearTimeout(t);
-  }, [veil, navigate]);
-
-  /* unmount after the fade so the next booking starts clean */
-  useEffect(() => {
-    if (!veil || veil.phase !== 'out') return;
-    const t = setTimeout(() => {
-      setVeil((v) => (v && v.id === veil.id ? null : v));
-    }, 550);
-    return () => clearTimeout(t);
-  }, [veil]);
-
   return (
     <BookCtx.Provider value={book}>
-      <CursorFX />
       <ScrollFX />
-      <Intro />
       <Nav />
-      <main>
+      <main className="main-content">
         <Routes>
           <Route path="/" element={<Home />} />
           <Route path="/contact" element={<Contact />} />
@@ -275,30 +225,72 @@ export default function App() {
           <Route path="*" element={<Home />} />
         </Routes>
       </main>
-      <footer>
-        <div className="foot foot-centered">
-          <div className="foot-brand">Double H Consulting</div>
-          <p className="foot-note">{t('footer_about')}</p>
-          <div className="foot-rights">
-            © {year} {t('footer_rights')}
+
+      <footer className="site-footer">
+        <div className="footer-container">
+          <div className="footer-top-grid">
+            <div className="footer-brand-col">
+              <Link to="/" className="footer-brand">
+                <img src="/logo-dark.png" alt="Double H" className="footer-logo" />
+                <span className="footer-tag">{t('brand_sub')}</span>
+              </Link>
+              <p className="footer-desc">{t('footer_about')}</p>
+              <div className="footer-trust-pill">
+                <IconShield size={16} />
+                <span>American PE & ISO 9001 Accredited</span>
+              </div>
+            </div>
+
+            <div className="footer-links-col">
+              <h4>Practice Areas</h4>
+              <ul>
+                <li><Link to="/contact?division=bim">{t('div_bim')}</Link></li>
+                <li><Link to="/contact?division=arch">{t('div_arch')}</Link></li>
+                <li><Link to="/contact?division=civil">{t('div_civil')}</Link></li>
+                <li><Link to="/contact?division=elec">{t('div_elec')}</Link></li>
+                <li><Link to="/contact?division=law">{t('div_law')}</Link></li>
+              </ul>
+            </div>
+
+            <div className="footer-links-col">
+              <h4>Organization</h4>
+              <ul>
+                <li><a href="#about">{t('nav_about')}</a></li>
+                <li><a href="#divisions">{t('nav_divisions')}</a></li>
+                <li><a href="#certificates">{t('nav_certificates')}</a></li>
+                <li><Link to="/contact">{t('nav_contact')}</Link></li>
+                <li>
+                  <Link to="/admin" className="admin-link">
+                    <IconLock size={14} />
+                    <span>{t('footer_admin')}</span>
+                  </Link>
+                </li>
+              </ul>
+            </div>
+
+            <div className="footer-contact-col">
+              <h4>Executive Inquiries</h4>
+              <p className="footer-contact-item">info@doubleh.com</p>
+              <p className="footer-contact-item">+1 (555) 000-0000</p>
+              <p className="footer-contact-item">New York, NY — Serving Global Clients</p>
+              <Link to="/contact" className="btn btn-footer-cta">
+                {t('cta_book_now')}
+              </Link>
+            </div>
+          </div>
+
+          <div className="footer-bottom-bar">
+            <p className="footer-copyright">
+              © {year} {t('footer_rights')}
+            </p>
+            <div className="footer-legal-tags">
+              <span>Confidentiality Assured</span>
+              <span>•</span>
+              <span>US Engineering Standards</span>
+            </div>
           </div>
         </div>
       </footer>
-      {veil && (
-        <div key={veil.id} className={`book-veil ${veil.phase}`} aria-hidden="true">
-          <div className="book-circle" />
-          <div className="book-phone-wrap">
-            <span className="book-ring r1" />
-            <span className="book-ring r2" />
-            <span className="book-ring r3" />
-            <span className="book-phone-badge">
-              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                <path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72c.127.96.361 1.903.7 2.81a2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45c.907.339 1.85.573 2.81.7A2 2 0 0 1 22 16.92z" />
-              </svg>
-            </span>
-          </div>
-        </div>
-      )}
     </BookCtx.Provider>
   );
 }

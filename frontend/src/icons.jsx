@@ -26,15 +26,22 @@ import {
   LockKeyhole,
   Menu,
   ArrowUpRight,
+  ShieldCheck,
+  Award,
+  Calendar,
+  ChevronRight,
+  Layers,
+  Briefcase,
+  Compass,
+  CheckCircle2,
 } from 'lucide-react';
 
-// One maintained icon family; adjacent text names every action.
 const icon = (Component) =>
   function Icon(props) {
     return (
       <Component
-        size={24}
-        strokeWidth={1.7}
+        size={22}
+        strokeWidth={1.8}
         aria-hidden="true"
         focusable="false"
         {...props}
@@ -69,3 +76,11 @@ export const IconClose = icon(X);
 export const IconLock = icon(LockKeyhole);
 export const IconMenu = icon(Menu);
 export const IconArrow = icon(ArrowUpRight);
+export const IconShield = icon(ShieldCheck);
+export const IconAward = icon(Award);
+export const IconCalendar = icon(Calendar);
+export const IconChevron = icon(ChevronRight);
+export const IconLayers = icon(Layers);
+export const IconBriefcase = icon(Briefcase);
+export const IconCompass = icon(Compass);
+export const IconCheckBadge = icon(CheckCircle2);

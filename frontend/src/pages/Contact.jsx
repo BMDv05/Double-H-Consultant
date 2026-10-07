@@ -1,38 +1,32 @@
 import { useEffect, useState } from 'react';
+import { useSearchParams } from 'react-router-dom';
 import { useLang } from '../LangContext.jsx';
-
-const IconMail = () => (
-  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
-    <rect x="2.5" y="4.5" width="19" height="15" rx="3" />
-    <path d="m3.5 7 8.5 6 8.5-6" />
-  </svg>
-);
-
-const IconPhone = () => (
-  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
-    <path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72c.127.96.361 1.903.7 2.81a2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45c.907.339 1.85.573 2.81.7A2 2 0 0 1 22 16.92z" />
-  </svg>
-);
-
-const IconClock = () => (
-  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
-    <circle cx="12" cy="12" r="9" />
-    <path d="M12 7v5l3.2 2" />
-  </svg>
-);
-
-const IconPin = () => (
-  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
-    <path d="M20 10c0 6-8 12-8 12S4 16 4 10a8 8 0 0 1 16 0Z" />
-    <circle cx="12" cy="10" r="3" />
-  </svg>
-);
+import {
+  IconMail,
+  IconPhone,
+  IconClock,
+  IconPin,
+  IconShield,
+  IconArrow,
+  IconCheckBadge,
+} from '../icons.jsx';
 
 const validEmail = (e) => /^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/.test(e);
 
 export default function Contact() {
   const { t, lang } = useLang();
-  const [form, setForm] = useState({ name: '', email: '', subject: '', message: '' });
+  const [searchParams] = useSearchParams();
+  const prefillDiv = searchParams.get('division') || '';
+  const prefillSubject = searchParams.get('subject') || '';
+
+  const [form, setForm] = useState({
+    name: '',
+    email: '',
+    division: prefillDiv,
+    subject: prefillSubject ? `Inquiry: ${prefillSubject}` : '',
+    message: '',
+  });
+
   const [errors, setErrors] = useState({});
   const [state, setState] = useState('idle'); // idle | sending | ok | error
   const [honeypot, setHoneypot] = useState('');
@@ -45,9 +39,19 @@ export default function Contact() {
       .catch(() => {});
   }, []);
 
+  useEffect(() => {
+    if (prefillDiv || prefillSubject) {
+      setForm((prev) => ({
+        ...prev,
+        division: prefillDiv || prev.division,
+        subject: prefillSubject ? `Inquiry: ${prefillSubject}` : prev.subject,
+      }));
+    }
+  }, [prefillDiv, prefillSubject]);
+
   const set = (k) => (e) => setForm({ ...form, [k]: e.target.value });
 
-  // client-side rate limit: max 5 / 10 min per browser
+  // Client-side rate limit: max 5 requests per 10 minutes
   const rateOk = () => {
     try {
       const key = 'dh-rl-contact';
@@ -74,19 +78,32 @@ export default function Contact() {
 
   const submit = async (e) => {
     e.preventDefault();
-    if (honeypot) return; // bot filled hidden field
+    if (honeypot) return;
     if (!validate()) return;
     if (!rateOk()) {
       setErrors({ global: t('err_rate') });
       return;
     }
+
     setState('sending');
+    const finalSubject = form.division
+      ? `[${t(`div_${form.division}`) || form.division}] ${form.subject}`
+      : form.subject;
+
     try {
       const res = await fetch('/api/contact', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ ...form, lang, honeypot }),
+        body: JSON.stringify({
+          name: form.name.trim(),
+          email: form.email.trim(),
+          subject: finalSubject.trim(),
+          message: form.message.trim(),
+          lang,
+          honeypot,
+        }),
       });
+
       if (res.ok) {
         setState('ok');
       } else {
@@ -100,97 +117,194 @@ export default function Contact() {
   };
 
   const reset = () => {
-    setForm({ name: '', email: '', subject: '', message: '' });
+    setForm({ name: '', email: '', division: '', subject: '', message: '' });
     setErrors({});
     setState('idle');
   };
 
   return (
-    <section className="section contact-page">
-      <div className="eyebrow">Double H</div>
-      <h2>{t('contact_title')}</h2>
-      <p className="section-lead">{t('contact_desc')}</p>
+    <div className="contact-page-wrap">
+      <section className="section contact-page">
+        <div className="contact-hero-banner reveal">
+          <div className="eyebrow">{t('contact_eyebrow')}</div>
+          <h2>{t('contact_title')}</h2>
+          <p className="section-lead">{t('contact_desc')}</p>
+        </div>
 
-      <div className="contact-info contact-info-row reveal">
+        {/* Executive Contact Cards */}
+        <div className="contact-info-grid reveal">
           <div className="info-card">
             <div className="info-icon" aria-hidden="true">
-              <IconMail />
+              <IconMail size={22} />
             </div>
-            <h3>{t('contact_email')}</h3>
-            <p dir="ltr">{info?.email || 'info@doubleh.com'}</p>
+            <div className="info-text">
+              <h3>{t('contact_email')}</h3>
+              <p dir="ltr">{info?.email || 'info@doubleh.com'}</p>
+            </div>
           </div>
+
           <div className="info-card">
             <div className="info-icon" aria-hidden="true">
-              <IconPhone />
+              <IconPhone size={22} />
             </div>
-            <h3>{t('contact_phone')}</h3>
-            <p dir="ltr">{info?.phone || '+1 (555) 000-0000'}</p>
+            <div className="info-text">
+              <h3>{t('contact_phone')}</h3>
+              <p dir="ltr">{info?.phone || '+1 (555) 000-0000'}</p>
+            </div>
           </div>
+
           <div className="info-card">
             <div className="info-icon" aria-hidden="true">
-              <IconClock />
+              <IconClock size={22} />
             </div>
-            <h3>{t('contact_hours')}</h3>
-            <p>{t('contact_hours_v')}</p>
+            <div className="info-text">
+              <h3>{t('contact_hours')}</h3>
+              <p>{t('contact_hours_v')}</p>
+            </div>
           </div>
+
           <div className="info-card">
             <div className="info-icon" aria-hidden="true">
-              <IconPin />
+              <IconPin size={22} />
             </div>
-            <h3>{t('contact_location')}</h3>
-            <p>{info?.address || t('contact_location_v')}</p>
+            <div className="info-text">
+              <h3>{t('contact_location')}</h3>
+              <p>{info?.address || t('contact_location_v')}</p>
+            </div>
           </div>
         </div>
 
-        <div className="form-wrap form-centered reveal">
+        {/* Consultation Request Form */}
+        <div className="form-container reveal">
           {state === 'ok' ? (
             <div className="ok-box">
+              <div className="ok-icon-circle">
+                <IconCheckBadge size={36} />
+              </div>
               <h3>{t('form_ok_t')}</h3>
               <p>{t('form_ok_d')}</p>
-              <button className="btn btn-dark" onClick={reset}>
+              <button className="btn btn-primary" onClick={reset}>
                 {t('form_again')}
               </button>
             </div>
           ) : (
-            <form onSubmit={submit} noValidate>
-              <label>{t('form_name')}</label>
-              <input value={form.name} onChange={set('name')} autoComplete="name" />
-              <div className="err">{errors.name}</div>
+            <div className="form-card">
+              <div className="form-card-header">
+                <div className="form-badge">
+                  <IconShield size={16} />
+                  <span>Confidential Advisory</span>
+                </div>
+                <h3>Schedule Diagnostic Consultation</h3>
+                <p>Provide your project parameters below to connect with an executive practice lead.</p>
+              </div>
 
-              <label>{t('form_email')}</label>
-              <input type="email" dir="ltr" value={form.email} onChange={set('email')} autoComplete="email" />
-              <div className="err">{errors.email}</div>
+              <form onSubmit={submit} noValidate className="consultation-form">
+                <div className="form-row-2">
+                  <div className="field-group">
+                    <label htmlFor="client-name">{t('form_name')}</label>
+                    <input
+                      id="client-name"
+                      value={form.name}
+                      onChange={set('name')}
+                      autoComplete="name"
+                      placeholder="e.g. Dr. Arthur Vance"
+                    />
+                    {errors.name && <div className="err-msg">{errors.name}</div>}
+                  </div>
 
-              <label>{t('form_subject')}</label>
-              <input value={form.subject} onChange={set('subject')} />
-              <div className="err">{errors.subject}</div>
+                  <div className="field-group">
+                    <label htmlFor="client-email">{t('form_email')}</label>
+                    <input
+                      id="client-email"
+                      type="email"
+                      dir="ltr"
+                      value={form.email}
+                      onChange={set('email')}
+                      autoComplete="email"
+                      placeholder="e.g. arthur@enterprise.com"
+                    />
+                    {errors.email && <div className="err-msg">{errors.email}</div>}
+                  </div>
+                </div>
 
-              <label>{t('form_message')}</label>
-              <textarea rows={5} maxLength={3000} value={form.message} onChange={set('message')} />
-              <div className="err">{errors.message}</div>
+                <div className="form-row-2">
+                  <div className="field-group">
+                    <label htmlFor="client-division">{t('form_division')}</label>
+                    <select
+                      id="client-division"
+                      value={form.division}
+                      onChange={set('division')}
+                      className="form-select"
+                    >
+                      <option value="">{t('form_division_select')}</option>
+                      <option value="bim">{t('div_bim')}</option>
+                      <option value="arch">{t('div_arch')}</option>
+                      <option value="civil">{t('div_civil')}</option>
+                      <option value="elec">{t('div_elec')}</option>
+                      <option value="medical">{t('div_medical')}</option>
+                      <option value="law">{t('div_law')}</option>
+                      <option value="mgmt">{t('div_mgmt')}</option>
+                      <option value="bd">{t('div_bd')}</option>
+                      <option value="startup">{t('div_startup')}</option>
+                    </select>
+                  </div>
 
-              {/* honeypot */}
-              <input
-                className="honey"
-                tabIndex={-1}
-                autoComplete="off"
-                value={honeypot}
-                onChange={(e) => setHoneypot(e.target.value)}
-                aria-hidden="true"
-              />
+                  <div className="field-group">
+                    <label htmlFor="client-subject">{t('form_subject')}</label>
+                    <input
+                      id="client-subject"
+                      value={form.subject}
+                      onChange={set('subject')}
+                      placeholder="e.g. Commercial Mixed-Use Structural Peer Review"
+                    />
+                    {errors.subject && <div className="err-msg">{errors.subject}</div>}
+                  </div>
+                </div>
 
-              {errors.global && (
-                <p className="notice" style={{ color: '#b42318' }}>
-                  {errors.global}
-                </p>
-              )}
+                <div className="field-group">
+                  <label htmlFor="client-message">{t('form_message')}</label>
+                  <textarea
+                    id="client-message"
+                    rows={5}
+                    maxLength={3000}
+                    value={form.message}
+                    onChange={set('message')}
+                    placeholder="Describe your project scope, location, timeline, and current development phase…"
+                  />
+                  {errors.message && <div className="err-msg">{errors.message}</div>}
+                </div>
 
-              <button className="btn btn-dark" type="submit" disabled={state === 'sending'} style={{ marginTop: 12 }}>
-                {state === 'sending' ? t('form_sending') : t('form_send')}
-              </button>
-            </form>
+                {/* Honeypot field for anti-bot protection */}
+                <input
+                  className="honey"
+                  tabIndex={-1}
+                  autoComplete="off"
+                  value={honeypot}
+                  onChange={(e) => setHoneypot(e.target.value)}
+                  aria-hidden="true"
+                />
+
+                {errors.global && (
+                  <div className="form-error-banner" role="alert">
+                    {errors.global}
+                  </div>
+                )}
+
+                <div className="form-action-row">
+                  <button className="btn btn-primary btn-submit" type="submit" disabled={state === 'sending'}>
+                    <span>{state === 'sending' ? t('form_sending') : t('form_send')}</span>
+                    <IconArrow size={18} />
+                  </button>
+                  <span className="form-disclaimer">
+                    <IconClock size={14} />
+                    <span>Response guaranteed within 1 business day</span>
+                  </span>
+                </div>
+              </form>
+            </div>
           )}
         </div>
-    </section>
+      </section>
+    </div>
   );
 }
