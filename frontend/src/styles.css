@@ -627,25 +627,45 @@ html[lang='ar'] .eyebrow {
   display: flex;
   align-items: center;
   justify-content: space-between;
-  gap: 12px;
+  gap: 14px;
   margin-bottom: 16px;
 }
 
-.cert-badge-photo {
-  width: 52px;
-  height: 52px;
-  border-radius: 50%;
-  border: 2px solid var(--sage);
-  overflow: hidden;
-  background: var(--primary-deep);
+.cert-seal-wrap {
+  width: 58px;
+  height: 58px;
+  display: grid;
+  place-items: center;
   flex-shrink: 0;
+  transition: transform 0.3s var(--ease);
 }
 
-.cert-badge-photo img {
-  width: 100%;
-  height: 100%;
-  object-fit: cover;
-  display: block;
+.cert-card:hover .cert-seal-wrap {
+  transform: scale(1.06) rotate(2deg);
+}
+
+.cert-badges-col {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  gap: 6px;
+}
+
+html[lang='ar'] .cert-badges-col {
+  align-items: flex-start;
+}
+
+.cert-code-tag {
+  display: inline-block;
+  font-family: 'SF Mono', 'Courier New', monospace;
+  font-size: 10px;
+  font-weight: 700;
+  letter-spacing: 0.06em;
+  color: var(--sage);
+  background: rgba(56, 115, 107, 0.08);
+  border: 1px solid rgba(56, 115, 107, 0.2);
+  padding: 3px 8px;
+  border-radius: 4px;
 }
 
 .cert-tag {
@@ -663,22 +683,36 @@ html[lang='ar'] .eyebrow {
   margin-bottom: 6px;
 }
 
-.cert-card p {
+.cert-issuer {
   font-size: 13.5px;
   color: var(--ink-subtle);
   margin: 0 0 16px;
   flex-grow: 1;
 }
 
+.cert-footer {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+  border-top: 1px solid var(--line);
+  padding-top: 12px;
+  margin-top: auto;
+}
+
+.cert-jurisdiction {
+  font-size: 11.5px;
+  color: var(--ink-muted);
+  font-weight: 600;
+}
+
 .cert-verified {
   display: flex;
   align-items: center;
   gap: 6px;
-  font-size: 12.5px;
+  font-size: 12px;
   font-weight: 700;
   color: var(--sage);
-  border-top: 1px solid var(--line);
-  padding-top: 12px;
 }
 
 /* ================= ABOUT / STRATEGIC DELIVERY ================= */
@@ -903,24 +937,39 @@ html[lang='ar'] .pillar-item:hover {
   pointer-events: none;
 }
 
-.division-tag {
+.division-media-top {
   position: absolute;
   top: 14px;
   left: 14px;
+  right: 14px;
   z-index: 2;
-  background: rgba(255, 255, 255, 0.92);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.division-index-badge {
+  font-family: var(--font-head);
+  font-size: 11.5px;
+  font-weight: 900;
+  color: #fff;
+  background: rgba(12, 43, 44, 0.88);
+  backdrop-filter: blur(8px);
+  padding: 3px 9px;
+  border-radius: var(--radius-pill);
+  border: 1px solid rgba(255, 255, 255, 0.2);
+}
+
+.division-tag {
+  background: rgba(255, 255, 255, 0.94);
   backdrop-filter: blur(8px);
   color: var(--primary-deep);
-  font-size: 11.5px;
+  font-size: 11px;
   font-weight: 800;
   padding: 4px 12px;
   border-radius: var(--radius-pill);
   box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
-}
-
-html[lang='ar'] .division-tag {
-  left: auto;
-  right: 14px;
+  border: 1px solid rgba(255, 255, 255, 0.8);
 }
 
 .division-body {
@@ -1000,79 +1049,113 @@ html[lang='ar'] .division-tag {
 }
 
 .value-card {
-  background: var(--paper);
+  background: var(--paper-card);
   border: 1px solid var(--line);
   border-radius: var(--radius-md);
   overflow: hidden;
   display: flex;
   flex-direction: column;
-  transition: transform 0.25s var(--ease), border-color 0.25s;
+  transition: transform 0.25s var(--ease), box-shadow 0.25s, border-color 0.25s;
 }
 
 .value-card:hover {
   transform: translateY(-4px);
   border-color: var(--sage);
+  box-shadow: var(--shadow-md);
 }
 
-.value-card-photo {
+.value-schematic-wrap {
   position: relative;
-  width: 100%;
-  aspect-ratio: 16 / 9;
-  overflow: hidden;
-  background: var(--primary-deep);
+  background: linear-gradient(180deg, #f4f8f7 0%, #edf3f2 100%);
+  border-bottom: 1px solid var(--line);
+  padding: 14px 16px 12px;
 }
 
-.value-card-photo img {
-  width: 100%;
-  height: 100%;
-  object-fit: cover;
-  display: block;
+.value-card-header-bar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 8px;
+}
+
+.value-spec-code {
+  font-family: 'SF Mono', 'Courier New', monospace;
+  font-size: 10.5px;
+  font-weight: 700;
+  color: var(--sage);
+  letter-spacing: 0.06em;
 }
 
 .value-card-index {
-  position: absolute;
-  top: 10px;
-  right: 10px;
   font-family: var(--font-head);
-  font-size: 13px;
+  font-size: 12px;
   font-weight: 900;
   color: #fff;
-  background: rgba(12, 43, 44, 0.85);
-  backdrop-filter: blur(6px);
+  background: var(--primary-deep);
   padding: 2px 8px;
   border-radius: var(--radius-pill);
 }
 
-html[lang='ar'] .value-card-index {
-  right: auto;
-  left: 10px;
+.value-schematic-svg {
+  width: 100%;
+  height: 96px;
+  display: block;
 }
 
 .value-card-body {
-  padding: 20px;
+  padding: 20px 22px;
+  display: flex;
+  flex-direction: column;
+  flex-grow: 1;
+}
+
+.value-title-row {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin-bottom: 10px;
 }
 
 .value-icon-circle {
-  width: 38px;
-  height: 38px;
-  border-radius: 50%;
+  width: 32px;
+  height: 32px;
+  border-radius: 9px;
   background: var(--sage-light);
   color: var(--primary-deep);
   display: grid;
   place-items: center;
-  margin-bottom: 12px;
+  flex-shrink: 0;
 }
 
-.value-card h3 {
-  font-size: 17px;
-  margin-bottom: 6px;
+.value-title-row h3 {
+  font-size: 16.5px;
+  margin: 0;
 }
 
-.value-card p {
+.value-card-desc {
   font-size: 13.5px;
   color: var(--ink-muted);
-  margin: 0;
-  line-height: 1.6;
+  margin: 0 0 16px;
+  line-height: 1.65;
+  flex-grow: 1;
+}
+
+.value-card-footer {
+  margin-top: auto;
+  padding-top: 12px;
+  border-top: 1px solid var(--line);
+}
+
+.value-metric-pill {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 11.5px;
+  font-weight: 700;
+  color: var(--primary-brand);
+  background: var(--sage-light);
+  padding: 4px 10px;
+  border-radius: var(--radius-pill);
 }
 
 /* ================= ADVISORY CTA BANNER ================= */

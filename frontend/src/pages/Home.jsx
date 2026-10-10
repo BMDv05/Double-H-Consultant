@@ -22,6 +22,8 @@ import {
   IconChevron,
   IconLayers,
   IconCheckBadge,
+  CertSeal,
+  ValueSchematic,
 } from '../icons.jsx';
 
 const hideImg = (e) => {
@@ -31,13 +33,15 @@ const hideImg = (e) => {
 const DIVISIONS = [
   {
     key: 'bim',
+    num: '01',
     img: '/div-bim.jpg',
     category: 'design',
     icon: IconBIM,
-    tag: 'BIM / VDC',
+    tag: 'BIM / VDC LOD 400',
   },
   {
     key: 'arch',
+    num: '02',
     img: '/div-arch.jpg',
     category: 'design',
     icon: IconArch,
@@ -45,6 +49,7 @@ const DIVISIONS = [
   },
   {
     key: 'civil',
+    num: '03',
     img: '/div-civil.jpg',
     category: 'design',
     icon: IconCivil,
@@ -52,6 +57,7 @@ const DIVISIONS = [
   },
   {
     key: 'elec',
+    num: '04',
     img: '/div-elec.jpg',
     category: 'design',
     icon: IconElec,
@@ -59,6 +65,7 @@ const DIVISIONS = [
   },
   {
     key: 'mgmt',
+    num: '05',
     img: '/div-mgmt.jpg',
     category: 'mgmt',
     icon: IconMgmt,
@@ -66,6 +73,7 @@ const DIVISIONS = [
   },
   {
     key: 'bd',
+    num: '06',
     img: '/div-bd.jpg',
     category: 'mgmt',
     icon: IconBD,
@@ -73,6 +81,7 @@ const DIVISIONS = [
   },
   {
     key: 'startup',
+    num: '07',
     img: '/div-startup.jpg',
     category: 'mgmt',
     icon: IconStartups,
@@ -80,6 +89,7 @@ const DIVISIONS = [
   },
   {
     key: 'medical',
+    num: '08',
     img: '/div-medical.jpg',
     category: 'special',
     icon: IconMedical,
@@ -87,6 +97,7 @@ const DIVISIONS = [
   },
   {
     key: 'law',
+    num: '09',
     img: '/div-law.jpg',
     category: 'special',
     icon: IconLaw,
@@ -95,10 +106,10 @@ const DIVISIONS = [
 ];
 
 const VALUE_ITEMS = [
-  { key: '1', img: '/pic-value-integrity.jpg', icon: IconShield },
-  { key: '2', img: '/pic-value-excellence.jpg', icon: IconAward },
-  { key: '3', img: '/pic-value-fast.jpg', icon: IconClock },
-  { key: '4', img: '/pic-value-longterm.jpg', icon: IconUsers },
+  { key: '1', icon: IconShield },
+  { key: '2', icon: IconAward },
+  { key: '3', icon: IconClock },
+  { key: '4', icon: IconUsers },
 ];
 
 const CERT_ITEMS = [
@@ -107,42 +118,48 @@ const CERT_ITEMS = [
     name: 'Professional Engineer (PE)',
     issuer: 'State Boards of Professional Engineering — USA',
     badge: 'State Licensed',
-    photo: '/pic-cert-pe.jpg',
+    code: 'REG // 40 CFR & ASCE 7',
+    jurisdiction: 'United States Jurisdictions',
   },
   {
     id: 'iso',
     name: 'ISO 9001: Quality Management',
     issuer: 'International & US Accredited Registrars',
     badge: 'Audited QA',
-    photo: '/pic-cert-iso.jpg',
+    code: 'ISO/IEC 17021:2015 AUDITED',
+    jurisdiction: 'International Quality Assurance',
   },
   {
     id: 'leed',
     name: 'LEED Accredited Professional',
     issuer: 'U.S. Green Building Council (USGBC)',
     badge: 'Sustainable Design',
-    photo: '/pic-cert-leed.jpg',
+    code: 'USGBC LEED AP BD+C',
+    jurisdiction: 'High-Performance Architecture',
   },
   {
     id: 'osha',
     name: 'OSHA Safety Standards Certification',
     issuer: 'Occupational Safety & Health Administration — USA',
     badge: 'Zero-Harm Site Safety',
-    photo: '/pic-cert-osha.jpg',
+    code: '29 CFR 1926 / 1910 STANDARD',
+    jurisdiction: 'Federal Safety Governance',
   },
   {
     id: 'pmp',
     name: 'PMP — Project Management Professional',
     issuer: 'Project Management Institute (PMI) — USA',
     badge: 'Earned Value Governance',
-    photo: '/pic-cert-pmp.jpg',
+    code: 'PMBOK 7TH ED / ANSI 99-001',
+    jurisdiction: 'Critical Path & Cost Governance',
   },
   {
     id: 'autodesk',
     name: 'Autodesk Certified Professional',
     issuer: 'Autodesk USA — Revit & Civil 3D',
     badge: 'Computational BIM',
-    photo: '/pic-cert-autodesk.jpg',
+    code: 'LOD 400 REVIT & CIVIL 3D',
+    jurisdiction: 'VDC & Digital Twin Protocol',
   },
 ];
 
@@ -274,16 +291,22 @@ export default function Home() {
             {CERT_ITEMS.map((c, i) => (
               <div className="cert-card reveal" key={c.id} style={{ '--d': `${i * 60}ms` }}>
                 <div className="cert-card-header">
-                  <div className="cert-badge-photo">
-                    <img src={c.photo} alt={c.name} loading="lazy" onError={hideImg} />
+                  <div className="cert-seal-wrap">
+                    <CertSeal id={c.id} size={54} />
                   </div>
-                  <span className="cert-tag">{c.badge}</span>
+                  <div className="cert-badges-col">
+                    <span className="cert-code-tag">{c.code}</span>
+                    <span className="cert-tag">{c.badge}</span>
+                  </div>
                 </div>
                 <h3>{c.name}</h3>
-                <p>{c.issuer}</p>
-                <div className="cert-verified">
-                  <IconCheckBadge size={14} />
-                  <span>Verified Standard</span>
+                <p className="cert-issuer">{c.issuer}</p>
+                <div className="cert-footer">
+                  <span className="cert-jurisdiction">{c.jurisdiction}</span>
+                  <div className="cert-verified">
+                    <IconCheckBadge size={14} />
+                    <span>Verified Standard</span>
+                  </div>
                 </div>
               </div>
             ))}
@@ -299,7 +322,7 @@ export default function Home() {
             <div className="about-photo-wrap">
               <img
                 src="/about-consulting.jpg"
-                alt="Double H Executive Consulting Partners"
+                alt="Double H Technical Drafting & BIM Coordination Studio"
                 className="about-main-img"
                 loading="lazy"
                 onError={hideImg}
@@ -408,13 +431,16 @@ export default function Home() {
                 <div className="division-media">
                   <img src={d.img} alt={t(`div_${d.key}`)} loading="lazy" onError={hideImg} />
                   <div className="division-media-overlay" />
-                  <span className="division-tag">{d.tag}</span>
+                  <div className="division-media-top">
+                    <span className="division-index-badge">{d.num}</span>
+                    <span className="division-tag">{d.tag}</span>
+                  </div>
                 </div>
 
                 <div className="division-body">
                   <div className="division-title-row">
                     <div className="division-icon-badge">
-                      <Icon size={20} />
+                      <Icon size={18} />
                     </div>
                     <h3>{t(`div_${d.key}`)}</h3>
                   </div>
@@ -448,16 +474,27 @@ export default function Home() {
             const Icon = item.icon;
             return (
               <div className="value-card reveal" key={item.key} style={{ '--d': `${i * 70}ms` }}>
-                <div className="value-card-photo">
-                  <img src={item.img} alt={t(`value_${item.key}`)} loading="lazy" onError={hideImg} />
-                  <span className="value-card-index">0{item.key}</span>
+                <div className="value-schematic-wrap">
+                  <div className="value-card-header-bar">
+                    <span className="value-spec-code">{t(`value_${item.key}_spec`)}</span>
+                    <span className="value-card-index">0{item.key}</span>
+                  </div>
+                  <ValueSchematic id={item.key} />
                 </div>
                 <div className="value-card-body">
-                  <div className="value-icon-circle">
-                    <Icon size={20} />
+                  <div className="value-title-row">
+                    <div className="value-icon-circle">
+                      <Icon size={18} />
+                    </div>
+                    <h3>{t(`value_${item.key}`)}</h3>
                   </div>
-                  <h3>{t(`value_${item.key}`)}</h3>
-                  <p>{t(`value_${item.key}d`)}</p>
+                  <p className="value-card-desc">{t(`value_${item.key}d`)}</p>
+                  <div className="value-card-footer">
+                    <span className="value-metric-pill">
+                      <IconCheckBadge size={13} />
+                      {t(`value_${item.key}_metric`)}
+                    </span>
+                  </div>
                 </div>
               </div>
             );
