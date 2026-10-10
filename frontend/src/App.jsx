@@ -18,7 +18,7 @@ import {
 const BookCtx = createContext(() => {});
 export const useBook = () => useContext(BookCtx);
 
-export function BookButton({ to, division = '', subject = '', className = '', children, onClick }) {
+export function BookButton({ to, division = '', subject = '', phase = 'schematic', className = '', children, onClick }) {
   const book = useBook();
   return (
     <button
@@ -27,7 +27,7 @@ export function BookButton({ to, division = '', subject = '', className = '', ch
       onClick={(e) => {
         e.preventDefault();
         if (onClick) onClick(e);
-        book({ division, subject, to });
+        book({ division, subject, phase, to });
       }}
     >
       <span className="btn-label">{children}</span>
@@ -38,7 +38,7 @@ export function BookButton({ to, division = '', subject = '', className = '', ch
 /* ---------- scroll progress + reveal-on-scroll ---------- */
 function ScrollFX() {
   const barRef = useRef(null);
-  const { pathname } = useLocation();
+  const { pathname, hash } = useLocation();
 
   useEffect(() => {
     const onScroll = () => {
@@ -52,8 +52,16 @@ function ScrollFX() {
   }, []);
 
   useEffect(() => {
-    window.scrollTo({ top: 0 });
-    const els = [...document.querySelectorAll('.reveal')];
+    if (hash) {
+      const id = hash.replace('#', '');
+      const el = document.getElementById(id);
+      if (el) {
+        setTimeout(() => el.scrollIntoView({ behavior: 'smooth' }), 60);
+      }
+    } else {
+      window.scrollTo({ top: 0 });
+    }
+
     const io = new IntersectionObserver(
       (entries) =>
         entries.forEach((x) => {
@@ -64,9 +72,25 @@ function ScrollFX() {
         }),
       { threshold: 0.1 }
     );
-    els.forEach((el) => io.observe(el));
-    return () => io.disconnect();
-  }, [pathname]);
+
+    const registerAll = () => {
+      const els = [...document.querySelectorAll('.reveal:not(.visible)')];
+      els.forEach((el) => io.observe(el));
+    };
+
+    registerAll();
+
+    // Dynamically observe added nodes (e.g. division filtering, modals, tabs)
+    const mo = new MutationObserver(() => {
+      registerAll();
+    });
+    mo.observe(document.body, { childList: true, subtree: true });
+
+    return () => {
+      io.disconnect();
+      mo.disconnect();
+    };
+  }, [pathname, hash]);
 
   return <div id="progress" ref={barRef} />;
 }
@@ -216,6 +240,7 @@ export default function App() {
   const [modalOpen, setModalOpen] = useState(false);
   const [modalDivision, setModalDivision] = useState('');
   const [modalSubject, setModalSubject] = useState('');
+  const [modalPhase, setModalPhase] = useState('schematic');
 
   const book = useCallback(
     (arg) => {
@@ -231,8 +256,10 @@ export default function App() {
       }
       const division = typeof arg === 'object' ? arg.division || '' : '';
       const subject = typeof arg === 'object' ? arg.subject || '' : '';
+      const phase = typeof arg === 'object' ? arg.phase || 'schematic' : 'schematic';
       setModalDivision(division);
       setModalSubject(subject);
+      setModalPhase(phase);
       setModalOpen(true);
     },
     [navigate]
@@ -247,6 +274,7 @@ export default function App() {
         onClose={() => setModalOpen(false)}
         initialDivision={modalDivision}
         initialSubject={modalSubject}
+        initialPhase={modalPhase}
       />
       <main className="main-content">
         <Routes>
@@ -304,9 +332,9 @@ export default function App() {
               <p className="footer-contact-item">info@doubleh.com</p>
               <p className="footer-contact-item">+1 (555) 000-0000</p>
               <p className="footer-contact-item">{t('footer_location_sub')}</p>
-              <Link to="/contact" className="btn btn-footer-cta">
+              <BookButton className="btn btn-footer-cta">
                 {t('cta_book_now')}
-              </Link>
+              </BookButton>
             </div>
           </div>
 

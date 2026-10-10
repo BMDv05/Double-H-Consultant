@@ -249,8 +249,7 @@ export default function Home() {
   }, [activeFilter]);
 
   const handleInquireDivision = (divisionKey) => {
-    const divisionName = t(`div_${divisionKey}`);
-    book({ division: divisionKey, subject: divisionName });
+    book({ division: divisionKey });
   };
 
   return (
@@ -507,6 +506,8 @@ export default function Home() {
                     <span className="journey-lead-badge">{t(p.leadKey)}</span>
                     <BookButton
                       className="btn-phase-book"
+                      phase={p.phase === 1 ? 'schematic' : p.phase === 2 ? 'bim' : 'feasibility'}
+                      subject={t(p.titleKey)}
                       onClick={(e) => {
                         e.stopPropagation();
                       }}
@@ -533,7 +534,7 @@ export default function Home() {
             {HESITATION_ITEMS.map((h, i) => {
               const Icon = h.icon;
               return (
-                <div className="hesitation-card" key={h.key} style={{ '--d': `${i * 60}ms` }}>
+                <div className="hesitation-card reveal" key={h.key} style={{ '--d': `${i * 60}ms` }}>
                   <div className="hesitation-card-top">
                     <div className="hesitation-icon-box">
                       <Icon size={20} />

@@ -117,36 +117,44 @@ html[lang='ar'] h6 {
 }
 
 /* Directional Arrow Micro-Animation: Extends subtly on hover */
-.btn svg,
-.division-inquire-btn svg,
-.btn-nav-cta svg,
-.nav-mobile-cta svg,
-.btn-phase-book svg {
-  transition: transform 0.22s var(--ease-out);
+.btn .icon-arrow,
+.division-inquire-btn .icon-arrow,
+.btn-nav-cta .icon-arrow,
+.nav-mobile-cta .icon-arrow,
+.btn-phase-book .icon-arrow,
+.sched-submit-btn .icon-arrow,
+.journey-main-btn .icon-arrow {
+  transition: transform 0.24s var(--ease-out);
 }
 
-.btn:hover svg,
-.division-inquire-btn:hover svg,
-.btn-nav-cta:hover svg,
-.nav-mobile-cta:hover svg,
-.btn-phase-book:hover svg {
+.btn:hover .icon-arrow,
+.division-inquire-btn:hover .icon-arrow,
+.btn-nav-cta:hover .icon-arrow,
+.nav-mobile-cta:hover .icon-arrow,
+.btn-phase-book:hover .icon-arrow,
+.sched-submit-btn:hover .icon-arrow,
+.journey-main-btn:hover .icon-arrow {
   transform: translateX(4px);
 }
 
-html[lang='ar'] .btn svg,
-html[lang='ar'] .division-inquire-btn svg,
-html[lang='ar'] .btn-nav-cta svg,
-html[lang='ar'] .nav-mobile-cta svg,
-html[lang='ar'] .btn-phase-book svg {
+html[lang='ar'] .btn .icon-arrow,
+html[lang='ar'] .division-inquire-btn .icon-arrow,
+html[lang='ar'] .btn-nav-cta .icon-arrow,
+html[lang='ar'] .nav-mobile-cta .icon-arrow,
+html[lang='ar'] .btn-phase-book .icon-arrow,
+html[lang='ar'] .sched-submit-btn .icon-arrow,
+html[lang='ar'] .journey-main-btn .icon-arrow {
   transform: scaleX(-1);
 }
 
-html[lang='ar'] .btn:hover svg,
-html[lang='ar'] .division-inquire-btn:hover svg,
-html[lang='ar'] .btn-nav-cta:hover svg,
-html[lang='ar'] .nav-mobile-cta:hover svg,
-html[lang='ar'] .btn-phase-book:hover svg {
-  transform: scaleX(-1) translateX(-4px);
+html[lang='ar'] .btn:hover .icon-arrow,
+html[lang='ar'] .division-inquire-btn:hover .icon-arrow,
+html[lang='ar'] .btn-nav-cta:hover .icon-arrow,
+html[lang='ar'] .nav-mobile-cta:hover .icon-arrow,
+html[lang='ar'] .btn-phase-book:hover .icon-arrow,
+html[lang='ar'] .sched-submit-btn:hover .icon-arrow,
+html[lang='ar'] .journey-main-btn:hover .icon-arrow {
+  transform: scaleX(-1) translateX(4px); /* Extends 4px forward to the left in RTL */
 }
 
 a {
@@ -803,7 +811,7 @@ html[lang='ar'] .spec-val {
 
 .cert-card:hover {
   transform: translateY(-3px);
-  box-shadow: var(--shadow-md);
+  box-shadow: 0 14px 34px rgba(18, 57, 58, 0.1), 0 0 0 1px var(--accent-sage);
   border-color: var(--accent-sage);
 }
 
@@ -1056,11 +1064,43 @@ html[lang='ar'] .pillar-item:hover {
   position: absolute;
   inset: 0;
   background-image:
-    linear-gradient(to right, rgba(70, 118, 111, 0.05) 1px, transparent 1px),
-    linear-gradient(to bottom, rgba(70, 118, 111, 0.05) 1px, transparent 1px);
-  background-size: 40px 40px;
+    linear-gradient(to right, rgba(70, 118, 111, 0.055) 1px, transparent 1px),
+    linear-gradient(to bottom, rgba(70, 118, 111, 0.055) 1px, transparent 1px),
+    linear-gradient(to right, rgba(18, 57, 58, 0.02) 1px, transparent 1px),
+    linear-gradient(to bottom, rgba(18, 57, 58, 0.02) 1px, transparent 1px);
+  background-size: 48px 48px, 48px 48px, 12px 12px, 12px 12px;
   pointer-events: none;
   z-index: 1;
+}
+
+.journey-blueprint-grid::before {
+  content: '';
+  position: absolute;
+  top: 24px;
+  left: 24px;
+  right: 24px;
+  bottom: 24px;
+  border: 1px dashed rgba(70, 118, 111, 0.16);
+  pointer-events: none;
+}
+
+.journey-blueprint-grid::after {
+  content: 'CAD // ASCE-7 COORD: 40°42′N 74°00′W • GRID 48x12';
+  position: absolute;
+  bottom: 14px;
+  left: 28px;
+  font-family: 'SF Mono', 'Courier New', monospace;
+  font-size: 9px;
+  font-weight: 700;
+  letter-spacing: 0.12em;
+  color: var(--accent-sage);
+  opacity: 0.45;
+  pointer-events: none;
+}
+
+html[lang='ar'] .journey-blueprint-grid::after {
+  left: auto;
+  right: 28px;
 }
 
 /* Interactive Phase Tabs */
@@ -1082,27 +1122,30 @@ html[lang='ar'] .pillar-item:hover {
   display: inline-flex;
   align-items: center;
   gap: 8px;
-  border: none;
+  border: 1px solid transparent;
   background: transparent;
   color: var(--ink-muted);
   font-family: inherit;
   font-size: 13.5px;
   font-weight: 700;
   padding: 8px 18px;
-  border-radius: 3px;
+  border-radius: 4px;
   cursor: pointer;
-  transition: all 0.2s var(--ease);
+  transition: transform 0.2s var(--ease-out), color 0.2s var(--ease-out), background 0.2s var(--ease-out), box-shadow 0.2s var(--ease-out), border-color 0.2s var(--ease-out);
 }
 
 .journey-tab-btn:hover {
   color: var(--primary-deep);
   background: rgba(255, 255, 255, 0.7);
+  transform: translateY(-1px);
 }
 
 .journey-tab-btn.active {
   background: var(--primary-deep);
   color: #ffffff;
-  box-shadow: 0 2px 6px rgba(18, 57, 58, 0.2);
+  border-color: var(--primary-deep);
+  box-shadow: 0 4px 12px rgba(18, 57, 58, 0.22);
+  transform: translateY(-1px);
 }
 
 .journey-tab-index {
@@ -1142,7 +1185,8 @@ html[lang='ar'] .pillar-item:hover {
 
 .journey-phase-card.active-phase {
   border-color: var(--primary-deep);
-  box-shadow: 0 14px 38px rgba(18, 57, 58, 0.14), 0 0 0 1.5px var(--primary-deep);
+  box-shadow: 0 16px 42px rgba(18, 57, 58, 0.16), 0 0 0 2px var(--primary-deep);
+  transform: translateY(-4px);
 }
 
 .journey-card-topbar {
@@ -1177,6 +1221,31 @@ html[lang='ar'] .pillar-item:hover {
   display: flex;
   align-items: center;
   justify-content: center;
+  position: relative;
+}
+
+.journey-schematic-container::before {
+  content: '⌜';
+  position: absolute;
+  top: 4px;
+  left: 6px;
+  font-size: 13px;
+  color: var(--accent-sage);
+  opacity: 0.4;
+  line-height: 1;
+  pointer-events: none;
+}
+
+.journey-schematic-container::after {
+  content: '⌟';
+  position: absolute;
+  bottom: 4px;
+  right: 6px;
+  font-size: 13px;
+  color: var(--accent-sage);
+  opacity: 0.4;
+  line-height: 1;
+  pointer-events: none;
 }
 
 .journey-schematic-svg {
@@ -1312,9 +1381,9 @@ html[lang='ar'] .pillar-item:hover {
 }
 
 .hesitation-card:hover {
-  transform: translateY(-2px);
+  transform: translateY(-3px);
   border-color: var(--accent-sage);
-  box-shadow: 0 10px 28px rgba(18, 57, 58, 0.08);
+  box-shadow: 0 12px 30px rgba(18, 57, 58, 0.09), 0 0 0 1px var(--accent-sage);
 }
 
 .hesitation-card-top {
@@ -1418,27 +1487,30 @@ html[lang='ar'] .pillar-item:hover {
 }
 
 .filter-btn {
-  border: none;
+  border: 1px solid transparent;
   background: transparent;
   color: var(--ink-muted);
   font-family: inherit;
   font-size: 13.5px;
   font-weight: 700;
   padding: 8px 20px;
-  border-radius: 3px;
+  border-radius: 4px;
   cursor: pointer;
-  transition: all 0.2s var(--ease);
+  transition: transform 0.2s var(--ease-out), color 0.2s var(--ease-out), background 0.2s var(--ease-out), box-shadow 0.2s var(--ease-out), border-color 0.2s var(--ease-out);
 }
 
 .filter-btn:hover {
   color: var(--primary-deep);
   background: rgba(255, 255, 255, 0.6);
+  transform: translateY(-1px);
 }
 
 .filter-btn.active {
   background: var(--primary-deep);
   color: #fff;
-  box-shadow: 0 1px 4px rgba(18, 57, 58, 0.2);
+  border-color: var(--primary-deep);
+  box-shadow: 0 4px 12px rgba(18, 57, 58, 0.22);
+  transform: translateY(-1px);
 }
 
 .divisions-grid {
@@ -1460,7 +1532,7 @@ html[lang='ar'] .pillar-item:hover {
 
 .division-card:hover {
   transform: translateY(-4px);
-  box-shadow: var(--shadow-md);
+  box-shadow: 0 16px 36px rgba(18, 57, 58, 0.12), 0 0 0 1px var(--accent-sage);
   border-color: var(--accent-sage);
 }
 
@@ -1603,7 +1675,7 @@ html[lang='ar'] .pillar-item:hover {
 .value-card:hover {
   transform: translateY(-3px);
   border-color: var(--accent-sage);
-  box-shadow: var(--shadow-sm);
+  box-shadow: 0 14px 32px rgba(18, 57, 58, 0.1), 0 0 0 1px var(--accent-sage);
 }
 
 .value-schematic-wrap {
@@ -2312,27 +2384,51 @@ html[lang='ar'] .footer-tag {
   margin: 0 auto 16px;
 }
 
-/* Modals */
+/* Modals & Dialog Backdrop */
+dialog.modal,
+.modal {
+  background: #ffffff;
+  border-radius: 4px; /* Strict architectural 4px geometry */
+  width: min(640px, 94vw);
+  max-height: 88vh;
+  overflow-y: auto;
+  padding: 32px;
+  box-shadow: 0 24px 64px rgba(18, 57, 58, 0.35), 0 0 0 1px rgba(70, 118, 111, 0.18);
+  border: 1px solid var(--line);
+  margin: auto;
+  color: var(--ink);
+  animation: modalEnter 0.26s var(--ease-out);
+}
+
+dialog.modal::backdrop,
 .modal-backdrop {
   position: fixed;
   inset: 0;
   z-index: 500;
-  background: rgba(18, 57, 58, 0.65);
-  backdrop-filter: blur(6px);
-  display: grid;
-  place-items: center;
-  padding: 20px;
+  background: rgba(18, 57, 58, 0.68);
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
+  animation: backdropEnter 0.26s var(--ease-out);
 }
 
-.modal {
-  background: #ffffff;
-  border-radius: 6px;
-  width: min(620px, 100%);
-  max-height: 88vh;
-  overflow-y: auto;
-  padding: 32px;
-  box-shadow: 0 24px 60px rgba(18, 57, 58, 0.35);
-  border: 1px solid var(--line);
+@keyframes modalEnter {
+  from {
+    opacity: 0;
+    transform: scale(0.97) translateY(12px);
+  }
+  to {
+    opacity: 1;
+    transform: scale(1) translateY(0);
+  }
+}
+
+@keyframes backdropEnter {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
 }
 
 .modal-head {

@@ -353,7 +353,7 @@ export default function Contact() {
             {HESITATION_ITEMS.map((h, i) => {
               const Icon = h.icon;
               return (
-                <div className="hesitation-card" key={h.key} style={{ '--d': `${i * 60}ms` }}>
+                <div className="hesitation-card reveal" key={h.key} style={{ '--d': `${i * 60}ms` }}>
                   <div className="hesitation-card-top">
                     <div className="hesitation-icon-box">
                       <Icon size={20} />

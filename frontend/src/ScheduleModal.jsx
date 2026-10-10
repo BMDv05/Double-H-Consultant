@@ -38,11 +38,12 @@ export default function ScheduleModal({
   onClose,
   initialDivision = '',
   initialSubject = '',
+  initialPhase = 'schematic',
 }) {
   const { t, lang } = useLang();
 
   const [division, setDivision] = useState(initialDivision);
-  const [devPhase, setDevPhase] = useState('schematic');
+  const [devPhase, setDevPhase] = useState(initialPhase);
   const [name, setName] = useState('');
   const [email, setEmail] = useState('');
   const [subject, setSubject] = useState(initialSubject);
@@ -56,18 +57,32 @@ export default function ScheduleModal({
     if (open) {
       setDivision(initialDivision || '');
       setSubject(initialSubject || '');
+      setDevPhase(initialPhase || 'schematic');
       setStatus('idle');
       setErrors({});
     }
-  }, [open, initialDivision, initialSubject]);
+  }, [open, initialDivision, initialSubject, initialPhase]);
 
   if (!open) return null;
+
+  const rateOk = () => {
+    try {
+      const key = 'dh-rl-contact';
+      const now = Date.now();
+      let arr = JSON.parse(localStorage.getItem(key) || '[]').filter((x) => now - x < 600000);
+      if (arr.length >= 5) return false;
+      arr.push(now);
+      localStorage.setItem(key, JSON.stringify(arr));
+      return true;
+    } catch {
+      return true;
+    }
+  };
 
   const validate = () => {
     const errs = {};
     if (name.trim().length < 2) errs.name = t('err_name');
     if (!validEmail(email.trim())) errs.email = t('err_email');
-    if (subject.trim().length < 2) errs.subject = t('err_subject');
     if (notes.trim().length < 10) errs.notes = t('err_message');
     setErrors(errs);
     return Object.keys(errs).length === 0;
@@ -77,12 +92,20 @@ export default function ScheduleModal({
     e.preventDefault();
     if (honeypot) return;
     if (!validate()) return;
+    if (!rateOk()) {
+      setErrors({ global: t('err_rate') });
+      return;
+    }
 
     setStatus('sending');
-    const divisionName = division ? t(`div_${division}`) || division : 'Multidisciplinary';
+    const divisionName = division ? (t(`div_${division}`) || division) : t('modal_div_all');
     const phaseLabel = t(`modal_phase_opt_${devPhase}`) || devPhase;
 
-    const formattedSubject = `[Strategic Consultation // ${divisionName}] ${subject.trim()}`;
+    const trimmedSubject = subject.trim();
+    const effectiveSubject = trimmedSubject && trimmedSubject !== divisionName
+      ? `[Strategic Consultation // ${divisionName}] ${trimmedSubject}`
+      : `[Strategic Consultation // ${divisionName}] Diagnostic Session`;
+
     const formattedMessage = `[DIAGNOSTIC ADVISORY INTAKE]\nPractice Division: ${divisionName}\nDevelopment Stage: ${phaseLabel}\n\nProject Scope & Objectives:\n${notes.trim()}`;
 
     try {
@@ -92,7 +115,7 @@ export default function ScheduleModal({
         body: JSON.stringify({
           name: name.trim(),
           email: email.trim(),
-          subject: formattedSubject,
+          subject: effectiveSubject,
           message: formattedMessage,
           lang,
           honeypot,
@@ -105,7 +128,11 @@ export default function ScheduleModal({
         setStatus('success');
       } else {
         setStatus('error');
-        setErrors({ global: t('err_generic') });
+        if (res.status === 429) {
+          setErrors({ global: t('err_rate') });
+        } else {
+          setErrors({ global: t('err_generic') });
+        }
       }
     } catch {
       setStatus('error');
@@ -151,16 +178,16 @@ export default function ScheduleModal({
 
             <div className="sched-receipt-box">
               <div className="receipt-row">
-                <span>REFERENCE PROTOCOL</span>
+                <span>{t('modal_receipt_ref')}</span>
                 <b>DH-PE-{confirmId}</b>
               </div>
               <div className="receipt-row">
-                <span>LEAD PRINCIPAL INTAKE</span>
-                <b>US PE &amp; AIA PARTNER REVIEW</b>
+                <span>{t('modal_receipt_lead')}</span>
+                <b>{t('modal_receipt_lead_val')}</b>
               </div>
               <div className="receipt-row">
-                <span>GUARANTEED CALENDAR SLA</span>
-                <b>&lt; 24 BUSINESS HOURS</b>
+                <span>{t('modal_receipt_sla')}</span>
+                <b>{t('modal_receipt_sla_val')}</b>
               </div>
             </div>
 
@@ -184,7 +211,7 @@ export default function ScheduleModal({
                       role="radio"
                       aria-checked={isSelected}
                       className={`sched-div-chip ${isSelected ? 'selected' : ''}`}
-                      onClick={() => setDivision(d.key)}
+                      onClick={() => setDivision((curr) => (curr === d.key ? '' : d.key))}
                     >
                       <Icon size={15} />
                       <span>{t(`div_${d.key}`)}</span>
@@ -287,15 +314,15 @@ export default function ScheduleModal({
             <div className="sched-trust-strip">
               <div className="trust-item">
                 <IconShield size={16} />
-                <span>100% Confidential (Strict NDA)</span>
+                <span>{t('modal_trust_nda')}</span>
               </div>
               <div className="trust-item">
                 <IconClock size={16} />
-                <span>24-Hour Calendar SLA</span>
+                <span>{t('modal_trust_sla')}</span>
               </div>
               <div className="trust-item">
                 <IconCheckBadge size={16} />
-                <span>US PE &amp; AIA Principals</span>
+                <span>{t('modal_trust_pe')}</span>
               </div>
             </div>
 
