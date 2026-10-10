@@ -235,7 +235,7 @@ export default function App() {
                 <span className="footer-tag">{t('brand_sub')}</span>
               </Link>
               <p className="footer-desc">{t('footer_about')}</p>
-              <div className="footer-trust-pill">
+              <div className="footer-trust-badge">
                 <IconShield size={16} />
                 <span>American PE & ISO 9001 Accredited</span>
               </div>

@@ -200,10 +200,7 @@ export default function Home() {
         <div className="hero-inner">
           <div className="hero-content">
             <div className="hero-kicker">
-              <span className="free-badge">
-                <IconBadge size={16} />
-                {t('hero_badge')}
-              </span>
+              <span className="eyebrow">{t('hero_badge')}</span>
             </div>
 
             <h1 className="hero-headline">{t('hero_title')}</h1>
@@ -254,24 +251,21 @@ export default function Home() {
               <div className="hero-img-overlay" />
             </div>
 
-            {/* Floating Trust Pills */}
-            <div className="hero-float-badge top-badge">
-              <div className="float-icon-wrap">
-                <IconShield size={18} />
+            {/* Architectural Specification Bar */}
+            <div className="hero-arch-spec-bar">
+              <div className="arch-spec-item">
+                <span className="spec-label">LICENSURE</span>
+                <span className="spec-val">{t('hero_spec_licensure')}</span>
               </div>
-              <div>
-                <strong>{t('hero_floating_badge')}</strong>
-                <span>Rigorous US QA Protocols</span>
+              <div className="arch-spec-divider" />
+              <div className="arch-spec-item">
+                <span className="spec-label">GOVERNANCE</span>
+                <span className="spec-val">{t('hero_spec_governance')}</span>
               </div>
-            </div>
-
-            <div className="hero-float-badge bottom-badge">
-              <div className="float-icon-wrap accent">
-                <IconLayers size={18} />
-              </div>
-              <div>
-                <strong>{t('hero_floating_scope')}</strong>
-                <span>Architecture • Civil • BIM • Law</span>
+              <div className="arch-spec-divider" />
+              <div className="arch-spec-item">
+                <span className="spec-label">STANDARD</span>
+                <span className="spec-val">{t('hero_spec_standard')}</span>
               </div>
             </div>
           </div>
@@ -490,7 +484,7 @@ export default function Home() {
                   </div>
                   <p className="value-card-desc">{t(`value_${item.key}d`)}</p>
                   <div className="value-card-footer">
-                    <span className="value-metric-pill">
+                    <span className="value-metric-tag">
                       <IconCheckBadge size={13} />
                       {t(`value_${item.key}_metric`)}
                     </span>
@@ -507,7 +501,7 @@ export default function Home() {
         <div className="advisory-card reveal">
           <div className="advisory-glow" aria-hidden="true" />
           <div className="advisory-inner">
-            <span className="advisory-badge">{t('free_badge')}</span>
+            <span className="advisory-kicker">{t('free_badge')}</span>
             <h2>{t('cta_title')}</h2>
             <p className="advisory-desc">{t('cta_desc')}</p>
 
