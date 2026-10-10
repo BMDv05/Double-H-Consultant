@@ -10,6 +10,7 @@ export const T = {
   en: {
     nav_home: 'Home',
     nav_about: 'About Us',
+    nav_journey: 'Consultation Journey',
     nav_divisions: 'Divisions',
     nav_certificates: 'Accreditations',
     nav_contact: 'Contact',
@@ -128,6 +129,85 @@ export const T = {
     cta_btn: 'Schedule Advisory Session',
     advisory_guarantee: 'Confidential Strategic Review • Senior Principal Lead • Guaranteed 24h Response',
 
+    status_principal_open: 'Principal Practice Availability: Open for Q4/Q1 Engagements',
+    status_availability_tag: 'Active Practice',
+
+    journey_eyebrow: 'Diagnostic Advisory Journey',
+    journey_title: 'What Happens in Your 15-Minute Strategic Consultation',
+    journey_lead:
+      'A structured, high-impact diagnostic session led directly by credentialed principals — zero fluff, zero sales pressure, 100% engineering clarity.',
+    journey_quick_badge: '15-Min Focused Structure',
+    journey_tab_phase1: '01. Scope & Code',
+    journey_tab_phase2: '02. Risk & BIM',
+    journey_tab_phase3: '03. Roadmap',
+    journey_cta_btn: 'Schedule This 15-Min Session',
+
+    journey_phase1_badge: 'Phase 01 // Min 00–05',
+    journey_phase1_title: 'Scope & Code Diagnostic',
+    journey_phase1_desc:
+      'Senior practice principals assess project parameters, structural loads, zoning limitations, and regulatory constraints against US and international codes.',
+    journey_phase1_deliverable: 'Deliverable: Baseline Code Compliance & Scope Boundary Diagnostic',
+    journey_phase1_lead: 'Lead: US-Licensed P.E. & AIA Practice Principals',
+
+    journey_phase2_badge: 'Phase 02 // Min 05–10',
+    journey_phase2_title: 'Risk & Milestone Mapping',
+    journey_phase2_desc:
+      'Immediate identification of critical structural conflicts, BIM multi-trade coordination clashes, permitting bottlenecks, and procurement lead times before capital commitment.',
+    journey_phase2_deliverable: 'Deliverable: Critical Risk Heatmap & Multi-Trade Clash Pre-Check',
+    journey_phase2_lead: 'Lead: Senior VDC / BIM LOD 400 & Structural Directors',
+
+    journey_phase3_badge: 'Phase 03 // Min 10–15',
+    journey_phase3_title: 'Actionable Technical Roadmap',
+    journey_phase3_desc:
+      'A concrete execution pathway with clear milestone horizons, multidisciplinary sequencing, cost governance metrics, and realistic project velocity.',
+    journey_phase3_deliverable: 'Deliverable: Structured Strategic Roadmap & Procurement Sequencing',
+    journey_phase3_lead: 'Lead: PMP Project Executives & Practice Partners',
+
+    hesitation_eyebrow: 'Fiduciary Commitment',
+    hesitation_title: 'Zero Uncertainty. Pure Engineering Value.',
+    hesitation_desc:
+      'We hold our initial diagnostic consultations to the same fiduciary standard as multimillion-dollar engineering commissions.',
+    hesitation_1_title: '100% Confidentiality & Fiduciary Standard',
+    hesitation_1_desc:
+      'Protected under strict professional nondisclosure (NDA). All shared documentation, designs, and commercial parameters remain 100% proprietary.',
+    hesitation_1_badge: 'Enforceable Mutual NDA',
+    hesitation_2_title: 'Zero Financial Commitment or Pressure',
+    hesitation_2_desc:
+      'Pure diagnostic advisory. We assess your project objectively with zero sales gimmicks, zero follow-up spam, and zero contractual lock-in.',
+    hesitation_2_badge: 'Zero Commercial Obligation',
+    hesitation_3_title: 'Direct Partner Advisory',
+    hesitation_3_desc:
+      'Engage directly with US-licensed P.E. and AIA practice principals with 18+ years experience — never junior account reps learning on your time.',
+    hesitation_3_badge: 'Credentialed Principals Only',
+    hesitation_4_title: 'Guaranteed 24-Business-Hour Response',
+    hesitation_4_desc:
+      'Immediate intake verification and principal calendar confirmation within one business day. Your project timeline never stalls.',
+    hesitation_4_badge: '24-Hour Velocity SLA',
+
+    modal_consult_eyebrow: 'Direct Principal Intake',
+    modal_consult_title: 'Schedule 15-Minute Strategic Consultation',
+    modal_consult_desc:
+      'Select your practice division and provide project parameters. A practice partner will review your scope and confirm a calendar slot within 24 business hours.',
+    modal_step_division: '1. Select Practice Division of Interest',
+    modal_step_details: '2. Project Parameters & Contact Information',
+    modal_phase_label: 'Development Stage',
+    modal_phase_opt_feasibility: 'Feasibility & Concept Planning',
+    modal_phase_opt_schematic: 'Schematic Design & Zoning / Permits',
+    modal_phase_opt_bim: 'Detailed Design / BIM LOD 350-400',
+    modal_phase_opt_construction: 'Under Construction / Value Engineering',
+    modal_notes_label: 'Project Scope & Specific Objectives *',
+    modal_notes_placeholder:
+      'Describe site location, building type, key engineering challenges, or specific milestones you want reviewed in the 15-minute diagnostic session…',
+    modal_submit_btn: 'Confirm & Schedule Strategic Call',
+    modal_submit_submitting: 'Transmitting Diagnostic Scope…',
+    modal_guarantee_trust: '100% Confidential • Direct US PE / AIA Partner • Zero Obligation',
+    modal_success_title: 'Diagnostic Session Request Confirmed ✓',
+    modal_success_desc:
+      'Your project brief has been routed to our senior practice leads. We will review your scope and confirm a calendar slot within 24 business hours.',
+    modal_success_cta: 'Return to Site',
+    modal_alt_contact: 'Prefer to review direct phone lines and global office addresses?',
+    modal_alt_contact_link: 'View Full Contact Directory →',
+
     contact_eyebrow: 'Initiate Engagement',
     contact_title: 'Consult With Our Practice Leads',
     contact_desc: 'Submit your project details below. A senior director will review your requirements and respond within 1 business day.',
@@ -219,6 +299,7 @@ export const T = {
   ar: {
     nav_home: 'الرئيسية',
     nav_about: 'من نحن',
+    nav_journey: 'مسار الاستشارة',
     nav_divisions: 'الأقسام الاستشارية',
     nav_certificates: 'الاعتمادات',
     nav_contact: 'تواصل معنا',
@@ -335,6 +416,85 @@ export const T = {
     cta_desc: 'تواصل مع شركائنا الاستشاريين في جلسة تشخيصية متخصصة لنحدد معاً المسار الفني والجدول الزمني الأنسب لتحقيق أهدافك.',
     cta_btn: 'احجز جلستك الاستشارية',
     advisory_guarantee: 'سرية تامة ١٠٠٪ • إشراف مباشر من الشريك التنفيذي • الرد خلال ٢٤ ساعة عمل',
+
+    status_principal_open: 'جاهزية الشركاء التنفيذيين: متاح لارتباطات الربعين الرابع والأول',
+    status_availability_tag: 'جاهزية استشارية نشطة',
+
+    journey_eyebrow: 'المسار الاستشاري التشخيصي',
+    journey_title: 'ماذا يحدث خلال جلستك الاستشارية الاستراتيجية (١٥ دقيقة)',
+    journey_lead:
+      'جلسة تشخيصية منظمة ومباشرة يقودها كبار المستشارين والمهندسين — تركيز تقني كامل، بلا أي حشو أو ضغوط تسويقية، وبأعلى درجات الوضوح الهندسي.',
+    journey_quick_badge: 'جلسة مركزة لمدة ١٥ دقيقة',
+    journey_tab_phase1: '٠١. الكودات والتشخيص',
+    journey_tab_phase2: '٠٢. المخاطر ونمذجة BIM',
+    journey_tab_phase3: '٠٣. خارطة الطريق',
+    journey_cta_btn: 'احجز جلستك التشخيصية (١٥ دقيقة)',
+
+    journey_phase1_badge: 'المرحلة ٠١ // د ٠٠–٠٥',
+    journey_phase1_title: 'التشخيص الهندسي والكودات التنظيمية',
+    journey_phase1_desc:
+      'يقوم كبار الشركاء التنفيذيين بتقييم معطيات مشروعك، قيود التخطيط والتنظيم، فرضيات الأحمال الإنشائية، والاشتراطات التنظيمية وفق المعايير الأمريكية والدولية.',
+    journey_phase1_deliverable: 'المخرج: تشخيص التوافق التنظيمي والحدود الفنية للمشروع',
+    journey_phase1_lead: 'الإشراف: مهندسون استشاريون مرخصون (P.E. & AIA)',
+
+    journey_phase2_badge: 'المرحلة ٠٢ // د ٠٥–١٠',
+    journey_phase2_title: 'تحديد المخاطر والمسار الحرج',
+    journey_phase2_desc:
+      'رصد استباقي لنقاط التعارض الإنشائي، تداخلات نمذجة BIM بين التخصصات، عقبات استخراج التراخيص، ومخاطر سلاسل التوريد قبل ضخ رأس المال.',
+    journey_phase2_deliverable: 'المخرج: مصفوفة المخاطر الحرجة وفحص التداخلات الفنية',
+    journey_phase2_lead: 'الإشراف: مدراء النمذجة الرقمية LOD 400 والهندسة الإنشائية',
+
+    journey_phase3_badge: 'المرحلة ٠٣ // د ١٠–١٥',
+    journey_phase3_title: 'خارطة الطريق الفنية والتنفيذية',
+    journey_phase3_desc:
+      'مسار تنفيذي ملموس يتضمن المحطات الزمنية الرئيسية، التسلسل متعدد التخصصات، معايير حوكمة التكاليف، ومعدل الإنجاز الواقعي للمشروع.',
+    journey_phase3_deliverable: 'المخرج: خارطة طريق استراتيجية وجدولة حزم التعاقد',
+    journey_phase3_lead: 'الإشراف: خبراء إدارة المشاريع PMP والشركاء المؤسسون',
+
+    hesitation_eyebrow: 'التزام ائتماني مؤسسي',
+    hesitation_title: 'ثقة مطلقة • قيمة هندسية لا تهاون فيها',
+    hesitation_desc:
+      'نلتزم في جلساتنا التشخيصية الأولية بنفس المعايير الائتمانية والمهنية الصارمة التي تحكم أكبر مشاريعنا الهندسية.',
+    hesitation_1_title: 'سرية تامة ١٠٠٪ والتزام ائتماني مهني',
+    hesitation_1_desc:
+      'كافة المناقشات والوثائق محمية باتفاقيات عدم إفصاح مهنية صارمة (NDA)، مع حماية كاملة للملكية الفكرية والبيانات التجارية.',
+    hesitation_1_badge: 'اتفاقية عدم إفصاح ملزمة',
+    hesitation_2_title: 'بدون أي التزام مالي أو ضغوط تسويقية',
+    hesitation_2_desc:
+      'استشارة تشخيصية موضوعية تركز على القيمة الفنية البحتة، بلا عروض مبيعات ملحة، ولا رسائل مزعجة، ولا أي قيود تعاقدية مسبقة.',
+    hesitation_2_badge: 'بدون أي التزام مالي',
+    hesitation_3_title: 'تواصل مباشر مع كبار الشركاء المعتمدين',
+    hesitation_3_desc:
+      'تتحدث مباشرة مع مهندسين واستشاريين تنفيذيين مرخصين يملكون أكثر من ١٨ عاماً من الخبرة — وليس موظفي مبيعات أو متدربين.',
+    hesitation_3_badge: 'كبار الشركاء المعتمدين فقط',
+    hesitation_4_title: 'استجابة مؤكدة خلال ٢٤ ساعة عمل',
+    hesitation_4_desc:
+      'تدقيق فوري لمعطيات المشروع وتأكيد موعد الجلسة الاستشارية خلال يوم عمل واحد كحد أقصى لحماية جدولك الزمني.',
+    hesitation_4_badge: 'استجابة سريعة خلال ٢٤ ساعة',
+
+    modal_consult_eyebrow: 'حجز مباشر مع كبار الخبراء',
+    modal_consult_title: 'حجز جلسة استشارية استراتيجية (١٥ دقيقة)',
+    modal_consult_desc:
+      'حدد القسم الاستشاري واكتب معطيات مشروعك. سيقوم أحد الشركاء التنفيذيين بتأكيد موعد الجلسة خلال ٢٤ ساعة عمل.',
+    modal_step_division: '١. اختر القسم الاستشاري المطلوب',
+    modal_step_details: '٢. بيانات التواصل ومعطيات المشروع',
+    modal_phase_label: 'مرحلة تطور المشروع',
+    modal_phase_opt_feasibility: 'دراسة الجدوى والتخطيط المبدئي',
+    modal_phase_opt_schematic: 'المخططات المعمارية والتراخيص',
+    modal_phase_opt_bim: 'التصميم التنفيذي ونمذجة BIM LOD 350-400',
+    modal_phase_opt_construction: 'قيد التنفيذ / هندسة قيمية',
+    modal_notes_label: 'نطاق المشروع والأهداف الرئيسية *',
+    modal_notes_placeholder:
+      'صف موقع المشروع، نوع المبنى، التحديات الهندسية أو الإنشائية، أو المحطات التي ترغب في مراجعتها خلال الجلسة التشخيصية…',
+    modal_submit_btn: 'تأكيد وحجز الجلسة الاستشارية',
+    modal_submit_submitting: 'جارٍ إرسال بيانات المشروع…',
+    modal_guarantee_trust: 'سرية تامة ١٠٠٪ • إشراف مباشر من كبار الشركاء • بدون أي التزام مالي',
+    modal_success_title: 'تم تأكيد طلب الجلسة التشخيصية بنجاح ✓',
+    modal_success_desc:
+      'تم توجيه ملخص مشروعك إلى رئيس التخصص الاستشاري المعني. سنراجع المعطيات ونرسل رابط تأكيد الموعد خلال ٢٤ ساعة عمل.',
+    modal_success_cta: 'العودة للموقع',
+    modal_alt_contact: 'هل تفضل مراجعة أرقام الهواتف المباشرة وعناوين المكاتب؟',
+    modal_alt_contact_link: 'الانتقال لدليل التواصل الكامل ←',
 
     contact_eyebrow: 'بدء التعاون',
     contact_title: 'تحدث مع كبار مستشارينا',

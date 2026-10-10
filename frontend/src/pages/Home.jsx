@@ -1,7 +1,7 @@
 import { useEffect, useState, useMemo } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useLang } from '../LangContext.jsx';
-import { Counter, BookButton } from '../App.jsx';
+import { Counter, BookButton, useBook } from '../App.jsx';
 import {
   IconArch,
   IconCivil,
@@ -24,11 +24,70 @@ import {
   IconCheckBadge,
   CertSeal,
   ValueSchematic,
+  JourneySchematic,
 } from '../icons.jsx';
 
 const hideImg = (e) => {
   e.currentTarget.style.display = 'none';
 };
+
+const JOURNEY_PHASES = [
+  {
+    phase: 1,
+    timeKey: 'journey_phase1_badge',
+    titleKey: 'journey_phase1_title',
+    descKey: 'journey_phase1_desc',
+    deliverableKey: 'journey_phase1_deliverable',
+    leadKey: 'journey_phase1_lead',
+  },
+  {
+    phase: 2,
+    timeKey: 'journey_phase2_badge',
+    titleKey: 'journey_phase2_title',
+    descKey: 'journey_phase2_desc',
+    deliverableKey: 'journey_phase2_deliverable',
+    leadKey: 'journey_phase2_lead',
+  },
+  {
+    phase: 3,
+    timeKey: 'journey_phase3_badge',
+    titleKey: 'journey_phase3_title',
+    descKey: 'journey_phase3_desc',
+    deliverableKey: 'journey_phase3_deliverable',
+    leadKey: 'journey_phase3_lead',
+  },
+];
+
+const HESITATION_ITEMS = [
+  {
+    key: '1',
+    icon: IconShield,
+    titleKey: 'hesitation_1_title',
+    descKey: 'hesitation_1_desc',
+    badgeKey: 'hesitation_1_badge',
+  },
+  {
+    key: '2',
+    icon: IconCheckBadge,
+    titleKey: 'hesitation_2_title',
+    descKey: 'hesitation_2_desc',
+    badgeKey: 'hesitation_2_badge',
+  },
+  {
+    key: '3',
+    icon: IconUsers,
+    titleKey: 'hesitation_3_title',
+    descKey: 'hesitation_3_desc',
+    badgeKey: 'hesitation_3_badge',
+  },
+  {
+    key: '4',
+    icon: IconClock,
+    titleKey: 'hesitation_4_title',
+    descKey: 'hesitation_4_desc',
+    badgeKey: 'hesitation_4_badge',
+  },
+];
 
 const DIVISIONS = [
   {
@@ -166,7 +225,9 @@ const CERT_ITEMS = [
 export default function Home() {
   const { t, lang } = useLang();
   const navigate = useNavigate();
+  const book = useBook();
   const [activeFilter, setActiveFilter] = useState('all');
+  const [activePhase, setActivePhase] = useState(1);
   const [company, setCompany] = useState(null);
 
   useEffect(() => {
@@ -189,7 +250,7 @@ export default function Home() {
 
   const handleInquireDivision = (divisionKey) => {
     const divisionName = t(`div_${divisionKey}`);
-    navigate(`/contact?division=${encodeURIComponent(divisionKey)}&subject=${encodeURIComponent(divisionName)}`);
+    book({ division: divisionKey, subject: divisionName });
   };
 
   return (
@@ -200,6 +261,10 @@ export default function Home() {
         <div className="hero-inner">
           <div className="hero-content">
             <div className="hero-kicker">
+              <div className="status-live-badge">
+                <span className="status-pulse-dot" />
+                <span>{t('status_principal_open')}</span>
+              </div>
               <span className="eyebrow">{t('hero_badge')}</span>
             </div>
 
@@ -208,7 +273,7 @@ export default function Home() {
             <p className="hero-desc">{t('hero_desc')}</p>
 
             <div className="hero-btns">
-              <BookButton to="/contact" className="btn-primary">
+              <BookButton className="btn-primary">
                 {t('cta_book_now')}
                 <IconArrow size={18} />
               </BookButton>
@@ -372,11 +437,126 @@ export default function Home() {
             </div>
 
             <div className="about-cta-row">
-              <BookButton to="/contact" className="btn-primary">
+              <BookButton className="btn-primary">
                 {t('cta_book_now')}
                 <IconArrow size={18} />
               </BookButton>
             </div>
+          </div>
+        </div>
+      </section>
+
+      {/* ================= DIAGNOSTIC ADVISORY JOURNEY ================= */}
+      <section className="section journey-section" id="journey">
+        <div className="journey-blueprint-grid" aria-hidden="true" />
+        <div className="section-header-centered">
+          <div className="eyebrow">{t('journey_eyebrow')}</div>
+          <h2>{t('journey_title')}</h2>
+          <p className="section-lead">{t('journey_lead')}</p>
+
+          {/* Interactive Phase Switcher Tabs */}
+          <div className="journey-phase-tabs" role="tablist" aria-label="Consultation Phases">
+            {JOURNEY_PHASES.map((p) => (
+              <button
+                key={p.phase}
+                type="button"
+                role="tab"
+                aria-selected={activePhase === p.phase}
+                className={`journey-tab-btn ${activePhase === p.phase ? 'active' : ''}`}
+                onClick={() => setActivePhase(p.phase)}
+              >
+                <span className="journey-tab-index">0{p.phase}</span>
+                <span className="journey-tab-text">{t(`journey_tab_phase${p.phase}`)}</span>
+              </button>
+            ))}
+          </div>
+        </div>
+
+        {/* 3-Phase Interactive Technical Progression Grid */}
+        <div className="journey-cards-grid">
+          {JOURNEY_PHASES.map((p, idx) => {
+            const isActive = activePhase === p.phase;
+            return (
+              <div
+                key={p.phase}
+                className={`journey-phase-card reveal ${isActive ? 'active-phase' : ''}`}
+                style={{ '--d': `${idx * 80}ms` }}
+                onClick={() => setActivePhase(p.phase)}
+              >
+                <div className="journey-card-topbar">
+                  <span className="journey-phase-num">0{p.phase} // DIAGNOSTIC</span>
+                  <span className="journey-phase-timing">{t(p.timeKey)}</span>
+                </div>
+
+                <div className="journey-schematic-container">
+                  <JourneySchematic phase={p.phase} />
+                </div>
+
+                <div className="journey-card-body">
+                  <h3>{t(p.titleKey)}</h3>
+                  <p className="journey-phase-desc">{t(p.descKey)}</p>
+
+                  <div className="journey-deliverable-box">
+                    <div className="deliverable-label">
+                      <IconCheckBadge size={14} />
+                      <span>{t(p.deliverableKey)}</span>
+                    </div>
+                  </div>
+
+                  <div className="journey-card-footer">
+                    <span className="journey-lead-badge">{t(p.leadKey)}</span>
+                    <BookButton
+                      className="btn-phase-book"
+                      onClick={(e) => {
+                        e.stopPropagation();
+                      }}
+                    >
+                      <span>{t('journey_cta_btn')}</span>
+                      <IconArrow size={14} />
+                    </BookButton>
+                  </div>
+                </div>
+              </div>
+            );
+          })}
+        </div>
+
+        {/* Client Hesitations Answered (4 Institutional Guarantees) */}
+        <div className="hesitation-section reveal">
+          <div className="hesitation-header">
+            <div className="eyebrow">{t('hesitation_eyebrow')}</div>
+            <h3>{t('hesitation_title')}</h3>
+            <p className="hesitation-lead">{t('hesitation_desc')}</p>
+          </div>
+
+          <div className="hesitation-cards-grid">
+            {HESITATION_ITEMS.map((h, i) => {
+              const Icon = h.icon;
+              return (
+                <div className="hesitation-card" key={h.key} style={{ '--d': `${i * 60}ms` }}>
+                  <div className="hesitation-card-top">
+                    <div className="hesitation-icon-box">
+                      <Icon size={20} />
+                    </div>
+                    <span className="hesitation-badge">{t(h.badgeKey)}</span>
+                  </div>
+                  <h4>{t(h.titleKey)}</h4>
+                  <p>{t(h.descKey)}</p>
+                </div>
+              );
+            })}
+          </div>
+
+          {/* Quick Consultation Intake Anchor */}
+          <div className="journey-cta-anchor">
+            <div className="journey-cta-status">
+              <span className="status-pulse-dot" />
+              <span>{t('status_principal_open')}</span>
+            </div>
+            <BookButton className="btn-primary journey-main-btn">
+              <span>{t('cta_book_now')}</span>
+              <IconArrow size={18} />
+            </BookButton>
           </div>
         </div>
       </section>

@@ -4,6 +4,7 @@ import { useLang } from './LangContext.jsx';
 import Home from './pages/Home.jsx';
 import Contact from './pages/Contact.jsx';
 import Admin from './pages/Admin.jsx';
+import ScheduleModal from './ScheduleModal.jsx';
 import {
   IconArrow,
   IconMenu,
@@ -17,7 +18,7 @@ import {
 const BookCtx = createContext(() => {});
 export const useBook = () => useContext(BookCtx);
 
-export function BookButton({ to = '/contact', className = '', children }) {
+export function BookButton({ to, division = '', subject = '', className = '', children, onClick }) {
   const book = useBook();
   return (
     <button
@@ -25,7 +26,8 @@ export function BookButton({ to = '/contact', className = '', children }) {
       className={`btn btn-book ${className}`}
       onClick={(e) => {
         e.preventDefault();
-        book(to);
+        if (onClick) onClick(e);
+        book({ division, subject, to });
       }}
     >
       <span className="btn-label">{children}</span>
@@ -147,6 +149,9 @@ function Nav() {
           <a href="#about" onClick={handleAnchor('about')}>
             {t('nav_about')}
           </a>
+          <a href="#journey" onClick={handleAnchor('journey')}>
+            {t('nav_journey')}
+          </a>
           <a href="#divisions" onClick={handleAnchor('divisions')}>
             {t('nav_divisions')}
           </a>
@@ -156,10 +161,10 @@ function Nav() {
           <NavLink to="/contact" onClick={() => setOpen(false)}>
             {t('nav_contact')}
           </NavLink>
-          <Link to="/contact" className="nav-mobile-cta" onClick={() => setOpen(false)}>
+          <BookButton className="nav-mobile-cta" onClick={() => setOpen(false)}>
             <span>{t('nav_book_cta')}</span>
             <IconArrow size={16} />
-          </Link>
+          </BookButton>
         </nav>
 
         {/* Actions / CTA & Language */}
@@ -183,10 +188,10 @@ function Nav() {
             </button>
           </div>
 
-          <Link to="/contact" className="btn btn-nav-cta">
+          <BookButton className="btn btn-nav-cta">
             <span>{t('nav_book_cta')}</span>
             <IconArrow size={16} />
-          </Link>
+          </BookButton>
 
           <button
             type="button"
@@ -208,10 +213,27 @@ export default function App() {
   const year = new Date().getFullYear();
   const navigate = useNavigate();
 
+  const [modalOpen, setModalOpen] = useState(false);
+  const [modalDivision, setModalDivision] = useState('');
+  const [modalSubject, setModalSubject] = useState('');
+
   const book = useCallback(
-    (to) => {
-      navigate(to);
-      window.scrollTo({ top: 0, behavior: 'smooth' });
+    (arg) => {
+      if (typeof arg === 'string' && (arg.startsWith('#') || (arg.startsWith('/') && arg !== '/contact'))) {
+        navigate(arg);
+        window.scrollTo({ top: 0, behavior: 'smooth' });
+        return;
+      }
+      if (arg && typeof arg === 'object' && arg.to && (arg.to.startsWith('#') || (arg.to.startsWith('/') && arg.to !== '/contact'))) {
+        navigate(arg.to);
+        window.scrollTo({ top: 0, behavior: 'smooth' });
+        return;
+      }
+      const division = typeof arg === 'object' ? arg.division || '' : '';
+      const subject = typeof arg === 'object' ? arg.subject || '' : '';
+      setModalDivision(division);
+      setModalSubject(subject);
+      setModalOpen(true);
     },
     [navigate]
   );
@@ -220,6 +242,12 @@ export default function App() {
     <BookCtx.Provider value={book}>
       <ScrollFX />
       <Nav />
+      <ScheduleModal
+        open={modalOpen}
+        onClose={() => setModalOpen(false)}
+        initialDivision={modalDivision}
+        initialSubject={modalSubject}
+      />
       <main className="main-content">
         <Routes>
           <Route path="/" element={<Home />} />

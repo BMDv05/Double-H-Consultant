@@ -9,7 +9,39 @@ import {
   IconShield,
   IconArrow,
   IconCheckBadge,
+  IconUsers,
 } from '../icons.jsx';
+
+const HESITATION_ITEMS = [
+  {
+    key: '1',
+    icon: IconShield,
+    titleKey: 'hesitation_1_title',
+    descKey: 'hesitation_1_desc',
+    badgeKey: 'hesitation_1_badge',
+  },
+  {
+    key: '2',
+    icon: IconCheckBadge,
+    titleKey: 'hesitation_2_title',
+    descKey: 'hesitation_2_desc',
+    badgeKey: 'hesitation_2_badge',
+  },
+  {
+    key: '3',
+    icon: IconUsers,
+    titleKey: 'hesitation_3_title',
+    descKey: 'hesitation_3_desc',
+    badgeKey: 'hesitation_3_badge',
+  },
+  {
+    key: '4',
+    icon: IconClock,
+    titleKey: 'hesitation_4_title',
+    descKey: 'hesitation_4_desc',
+    badgeKey: 'hesitation_4_badge',
+  },
+];
 
 const validEmail = (e) => /^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/.test(e);
 
@@ -126,6 +158,10 @@ export default function Contact() {
     <div className="contact-page-wrap">
       <section className="section contact-page">
         <div className="contact-hero-banner reveal">
+          <div className="status-live-badge">
+            <span className="status-pulse-dot" />
+            <span>{t('status_principal_open')}</span>
+          </div>
           <div className="eyebrow">{t('contact_eyebrow')}</div>
           <h2>{t('contact_title')}</h2>
           <p className="section-lead">{t('contact_desc')}</p>
@@ -303,6 +339,33 @@ export default function Contact() {
               </form>
             </div>
           )}
+        </div>
+
+        {/* Fiduciary Hesitation Guarantees */}
+        <div className="hesitation-section reveal" style={{ marginTop: '56px' }}>
+          <div className="hesitation-header">
+            <div className="eyebrow">{t('hesitation_eyebrow')}</div>
+            <h3>{t('hesitation_title')}</h3>
+            <p className="hesitation-lead">{t('hesitation_desc')}</p>
+          </div>
+
+          <div className="hesitation-cards-grid">
+            {HESITATION_ITEMS.map((h, i) => {
+              const Icon = h.icon;
+              return (
+                <div className="hesitation-card" key={h.key} style={{ '--d': `${i * 60}ms` }}>
+                  <div className="hesitation-card-top">
+                    <div className="hesitation-icon-box">
+                      <Icon size={20} />
+                    </div>
+                    <span className="hesitation-badge">{t(h.badgeKey)}</span>
+                  </div>
+                  <h4>{t(h.titleKey)}</h4>
+                  <p>{t(h.descKey)}</p>
+                </div>
+              );
+            })}
+          </div>
         </div>
       </section>
     </div>

@@ -504,3 +504,209 @@ export function ValueSchematic({ id, className = '' }) {
       return null;
   }
 }
+
+/* =========================================================================
+   DIAGNOSTIC ADVISORY JOURNEY SCHEMATICS (SVG)
+   Interactive technical diagrams illustrating the 3 consultation phases
+   ========================================================================= */
+export function JourneySchematic({ phase, className = '' }) {
+  switch (Number(phase)) {
+    case 1:
+      // Phase 01: Scope & Code Diagnostic (Structural Envelope & Zoning Grid)
+      return (
+        <svg
+          className={`journey-schematic-svg ${className}`}
+          viewBox="0 0 340 180"
+          fill="none"
+          xmlns="http://www.w3.org/2000/svg"
+          aria-hidden="true"
+        >
+          <defs>
+            <pattern id="j-grid-1" width="20" height="20" patternUnits="userSpaceOnUse">
+              <path d="M 20 0 L 0 0 0 20" fill="none" stroke="rgba(70, 118, 111, 0.15)" strokeWidth="0.8" />
+            </pattern>
+          </defs>
+          <rect width="340" height="180" fill="url(#j-grid-1)" />
+
+          {/* Building Mass Envelope & Zoning Setback Boundary */}
+          <polygon points="50,140 50,70 120,40 220,40 220,140" fill="rgba(18, 57, 58, 0.08)" stroke="#12393a" strokeWidth="2" />
+          <polygon points="35,145 35,60 115,25 235,25 235,145" fill="none" stroke="#c59b27" strokeWidth="1.2" strokeDasharray="4 3" />
+          <text x="238" y="32" fontSize="7.5" fontWeight="800" fill="#c59b27">
+            ZONING SETBACK ENVELOPE
+          </text>
+
+          {/* Internal Structural Grid Lines */}
+          <line x1="50" y1="105" x2="220" y2="105" stroke="#46766f" strokeWidth="1" strokeDasharray="3 2" />
+          <line x1="120" y1="40" x2="120" y2="140" stroke="#46766f" strokeWidth="1" strokeDasharray="3 2" />
+          <line x1="170" y1="40" x2="170" y2="140" stroke="#46766f" strokeWidth="1" strokeDasharray="3 2" />
+
+          {/* Load Vectors */}
+          <line x1="85" y1="20" x2="85" y2="52" stroke="#12393a" strokeWidth="2" />
+          <polygon points="85,58 81,48 89,48" fill="#12393a" />
+          <line x1="170" y1="14" x2="170" y2="36" stroke="#12393a" strokeWidth="2" />
+          <polygon points="170,42 166,32 174,32" fill="#12393a" />
+
+          {/* Code Diagnostic Checkpoint Badge */}
+          <rect x="230" y="75" width="95" height="52" rx="3" fill="#ffffff" stroke="#12393a" strokeWidth="1.4" />
+          <rect x="230" y="75" width="95" height="15" fill="#12393a" />
+          <text x="277" y="86" textAnchor="middle" fontSize="7" fontWeight="900" fill="#ffffff" letterSpacing="0.8">
+            CODE VERIFICATION
+          </text>
+          <text x="240" y="103" fontSize="7.5" fontWeight="800" fill="#12393a">
+            ✓ ASCE 7-22 // IBC
+          </text>
+          <text x="240" y="117" fontSize="7.5" fontWeight="800" fill="#46766f">
+            ✓ FAR &amp; HEIGHT LIMIT
+          </text>
+
+          {/* Datum Elevation Markers */}
+          <line x1="30" y1="140" x2="240" y2="140" stroke="#12393a" strokeWidth="2" />
+          <text x="35" y="155" fontSize="7" fontWeight="800" fill="#46766f" letterSpacing="1">
+            GRADE LEVEL // EL +0.000m
+          </text>
+          <text x="220" y="168" textAnchor="end" fontSize="7.5" fontWeight="800" fill="#12393a" letterSpacing="0.8">
+            PHASE 01: SCOPE DIAGNOSTIC • PE SIGN-OFF
+          </text>
+        </svg>
+      );
+
+    case 2:
+      // Phase 02: Risk & Milestone Mapping (Clash Matrix & Trade Coordination)
+      return (
+        <svg
+          className={`journey-schematic-svg ${className}`}
+          viewBox="0 0 340 180"
+          fill="none"
+          xmlns="http://www.w3.org/2000/svg"
+          aria-hidden="true"
+        >
+          <defs>
+            <pattern id="j-grid-2" width="20" height="20" patternUnits="userSpaceOnUse">
+              <path d="M 20 0 L 0 0 0 20" fill="none" stroke="rgba(70, 118, 111, 0.15)" strokeWidth="0.8" />
+            </pattern>
+          </defs>
+          <rect width="340" height="180" fill="url(#j-grid-2)" />
+
+          {/* Trade Systems: Structural vs MEP Conduit vs Architectural Slab */}
+          <rect x="40" y="45" width="260" height="14" fill="#12393a" rx="2" />
+          <text x="46" y="55" fontSize="6.5" fontWeight="900" fill="#e6ecec" letterSpacing="0.8">
+            STRUCTURAL BEAM // W24x68
+          </text>
+
+          {/* MEP Duct Crossing Line */}
+          <path d="M 90 20 L 90 130" stroke="#c59b27" strokeWidth="8" strokeLinecap="round" strokeOpacity="0.85" />
+          <text x="96" y="32" fontSize="6.5" fontWeight="900" fill="#c59b27">
+            MEP MAIN
+          </text>
+
+          {/* Cable Tray Route */}
+          <path d="M 190 20 L 190 130" stroke="#46766f" strokeWidth="6" strokeDasharray="6 3" />
+          <text x="196" y="32" fontSize="6.5" fontWeight="900" fill="#46766f">
+            HV CABLE
+          </text>
+
+          {/* Coordination Intersection Node */}
+          <circle cx="90" cy="52" r="16" fill="rgba(197, 155, 39, 0.2)" stroke="#c59b27" strokeWidth="2" strokeDasharray="3 2" />
+          <circle cx="90" cy="52" r="4" fill="#c59b27" />
+
+          {/* Risk Mitigation Callout Card */}
+          <rect x="140" y="80" width="160" height="56" rx="3" fill="#ffffff" stroke="#134c4b" strokeWidth="1.4" />
+          <rect x="140" y="80" width="160" height="15" fill="#134c4b" />
+          <text x="220" y="91" textAnchor="middle" fontSize="7" fontWeight="900" fill="#ffffff" letterSpacing="0.8">
+            BIM LOD 400 CLASH RESOLUTION
+          </text>
+          <text x="150" y="108" fontSize="7.5" fontWeight="800" fill="#12393a">
+            ✓ PREVENT PENETRATION RE-WORK
+          </text>
+          <text x="150" y="122" fontSize="7.5" fontWeight="800" fill="#46766f">
+            ✓ CAPITAL RISK MITIGATION: $0 SURPRISE
+          </text>
+
+          {/* Arrow pointing to intersection */}
+          <path d="M 140 100 L 112 70" stroke="#c59b27" strokeWidth="1.6" strokeDasharray="3 2" />
+          <polygon points="110,68 118,74 114,80" fill="#c59b27" />
+
+          <text x="170" y="164" textAnchor="middle" fontSize="7.5" fontWeight="800" fill="#12393a" letterSpacing="1">
+            PHASE 02: MILESTONE &amp; PROCUREMENT RISK MAPPING
+          </text>
+        </svg>
+      );
+
+    case 3:
+      // Phase 03: Actionable Technical Roadmap (CPM Sequencing & Velocity Timeline)
+      return (
+        <svg
+          className={`journey-schematic-svg ${className}`}
+          viewBox="0 0 340 180"
+          fill="none"
+          xmlns="http://www.w3.org/2000/svg"
+          aria-hidden="true"
+        >
+          <defs>
+            <pattern id="j-grid-3" width="20" height="20" patternUnits="userSpaceOnUse">
+              <path d="M 20 0 L 0 0 0 20" fill="none" stroke="rgba(70, 118, 111, 0.15)" strokeWidth="0.8" />
+            </pattern>
+          </defs>
+          <rect width="340" height="180" fill="url(#j-grid-3)" />
+
+          {/* Timeline Axis Track */}
+          <line x1="40" y1="90" x2="300" y2="90" stroke="#12393a" strokeWidth="2.5" />
+
+          {/* Milestone 1: Diagnostic & Permitting */}
+          <circle cx="70" cy="90" r="14" fill="#ffffff" stroke="#12393a" strokeWidth="2.5" />
+          <text x="70" y="94" textAnchor="middle" fontSize="9" fontWeight="900" fill="#12393a">
+            01
+          </text>
+          <rect x="35" y="32" width="70" height="38" rx="2" fill="#ffffff" stroke="#12393a" strokeWidth="1.2" />
+          <text x="70" y="46" textAnchor="middle" fontSize="7" fontWeight="900" fill="#12393a">
+            WEEKS 1–2
+          </text>
+          <text x="70" y="58" textAnchor="middle" fontSize="6.5" fontWeight="700" fill="#46766f">
+            Scope &amp; Code
+          </text>
+          <line x1="70" y1="70" x2="70" y2="76" stroke="#12393a" strokeWidth="1.5" />
+
+          {/* Milestone 2: Multi-Trade BIM & Engineering */}
+          <circle cx="170" cy="90" r="14" fill="#ffffff" stroke="#134c4b" strokeWidth="2.5" />
+          <text x="170" y="94" textAnchor="middle" fontSize="9" fontWeight="900" fill="#134c4b">
+            02
+          </text>
+          <rect x="135" y="112" width="70" height="38" rx="2" fill="#ffffff" stroke="#134c4b" strokeWidth="1.2" />
+          <text x="170" y="126" textAnchor="middle" fontSize="7" fontWeight="900" fill="#134c4b">
+            WEEKS 3–6
+          </text>
+          <text x="170" y="138" textAnchor="middle" fontSize="6.5" fontWeight="700" fill="#46766f">
+            BIM LOD 400
+          </text>
+          <line x1="170" y1="104" x2="170" y2="112" stroke="#134c4b" strokeWidth="1.5" />
+
+          {/* Milestone 3: Execution Sign-Off & Construction Velocity */}
+          <circle cx="270" cy="90" r="14" fill="#c59b27" stroke="#12393a" strokeWidth="2.5" />
+          <text x="270" y="94" textAnchor="middle" fontSize="9" fontWeight="900" fill="#ffffff">
+            03
+          </text>
+          <rect x="235" y="32" width="70" height="38" rx="2" fill="#ffffff" stroke="#c59b27" strokeWidth="1.2" />
+          <text x="270" y="46" textAnchor="middle" fontSize="7" fontWeight="900" fill="#c59b27">
+            WEEKS 7+
+          </text>
+          <text x="270" y="58" textAnchor="middle" fontSize="6.5" fontWeight="700" fill="#12393a">
+            Execution Velocity
+          </text>
+          <line x1="270" y1="70" x2="270" y2="76" stroke="#c59b27" strokeWidth="1.5" />
+
+          {/* Connecting Progress Arrow */}
+          <path d="M 84 90 L 156 90" stroke="#134c4b" strokeWidth="2.5" />
+          <polygon points="156,90 148,86 148,94" fill="#134c4b" />
+          <path d="M 184 90 L 256 90" stroke="#c59b27" strokeWidth="2.5" />
+          <polygon points="256,90 248,86 248,94" fill="#c59b27" />
+
+          <text x="170" y="168" textAnchor="middle" fontSize="7.5" fontWeight="800" fill="#12393a" letterSpacing="1">
+            PHASE 03: CONCRETE ROADMAP &amp; MULTIDISCIPLINARY SEQUENCING
+          </text>
+        </svg>
+      );
+
+    default:
+      return null;
+  }
+}

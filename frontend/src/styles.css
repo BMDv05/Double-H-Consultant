@@ -116,11 +116,37 @@ html[lang='ar'] h6 {
   font-weight: 900;
 }
 
+/* Directional Arrow Micro-Animation: Extends subtly on hover */
+.btn svg,
+.division-inquire-btn svg,
+.btn-nav-cta svg,
+.nav-mobile-cta svg,
+.btn-phase-book svg {
+  transition: transform 0.22s var(--ease-out);
+}
+
+.btn:hover svg,
+.division-inquire-btn:hover svg,
+.btn-nav-cta:hover svg,
+.nav-mobile-cta:hover svg,
+.btn-phase-book:hover svg {
+  transform: translateX(4px);
+}
+
 html[lang='ar'] .btn svg,
 html[lang='ar'] .division-inquire-btn svg,
 html[lang='ar'] .btn-nav-cta svg,
-html[lang='ar'] .nav-mobile-cta svg {
+html[lang='ar'] .nav-mobile-cta svg,
+html[lang='ar'] .btn-phase-book svg {
   transform: scaleX(-1);
+}
+
+html[lang='ar'] .btn:hover svg,
+html[lang='ar'] .division-inquire-btn:hover svg,
+html[lang='ar'] .btn-nav-cta:hover svg,
+html[lang='ar'] .nav-mobile-cta:hover svg,
+html[lang='ar'] .btn-phase-book:hover svg {
+  transform: scaleX(-1) translateX(-4px);
 }
 
 a {
@@ -464,6 +490,62 @@ html[lang='ar'] .logo-tag {
   overflow: hidden;
 }
 
+/* ================= LIVE STATUS INDICATOR ================= */
+.status-live-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  background: rgba(70, 118, 111, 0.08);
+  border: 1px solid rgba(70, 118, 111, 0.26);
+  padding: 5px 12px;
+  border-radius: 4px;
+  font-family: var(--font-head);
+  font-size: 11.5px;
+  font-weight: 800;
+  color: var(--primary-deep);
+  letter-spacing: 0.04em;
+  margin-bottom: 6px;
+  box-shadow: 0 1px 3px rgba(18, 57, 58, 0.04);
+}
+
+html[lang='ar'] .status-live-badge {
+  letter-spacing: 0;
+  font-size: 12.5px;
+}
+
+.status-pulse-dot {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: #134c4b;
+  position: relative;
+  flex-shrink: 0;
+}
+
+.status-pulse-dot::before {
+  content: '';
+  position: absolute;
+  inset: -3px;
+  border-radius: 50%;
+  background: rgba(19, 76, 75, 0.4);
+  animation: radar-pulse 2s cubic-bezier(0.16, 1, 0.3, 1) infinite;
+}
+
+@keyframes radar-pulse {
+  0% {
+    transform: scale(0.9);
+    opacity: 0.9;
+  }
+  60% {
+    transform: scale(2.2);
+    opacity: 0;
+  }
+  100% {
+    transform: scale(2.2);
+    opacity: 0;
+  }
+}
+
 /* ================= HERO SECTION ================= */
 .hero {
   position: relative;
@@ -474,6 +556,31 @@ html[lang='ar'] .logo-tag {
   padding: 56px 24px 72px;
   overflow: hidden;
   border-bottom: 1px solid var(--line);
+}
+
+/* CAD / Architectural Drafting Grid Overlay */
+.hero::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background-image:
+    linear-gradient(to right, rgba(70, 118, 111, 0.065) 1px, transparent 1px),
+    linear-gradient(to bottom, rgba(70, 118, 111, 0.065) 1px, transparent 1px);
+  background-size: 48px 48px;
+  pointer-events: none;
+  z-index: 1;
+}
+
+.hero::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background-image:
+    linear-gradient(to right, rgba(18, 57, 58, 0.025) 1px, transparent 1px),
+    linear-gradient(to bottom, rgba(18, 57, 58, 0.025) 1px, transparent 1px);
+  background-size: 12px 12px;
+  pointer-events: none;
+  z-index: 1;
 }
 
 .hero-wash {
@@ -500,8 +607,10 @@ html[lang='ar'] .logo-tag {
 
 .hero-kicker {
   display: flex;
-  align-items: center;
-  margin-bottom: 16px;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 8px;
+  margin-bottom: 20px;
 }
 
 .hero-headline {
@@ -932,6 +1041,346 @@ html[lang='ar'] .pillar-item:hover {
 
 .about-cta-row {
   margin-top: 10px;
+}
+
+/* ================= DIAGNOSTIC ADVISORY JOURNEY SECTION ================= */
+.journey-section {
+  position: relative;
+  background: #ffffff;
+  border-top: 1px solid var(--line);
+  padding: 88px 24px;
+  overflow: hidden;
+}
+
+.journey-blueprint-grid {
+  position: absolute;
+  inset: 0;
+  background-image:
+    linear-gradient(to right, rgba(70, 118, 111, 0.05) 1px, transparent 1px),
+    linear-gradient(to bottom, rgba(70, 118, 111, 0.05) 1px, transparent 1px);
+  background-size: 40px 40px;
+  pointer-events: none;
+  z-index: 1;
+}
+
+/* Interactive Phase Tabs */
+.journey-phase-tabs {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  background: var(--ice-mist);
+  padding: 5px;
+  border: 1px solid var(--line);
+  border-radius: 4px;
+  margin-top: 26px;
+  position: relative;
+  z-index: 2;
+}
+
+.journey-tab-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  border: none;
+  background: transparent;
+  color: var(--ink-muted);
+  font-family: inherit;
+  font-size: 13.5px;
+  font-weight: 700;
+  padding: 8px 18px;
+  border-radius: 3px;
+  cursor: pointer;
+  transition: all 0.2s var(--ease);
+}
+
+.journey-tab-btn:hover {
+  color: var(--primary-deep);
+  background: rgba(255, 255, 255, 0.7);
+}
+
+.journey-tab-btn.active {
+  background: var(--primary-deep);
+  color: #ffffff;
+  box-shadow: 0 2px 6px rgba(18, 57, 58, 0.2);
+}
+
+.journey-tab-index {
+  font-family: 'SF Mono', 'Courier New', monospace;
+  font-size: 11px;
+  font-weight: 800;
+  opacity: 0.85;
+}
+
+/* 3-Phase Progression Grid */
+.journey-cards-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 24px;
+  margin-bottom: 64px;
+  position: relative;
+  z-index: 2;
+}
+
+.journey-phase-card {
+  background: #ffffff;
+  border: 1px solid var(--line);
+  border-radius: 4px;
+  overflow: hidden;
+  box-shadow: var(--shadow-xs);
+  display: flex;
+  flex-direction: column;
+  cursor: pointer;
+  transition: transform 0.25s var(--ease), box-shadow 0.25s var(--ease), border-color 0.25s var(--ease);
+}
+
+.journey-phase-card:hover {
+  transform: translateY(-4px);
+  box-shadow: 0 14px 36px rgba(18, 57, 58, 0.12), 0 0 0 1px var(--accent-sage);
+  border-color: var(--accent-sage);
+}
+
+.journey-phase-card.active-phase {
+  border-color: var(--primary-deep);
+  box-shadow: 0 14px 38px rgba(18, 57, 58, 0.14), 0 0 0 1.5px var(--primary-deep);
+}
+
+.journey-card-topbar {
+  background: var(--ice-mist);
+  border-bottom: 1px solid var(--line);
+  padding: 8px 16px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+}
+
+.journey-phase-num {
+  font-family: 'SF Mono', 'Courier New', monospace;
+  font-size: 10.5px;
+  font-weight: 800;
+  color: var(--primary-deep);
+  letter-spacing: 0.08em;
+}
+
+.journey-phase-timing {
+  font-family: var(--font-head);
+  font-size: 11px;
+  font-weight: 800;
+  color: var(--accent-sage);
+}
+
+.journey-schematic-container {
+  background: var(--ice-mist);
+  border-bottom: 1px solid var(--line);
+  padding: 12px 14px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.journey-schematic-svg {
+  width: 100%;
+  height: 120px;
+  display: block;
+}
+
+.journey-card-body {
+  padding: 22px;
+  display: flex;
+  flex-direction: column;
+  flex-grow: 1;
+}
+
+.journey-card-body h3 {
+  font-size: 18.5px;
+  margin-bottom: 8px;
+}
+
+.journey-phase-desc {
+  font-size: 14px;
+  color: var(--ink-muted);
+  line-height: 1.65;
+  margin-bottom: 16px;
+  flex-grow: 1;
+}
+
+.journey-deliverable-box {
+  background: var(--paper);
+  border: 1px solid var(--line);
+  border-radius: 4px;
+  padding: 10px 12px;
+  margin-bottom: 16px;
+}
+
+.deliverable-label {
+  display: flex;
+  align-items: flex-start;
+  gap: 8px;
+  font-size: 12px;
+  font-weight: 700;
+  color: var(--primary-deep);
+  line-height: 1.45;
+}
+
+.journey-card-footer {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  border-top: 1px solid var(--line);
+  padding-top: 14px;
+  margin-top: auto;
+}
+
+.journey-lead-badge {
+  font-family: 'SF Mono', 'Courier New', monospace;
+  font-size: 10px;
+  font-weight: 700;
+  color: var(--accent-sage);
+  letter-spacing: 0.04em;
+}
+
+.btn-phase-book {
+  width: 100%;
+  padding: 9px 14px;
+  background: var(--paper);
+  border: 1px solid var(--line);
+  color: var(--primary-deep);
+  font-size: 12.5px;
+  font-weight: 700;
+  border-radius: 4px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: space-between;
+  transition: all 0.2s var(--ease);
+}
+
+.journey-phase-card:hover .btn-phase-book,
+.journey-phase-card.active-phase .btn-phase-book {
+  background: var(--primary-deep);
+  color: #ffffff;
+  border-color: var(--primary-deep);
+}
+
+/* Hesitations Guarantees Section */
+.hesitation-section {
+  position: relative;
+  z-index: 2;
+  background: var(--paper);
+  border: 1px solid var(--line);
+  border-radius: 6px;
+  padding: 44px 32px 36px;
+}
+
+.hesitation-header {
+  text-align: center;
+  max-width: 680px;
+  margin: 0 auto 36px;
+}
+
+.hesitation-header .eyebrow {
+  justify-content: center;
+}
+
+.hesitation-header h3 {
+  font-size: clamp(24px, 3vw, 34px);
+  margin: 6px 0 10px;
+}
+
+.hesitation-lead {
+  font-size: 15px;
+  color: var(--ink-muted);
+  margin: 0;
+}
+
+.hesitation-cards-grid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 20px;
+  margin-bottom: 36px;
+}
+
+.hesitation-card {
+  background: #ffffff;
+  border: 1px solid var(--line);
+  border-radius: 4px;
+  padding: 22px;
+  box-shadow: var(--shadow-xs);
+  display: flex;
+  flex-direction: column;
+  transition: transform 0.22s var(--ease), border-color 0.22s var(--ease), box-shadow 0.22s;
+}
+
+.hesitation-card:hover {
+  transform: translateY(-2px);
+  border-color: var(--accent-sage);
+  box-shadow: 0 10px 28px rgba(18, 57, 58, 0.08);
+}
+
+.hesitation-card-top {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+  margin-bottom: 14px;
+}
+
+.hesitation-icon-box {
+  width: 36px;
+  height: 36px;
+  border-radius: 4px;
+  background: var(--ice-mist);
+  color: var(--primary-deep);
+  display: grid;
+  place-items: center;
+  flex-shrink: 0;
+}
+
+.hesitation-badge {
+  font-family: 'SF Mono', 'Courier New', monospace;
+  font-size: 9.5px;
+  font-weight: 700;
+  color: var(--accent-sage);
+  background: rgba(70, 118, 111, 0.08);
+  border: 1px solid rgba(70, 118, 111, 0.2);
+  padding: 2px 7px;
+  border-radius: 2px;
+  letter-spacing: 0.04em;
+}
+
+.hesitation-card h4 {
+  font-size: 15.5px;
+  margin-bottom: 6px;
+  color: var(--primary-deep);
+}
+
+.hesitation-card p {
+  font-size: 13px;
+  color: var(--ink-muted);
+  margin: 0;
+  line-height: 1.62;
+}
+
+.journey-cta-anchor {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 20px;
+  padding-top: 24px;
+  border-top: 1px solid var(--line);
+}
+
+.journey-cta-status {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 13px;
+  font-weight: 700;
+  color: var(--primary-deep);
+}
+
+.journey-main-btn {
+  padding: 12px 28px;
 }
 
 /* ================= DIVISIONS SECTION ================= */
@@ -1940,6 +2389,246 @@ html[lang='ar'] .footer-tag {
   gap: 10px;
 }
 
+/* ================= SCHEDULE CONSULTATION MODAL ================= */
+.sched-modal-shell {
+  display: flex;
+  flex-direction: column;
+  gap: 22px;
+}
+
+.sched-modal-header {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 16px;
+  border-bottom: 1px solid var(--line);
+  padding-bottom: 18px;
+}
+
+.sched-modal-title-col {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.sched-modal-title {
+  font-size: clamp(20px, 2.4vw, 26px);
+  margin: 0;
+  color: var(--primary-deep);
+}
+
+.sched-modal-desc {
+  font-size: 13.5px;
+  color: var(--ink-muted);
+  margin: 0;
+  max-width: 54ch;
+}
+
+.sched-modal-close {
+  width: 34px;
+  height: 34px;
+  border-radius: 4px;
+  border: 1px solid var(--line);
+  background: var(--paper);
+  color: var(--primary-deep);
+  display: grid;
+  place-items: center;
+  cursor: pointer;
+  flex-shrink: 0;
+  transition: all 0.2s var(--ease);
+}
+
+.sched-modal-close:hover {
+  background: var(--primary-deep);
+  color: #ffffff;
+  border-color: var(--primary-deep);
+}
+
+.sched-modal-form {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+
+.sched-form-section {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.sched-section-label {
+  font-family: var(--font-head);
+  font-size: 12px;
+  font-weight: 800;
+  color: var(--accent-sage);
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
+html[lang='ar'] .sched-section-label {
+  letter-spacing: 0;
+  font-size: 13px;
+}
+
+.sched-division-chips {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 8px;
+}
+
+.sched-div-chip {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  background: var(--paper);
+  border: 1px solid var(--line);
+  border-radius: 4px;
+  padding: 8px 10px;
+  font-family: inherit;
+  font-size: 12px;
+  font-weight: 600;
+  color: var(--ink);
+  cursor: pointer;
+  text-align: start;
+  transition: all 0.18s var(--ease);
+}
+
+.sched-div-chip:hover {
+  border-color: var(--accent-sage);
+  background: var(--ice-mist);
+}
+
+.sched-div-chip.selected {
+  background: var(--primary-deep);
+  color: #ffffff;
+  border-color: var(--primary-deep);
+  box-shadow: 0 2px 6px rgba(18, 57, 58, 0.2);
+}
+
+.sched-grid-2 {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 16px;
+}
+
+.sched-trust-strip {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  background: var(--ice-mist);
+  border: 1px solid var(--line);
+  border-radius: 4px;
+  padding: 10px 14px;
+}
+
+.trust-item {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 11.5px;
+  font-weight: 700;
+  color: var(--primary-deep);
+}
+
+.sched-modal-actions {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  margin-top: 4px;
+}
+
+.sched-submit-btn {
+  width: 100%;
+  padding: 14px 20px;
+  font-size: 15px;
+}
+
+.sched-alt-link-wrap {
+  text-align: center;
+  font-size: 12.5px;
+  color: var(--ink-subtle);
+}
+
+.sched-alt-link {
+  color: var(--primary-deep);
+  font-weight: 700;
+  text-decoration: underline;
+  text-underline-offset: 3px;
+}
+
+.sched-modal-success {
+  text-align: center;
+  padding: 24px 12px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.sched-success-badge {
+  width: 68px;
+  height: 68px;
+  border-radius: 4px;
+  background: var(--ice-mist);
+  color: var(--secondary-deep);
+  display: grid;
+  place-items: center;
+  margin-bottom: 16px;
+}
+
+.sched-modal-success h3 {
+  font-size: 24px;
+  margin-bottom: 8px;
+}
+
+.sched-modal-success p {
+  font-size: 14.5px;
+  color: var(--ink-muted);
+  max-width: 48ch;
+  margin-bottom: 24px;
+}
+
+.sched-receipt-box {
+  width: 100%;
+  background: var(--paper);
+  border: 1px dashed var(--line);
+  border-radius: 4px;
+  padding: 14px 18px;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  margin-bottom: 24px;
+  text-align: start;
+}
+
+.receipt-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  font-size: 12px;
+}
+
+.receipt-row span {
+  font-family: 'SF Mono', 'Courier New', monospace;
+  color: var(--accent-sage);
+  font-weight: 700;
+}
+
+.receipt-row b {
+  color: var(--primary-deep);
+  font-family: var(--font-head);
+  font-weight: 800;
+}
+
+/* Crisp Architectural Card Hover Glows */
+.division-card:hover,
+.cert-card:hover,
+.value-card:hover,
+.info-card:hover {
+  box-shadow: 0 14px 34px rgba(18, 57, 58, 0.12), 0 0 0 1px rgba(70, 118, 111, 0.35);
+  border-color: var(--accent-sage);
+}
+
 /* ================= REVEAL ANIMATIONS ================= */
 .reveal {
   opacity: 0;
@@ -1970,6 +2659,15 @@ html[lang='ar'] .footer-tag {
     grid-template-columns: 1fr;
   }
   .values-cards-grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+  .journey-cards-grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+  .hesitation-cards-grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+  .sched-division-chips {
     grid-template-columns: repeat(2, 1fr);
   }
   .footer-top-grid {
@@ -2053,6 +2751,38 @@ html[lang='ar'] .footer-tag {
   }
   .values-cards-grid {
     grid-template-columns: 1fr;
+  }
+  .journey-cards-grid {
+    grid-template-columns: 1fr;
+  }
+  .journey-phase-tabs {
+    flex-direction: column;
+    width: 100%;
+  }
+  .journey-tab-btn {
+    width: 100%;
+    justify-content: center;
+  }
+  .hesitation-cards-grid {
+    grid-template-columns: 1fr;
+  }
+  .journey-cta-anchor {
+    flex-direction: column;
+    align-items: stretch;
+    text-align: center;
+  }
+  .journey-cta-status {
+    justify-content: center;
+  }
+  .sched-grid-2 {
+    grid-template-columns: 1fr;
+  }
+  .sched-division-chips {
+    grid-template-columns: 1fr;
+  }
+  .sched-trust-strip {
+    flex-direction: column;
+    align-items: flex-start;
   }
   .contact-info-grid {
     grid-template-columns: 1fr;
