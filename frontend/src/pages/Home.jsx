@@ -254,17 +254,17 @@ export default function Home() {
             {/* Architectural Specification Bar */}
             <div className="hero-arch-spec-bar">
               <div className="arch-spec-item">
-                <span className="spec-label">LICENSURE</span>
+                <span className="spec-label">{t('hero_spec_lbl_licensure')}</span>
                 <span className="spec-val">{t('hero_spec_licensure')}</span>
               </div>
               <div className="arch-spec-divider" />
               <div className="arch-spec-item">
-                <span className="spec-label">GOVERNANCE</span>
+                <span className="spec-label">{t('hero_spec_lbl_governance')}</span>
                 <span className="spec-val">{t('hero_spec_governance')}</span>
               </div>
               <div className="arch-spec-divider" />
               <div className="arch-spec-item">
-                <span className="spec-label">STANDARD</span>
+                <span className="spec-label">{t('hero_spec_lbl_standard')}</span>
                 <span className="spec-val">{t('hero_spec_standard')}</span>
               </div>
             </div>
@@ -299,7 +299,7 @@ export default function Home() {
                   <span className="cert-jurisdiction">{c.jurisdiction}</span>
                   <div className="cert-verified">
                     <IconCheckBadge size={14} />
-                    <span>Verified Standard</span>
+                    <span>{t('cert_verified_tag')}</span>
                   </div>
                 </div>
               </div>
@@ -314,16 +314,21 @@ export default function Home() {
           {/* Visual Side */}
           <div className="about-visual reveal">
             <div className="about-photo-wrap">
-              <img
-                src="/about-consulting.jpg"
-                alt="Double H Technical Drafting & BIM Coordination Studio"
-                className="about-main-img"
-                loading="lazy"
-                onError={hideImg}
-              />
-              <div className="about-photo-badge">
-                <IconCheckBadge size={20} />
-                <span>{t('about_badge_text')}</span>
+              <div className="about-img-frame">
+                <img
+                  src="/about-consulting.jpg"
+                  alt="Double H Technical Drafting & BIM Coordination Studio"
+                  className="about-main-img"
+                  loading="lazy"
+                  onError={hideImg}
+                />
+              </div>
+              <div className="about-arch-spec-bar">
+                <div className="about-spec-badge">
+                  <IconCheckBadge size={16} />
+                  <span>{t('about_badge_text')}</span>
+                </div>
+                <span className="about-spec-meta">PE // ISO 9001 GOVERNANCE</span>
               </div>
             </div>
           </div>
@@ -422,13 +427,13 @@ export default function Home() {
             const Icon = d.icon;
             return (
               <div className="division-card reveal" key={d.key} style={{ '--d': `${i * 50}ms` }}>
+                <div className="division-spec-bar">
+                  <span className="division-spec-num">{d.num} // SPEC</span>
+                  <span className="division-spec-tag">{d.tag}</span>
+                </div>
                 <div className="division-media">
                   <img src={d.img} alt={t(`div_${d.key}`)} loading="lazy" onError={hideImg} />
                   <div className="division-media-overlay" />
-                  <div className="division-media-top">
-                    <span className="division-index-badge">{d.num}</span>
-                    <span className="division-tag">{d.tag}</span>
-                  </div>
                 </div>
 
                 <div className="division-body">

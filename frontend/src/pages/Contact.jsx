@@ -192,10 +192,10 @@ export default function Contact() {
               <div className="form-card-header">
                 <div className="form-badge">
                   <IconShield size={16} />
-                  <span>Confidential Advisory</span>
+                  <span>{t('form_badge')}</span>
                 </div>
-                <h3>Schedule Diagnostic Consultation</h3>
-                <p>Provide your project parameters below to connect with an executive practice lead.</p>
+                <h3>{t('form_title')}</h3>
+                <p>{t('form_desc')}</p>
               </div>
 
               <form onSubmit={submit} noValidate className="consultation-form">
@@ -297,7 +297,7 @@ export default function Contact() {
                   </button>
                   <span className="form-disclaimer">
                     <IconClock size={14} />
-                    <span>Response guaranteed within 1 business day</span>
+                    <span>{t('form_guarantee')}</span>
                   </span>
                 </div>
               </form>

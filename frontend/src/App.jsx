@@ -28,7 +28,6 @@ export function BookButton({ to = '/contact', className = '', children }) {
         book(to);
       }}
     >
-      <IconPhoneCall className="btn-icon" size={18} />
       <span className="btn-label">{children}</span>
     </button>
   );
@@ -140,7 +139,7 @@ function Nav() {
           <span className="logo-tag">{t('brand_sub')}</span>
         </Link>
 
-        {/* Desktop Navigation */}
+        {/* Desktop and Mobile Navigation */}
         <nav className={`nav-links ${open ? 'open' : ''}`} aria-label="Main Navigation">
           <NavLink to="/" end onClick={() => setOpen(false)}>
             {t('nav_home')}
@@ -157,6 +156,10 @@ function Nav() {
           <NavLink to="/contact" onClick={() => setOpen(false)}>
             {t('nav_contact')}
           </NavLink>
+          <Link to="/contact" className="nav-mobile-cta" onClick={() => setOpen(false)}>
+            <span>{t('nav_book_cta')}</span>
+            <IconArrow size={16} />
+          </Link>
         </nav>
 
         {/* Actions / CTA & Language */}
@@ -237,12 +240,12 @@ export default function App() {
               <p className="footer-desc">{t('footer_about')}</p>
               <div className="footer-trust-badge">
                 <IconShield size={16} />
-                <span>American PE & ISO 9001 Accredited</span>
+                <span>{t('footer_trust')}</span>
               </div>
             </div>
 
             <div className="footer-links-col">
-              <h4>Practice Areas</h4>
+              <h4>{t('footer_practice_areas')}</h4>
               <ul>
                 <li><Link to="/contact?division=bim">{t('div_bim')}</Link></li>
                 <li><Link to="/contact?division=arch">{t('div_arch')}</Link></li>
@@ -253,7 +256,7 @@ export default function App() {
             </div>
 
             <div className="footer-links-col">
-              <h4>Organization</h4>
+              <h4>{t('footer_org')}</h4>
               <ul>
                 <li><a href="#about">{t('nav_about')}</a></li>
                 <li><a href="#divisions">{t('nav_divisions')}</a></li>
@@ -269,10 +272,10 @@ export default function App() {
             </div>
 
             <div className="footer-contact-col">
-              <h4>Executive Inquiries</h4>
+              <h4>{t('footer_inquiries')}</h4>
               <p className="footer-contact-item">info@doubleh.com</p>
               <p className="footer-contact-item">+1 (555) 000-0000</p>
-              <p className="footer-contact-item">New York, NY — Serving Global Clients</p>
+              <p className="footer-contact-item">{t('footer_location_sub')}</p>
               <Link to="/contact" className="btn btn-footer-cta">
                 {t('cta_book_now')}
               </Link>
@@ -284,9 +287,9 @@ export default function App() {
               © {year} {t('footer_rights')}
             </p>
             <div className="footer-legal-tags">
-              <span>Confidentiality Assured</span>
+              <span>{t('footer_confidential')}</span>
               <span>•</span>
-              <span>US Engineering Standards</span>
+              <span>{t('footer_standards')}</span>
             </div>
           </div>
         </div>

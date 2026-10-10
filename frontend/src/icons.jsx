@@ -336,15 +336,15 @@ export function ValueSchematic({ id, className = '' }) {
           </text>
 
           {/* Dimension Line */}
-          <line x1="70" y1="94" x2="280" y2="94" stroke="#738482" strokeWidth="1" strokeDasharray="4 2" />
-          <line x1="70" y1="90" x2="70" y2="98" stroke="#738482" strokeWidth="1" />
-          <line x1="280" y1="90" x2="280" y2="98" stroke="#738482" strokeWidth="1" />
+          <line x1="70" y1="94" x2="280" y2="94" stroke="#46766f" strokeWidth="1" strokeDasharray="4 2" />
+          <line x1="70" y1="90" x2="70" y2="98" stroke="#46766f" strokeWidth="1" />
+          <line x1="280" y1="90" x2="280" y2="98" stroke="#46766f" strokeWidth="1" />
           <text x="175" y="108" textAnchor="middle" fontSize="8.5" fontWeight="700" fill="#46766f" letterSpacing="0.8">
             SPAN L // NO SHORTCUTS
           </text>
 
           {/* Spec coordinate tag */}
-          <text x="44" y="146" fontSize="7.5" fontWeight="800" fill="#738482" letterSpacing="1.2">
+          <text x="44" y="146" fontSize="7.5" fontWeight="800" fill="#46766f" letterSpacing="1.2">
             AIA ETHICS CODE • STRUCTURAL FIDUCIARY
           </text>
         </svg>
@@ -392,7 +392,7 @@ export function ValueSchematic({ id, className = '' }) {
             DUAL-STAGE REVIEW
           </text>
 
-          <text x="160" y="148" textAnchor="middle" fontSize="7.5" fontWeight="800" fill="#738482" letterSpacing="1.2">
+          <text x="160" y="148" textAnchor="middle" fontSize="7.5" fontWeight="800" fill="#46766f" letterSpacing="1.2">
             COMPUTATIONAL VERIFICATION • PE AUDIT
           </text>
         </svg>
@@ -443,7 +443,7 @@ export function ValueSchematic({ id, className = '' }) {
             CRITICAL PATH CPM // ZERO FLOAT DRIFT
           </text>
 
-          <text x="160" y="148" textAnchor="middle" fontSize="7.5" fontWeight="800" fill="#738482" letterSpacing="1.2">
+          <text x="160" y="148" textAnchor="middle" fontSize="7.5" fontWeight="800" fill="#46766f" letterSpacing="1.2">
             EARNED VALUE MANAGEMENT • 24H VELOCITY
           </text>
         </svg>
@@ -494,7 +494,7 @@ export function ValueSchematic({ id, className = '' }) {
             18+ YEARS
           </text>
 
-          <text x="160" y="148" textAnchor="middle" fontSize="7.5" fontWeight="800" fill="#738482" letterSpacing="1.2">
+          <text x="160" y="148" textAnchor="middle" fontSize="7.5" fontWeight="800" fill="#46766f" letterSpacing="1.2">
             INSTITUTIONAL STEWARDSHIP • ENDURING CAPITAL
           </text>
         </svg>
