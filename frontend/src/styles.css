@@ -2902,6 +2902,587 @@ html[lang='ar'] .sched-section-label {
   }
 }
 
+/* ============================================================
+   HERO 3D VIEWPORT TABS & GUARANTEE STRIP
+   ============================================================ */
+.hero-viewport-tabs {
+  display: flex;
+  background: var(--primary-deep);
+  border-bottom: 1px solid rgba(70, 118, 111, 0.3);
+  padding: 8px 12px;
+  gap: 8px;
+  z-index: 5;
+  position: relative;
+}
+
+.hero-viewport-tab-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 6px 14px;
+  background: transparent;
+  color: var(--ice-mist);
+  border: 1px solid transparent;
+  border-radius: 4px;
+  font-family: var(--font-head);
+  font-size: 12px;
+  font-weight: 700;
+  cursor: pointer;
+  transition: all 0.2s var(--ease);
+}
+
+.hero-viewport-tab-btn:hover {
+  background: rgba(70, 118, 111, 0.25);
+  color: #fff;
+}
+
+.hero-viewport-tab-btn.active {
+  background: var(--secondary-deep);
+  color: #fff;
+  border-color: var(--accent-sage);
+  box-shadow: 0 1px 4px rgba(0, 0, 0, 0.2);
+}
+
+/* Institutional Fiduciary Guarantees underneath Hero CTA */
+.hero-guarantee-strip {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 12px;
+  margin-top: -18px;
+  margin-bottom: 30px;
+}
+
+.guarantee-pill {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 5px 12px;
+  background: rgba(18, 57, 58, 0.05);
+  border: 1px solid rgba(18, 57, 58, 0.12);
+  border-radius: 4px;
+  font-size: 12px;
+  font-weight: 600;
+  color: var(--primary-deep);
+}
+
+.guarantee-pill svg {
+  color: var(--accent-sage);
+}
+
+/* ============================================================
+   3D BIM DIGITAL TWIN WEBGL EXPERIENCE
+   ============================================================ */
+.bim-digital-twin-wrapper {
+  position: relative;
+  width: 100%;
+  aspect-ratio: 16 / 12;
+  min-height: 440px;
+  background: radial-gradient(circle at 50% 30%, #154545 0%, #12393a 65%, #0e292a 100%);
+  overflow: hidden;
+  cursor: grab;
+  user-select: none;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+}
+
+.bim-digital-twin-wrapper:active {
+  cursor: grabbing;
+}
+
+.bim-blueprint-grid {
+  position: absolute;
+  inset: 0;
+  background-image:
+    linear-gradient(to right, rgba(70, 118, 111, 0.12) 1px, transparent 1px),
+    linear-gradient(to bottom, rgba(70, 118, 111, 0.12) 1px, transparent 1px);
+  background-size: 28px 28px;
+  pointer-events: none;
+  z-index: 1;
+}
+
+.bim-webgl-canvas {
+  position: absolute;
+  inset: 0;
+  width: 100% !important;
+  height: 100% !important;
+  z-index: 2;
+  display: block;
+}
+
+.bim-fallback-schematic {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 2;
+  padding: 24px;
+}
+
+.bim-cad-svg {
+  width: 100%;
+  max-width: 440px;
+  height: auto;
+}
+
+/* Top HUD Bar */
+.bim-hud-top {
+  position: relative;
+  z-index: 4;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 12px 16px;
+  background: rgba(18, 57, 58, 0.7);
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
+  border-bottom: 1px solid rgba(70, 118, 111, 0.25);
+}
+
+.bim-hud-live-tag {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.bim-pulse-dot {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: #50c878;
+  box-shadow: 0 0 8px #50c878;
+  animation: pulseLive 2s infinite ease-in-out;
+}
+
+.bim-mono-text {
+  font-family: 'SF Mono', 'Courier New', monospace;
+  font-size: 10.5px;
+  font-weight: 700;
+  color: var(--ice-mist);
+  letter-spacing: 0.08em;
+}
+
+.bim-telemetry-cluster {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.bim-telemetry-item {
+  display: flex;
+  flex-direction: column;
+  gap: 1px;
+}
+
+.telemetry-lbl {
+  font-family: 'SF Mono', 'Courier New', monospace;
+  font-size: 8.5px;
+  color: var(--accent-sage);
+  letter-spacing: 0.1em;
+}
+
+.telemetry-val {
+  font-family: 'SF Mono', 'Courier New', monospace;
+  font-size: 11px;
+  font-weight: 700;
+  color: #fff;
+}
+
+.bim-telemetry-divider {
+  width: 1px;
+  height: 18px;
+  background: rgba(70, 118, 111, 0.4);
+}
+
+/* Layers Inspection Panel */
+.bim-layers-panel {
+  position: absolute;
+  top: 56px;
+  left: 14px;
+  z-index: 4;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  background: rgba(18, 57, 58, 0.85);
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
+  padding: 8px 10px;
+  border: 1px solid rgba(70, 118, 111, 0.3);
+  border-radius: 4px;
+  max-width: 220px;
+}
+
+html[lang='ar'] .bim-layers-panel {
+  left: auto;
+  right: 14px;
+}
+
+.bim-panel-title {
+  font-family: 'SF Mono', 'Courier New', monospace;
+  font-size: 9px;
+  font-weight: 700;
+  color: var(--accent-sage);
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
+.bim-layer-buttons {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.bim-layer-btn {
+  text-align: left;
+  border: none;
+  background: rgba(255, 255, 255, 0.06);
+  color: var(--ice-mist);
+  padding: 5px 8px;
+  border-radius: 3px;
+  font-size: 11px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.16s var(--ease);
+}
+
+html[lang='ar'] .bim-layer-btn {
+  text-align: right;
+}
+
+.bim-layer-btn:hover {
+  background: rgba(70, 118, 111, 0.35);
+  color: #fff;
+}
+
+.bim-layer-btn.active {
+  background: var(--accent-sage);
+  color: #fff;
+  font-weight: 700;
+}
+
+/* Viewport Orbit Tools */
+.bim-viewport-tools {
+  position: absolute;
+  top: 56px;
+  right: 14px;
+  z-index: 4;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+html[lang='ar'] .bim-viewport-tools {
+  right: auto;
+  left: 14px;
+}
+
+.bim-tool-btn {
+  background: rgba(18, 57, 58, 0.85);
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
+  border: 1px solid rgba(70, 118, 111, 0.3);
+  color: var(--ice-mist);
+  border-radius: 4px;
+  padding: 6px 10px;
+  font-size: 10.5px;
+  font-weight: 700;
+  cursor: pointer;
+  transition: all 0.18s var(--ease);
+}
+
+.bim-tool-btn:hover {
+  background: var(--secondary-deep);
+  color: #fff;
+  border-color: var(--accent-sage);
+}
+
+.bim-tool-btn.active {
+  background: var(--accent-sage);
+  color: #fff;
+}
+
+/* Drag Hint */
+.bim-drag-hint {
+  position: absolute;
+  bottom: 58px;
+  left: 50%;
+  transform: translateX(-50%);
+  z-index: 3;
+  pointer-events: none;
+  background: rgba(18, 57, 58, 0.7);
+  padding: 4px 10px;
+  border-radius: 4px;
+  border: 1px solid rgba(70, 118, 111, 0.25);
+  color: var(--ice-mist);
+  font-size: 10.5px;
+  font-weight: 600;
+}
+
+/* Bottom Conversion Strip */
+.bim-conversion-strip {
+  position: relative;
+  z-index: 4;
+  background: rgba(14, 41, 42, 0.92);
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
+  border-top: 1px solid rgba(70, 118, 111, 0.35);
+  padding: 10px 14px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+}
+
+.bim-conversion-info {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.bim-trust-icon {
+  color: var(--accent-sage);
+  flex-shrink: 0;
+}
+
+.bim-conversion-text {
+  font-size: 11.5px;
+  color: var(--ice-mist);
+  font-weight: 500;
+  line-height: 1.35;
+}
+
+.bim-action-cta-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  background: var(--accent-sage);
+  color: #fff;
+  border: none;
+  border-radius: 4px;
+  padding: 7px 14px;
+  font-size: 11.5px;
+  font-weight: 700;
+  cursor: pointer;
+  white-space: nowrap;
+  flex-shrink: 0;
+  transition: all 0.2s var(--ease);
+}
+
+.bim-action-cta-btn:hover {
+  background: #5a8e86;
+  transform: translateY(-1px);
+}
+
+/* ============================================================
+   15-MINUTE DIAGNOSTIC TECHNICAL AGENDA TIMELINE
+   ============================================================ */
+.agenda-breakdown-card {
+  margin-top: 52px;
+  background: #ffffff;
+  border: 1px solid var(--line);
+  border-radius: 6px;
+  padding: 40px 36px;
+  box-shadow: var(--shadow-md);
+  position: relative;
+  overflow: hidden;
+}
+
+.agenda-breakdown-card::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 3px;
+  background: linear-gradient(90deg, var(--primary-deep) 0%, var(--accent-sage) 100%);
+}
+
+.agenda-header {
+  text-align: center;
+  max-width: 760px;
+  margin: 0 auto 36px;
+}
+
+.agenda-header h3 {
+  font-size: clamp(24px, 2.6vw, 34px);
+  color: var(--primary-deep);
+  margin-bottom: 12px;
+}
+
+.agenda-subtitle {
+  font-size: 15px;
+  color: var(--ink-muted);
+  line-height: 1.65;
+}
+
+.agenda-timeline-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 24px;
+  position: relative;
+  margin-bottom: 36px;
+}
+
+.agenda-step-card {
+  background: var(--ice-mist);
+  border: 1px solid var(--line);
+  border-radius: 4px;
+  padding: 24px;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  transition: transform 0.24s var(--ease), box-shadow 0.24s var(--ease);
+}
+
+.agenda-step-card:hover {
+  transform: translateY(-3px);
+  box-shadow: var(--shadow-sm);
+  border-color: var(--accent-sage);
+}
+
+.agenda-step-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  background: var(--primary-deep);
+  color: #fff;
+  padding: 4px 10px;
+  border-radius: 3px;
+  font-family: 'SF Mono', 'Courier New', monospace;
+  font-size: 11px;
+  font-weight: 700;
+  align-self: flex-start;
+}
+
+.agenda-step-card h4 {
+  font-size: 17px;
+  font-weight: 800;
+  color: var(--primary-deep);
+  line-height: 1.3;
+}
+
+.agenda-step-card p {
+  font-size: 13.5px;
+  color: var(--ink-muted);
+  line-height: 1.6;
+  flex-grow: 1;
+}
+
+.agenda-metric-tag {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 4px 8px;
+  background: rgba(18, 57, 58, 0.08);
+  border-radius: 3px;
+  font-size: 11px;
+  font-weight: 600;
+  color: var(--primary-deep);
+}
+
+.agenda-action-row {
+  display: flex;
+  justify-content: center;
+}
+
+.agenda-cta-btn {
+  padding: 14px 32px;
+  font-size: 15px;
+}
+
+/* ============================================================
+   PERSISTENT FLOATING QUICK DIAGNOSTIC ACTION BAR
+   ============================================================ */
+.floating-diagnostic-bar {
+  position: fixed;
+  bottom: 24px;
+  right: 24px;
+  z-index: 150;
+  animation: slideUpFloat 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+html[lang='ar'] .floating-diagnostic-bar {
+  right: auto;
+  left: 24px;
+}
+
+@keyframes slideUpFloat {
+  from {
+    opacity: 0;
+    transform: translateY(16px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.floating-diagnostic-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 12px;
+  background: var(--primary-deep);
+  color: #ffffff;
+  border: 1px solid rgba(70, 118, 111, 0.4);
+  padding: 10px 18px;
+  border-radius: 4px;
+  box-shadow: 0 6px 24px rgba(18, 57, 58, 0.28);
+  cursor: pointer;
+  transition: all 0.22s var(--ease);
+}
+
+.floating-diagnostic-btn:hover {
+  background: var(--secondary-deep);
+  transform: translateY(-2px);
+  box-shadow: 0 10px 28px rgba(18, 57, 58, 0.36);
+}
+
+.floating-btn-text {
+  display: flex;
+  flex-direction: column;
+  text-align: left;
+}
+
+html[lang='ar'] .floating-btn-text {
+  text-align: right;
+}
+
+.floating-btn-text b {
+  font-family: var(--font-head);
+  font-size: 13px;
+  font-weight: 800;
+  line-height: 1.2;
+}
+
+.floating-btn-text small {
+  font-size: 10px;
+  color: var(--ice-mist);
+  opacity: 0.85;
+}
+
+/* Responsive Overrides */
+@media (max-width: 900px) {
+  .agenda-timeline-grid {
+    grid-template-columns: 1fr;
+  }
+  .bim-digital-twin-wrapper {
+    min-height: 380px;
+  }
+  .bim-layers-panel {
+    display: none; /* Keep clean on small mobile */
+  }
+  .floating-diagnostic-bar {
+    bottom: 16px;
+    right: 16px;
+  }
+  html[lang='ar'] .floating-diagnostic-bar {
+    right: auto;
+    left: 16px;
+  }
+}
+
 @media (prefers-reduced-motion: reduce) {
   *,
   *::before,

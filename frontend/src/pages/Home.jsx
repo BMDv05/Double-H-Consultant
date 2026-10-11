@@ -2,6 +2,7 @@ import { useEffect, useState, useMemo } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useLang } from '../LangContext.jsx';
 import { Counter, BookButton, useBook } from '../App.jsx';
+import BimDigitalTwin from '../BimDigitalTwin.jsx';
 import {
   IconArch,
   IconCivil,
@@ -241,6 +242,8 @@ export default function Home() {
     };
   }, []);
 
+  const [heroMediaTab, setHeroMediaTab] = useState('3d');
+
   const stats = company?.stats || { years: 18, projects: 450, clients: 300, divisions: 9 };
 
   const filteredDivisions = useMemo(() => {
@@ -281,6 +284,22 @@ export default function Home() {
               </a>
             </div>
 
+            {/* Institutional Fiduciary Guarantees for 15-Minute Consultation */}
+            <div className="hero-guarantee-strip">
+              <div className="guarantee-pill">
+                <IconShield size={14} />
+                <span>{t('hero_guarantee_nda')}</span>
+              </div>
+              <div className="guarantee-pill">
+                <IconCheckBadge size={14} />
+                <span>{t('hero_guarantee_pe')}</span>
+              </div>
+              <div className="guarantee-pill">
+                <IconClock size={14} />
+                <span>{t('hero_guarantee_sla')}</span>
+              </div>
+            </div>
+
             {/* Metrics Ribbon */}
             <div className="hero-stats">
               <div className="stat-box">
@@ -302,18 +321,46 @@ export default function Home() {
             </div>
           </div>
 
-          {/* Hero Visual Showcase */}
+          {/* Hero Visual Showcase — 3D BIM Digital Twin & Portfolio */}
           <div className="hero-visual-card reveal">
-            <div className="hero-image-wrap">
-              <img
-                src="/hero-showcase.jpg"
-                alt="Double H Architectural & Engineering Headquarters"
-                className="hero-main-img"
-                fetchpriority="high"
-                onError={hideImg}
-              />
-              <div className="hero-img-overlay" />
+            {/* Viewport Mode Switcher */}
+            <div className="hero-viewport-tabs" role="tablist">
+              <button
+                type="button"
+                role="tab"
+                aria-selected={heroMediaTab === '3d'}
+                className={`hero-viewport-tab-btn ${heroMediaTab === '3d' ? 'active' : ''}`}
+                onClick={() => setHeroMediaTab('3d')}
+              >
+                <IconBIM size={14} />
+                <span>{t('bim_tab_3d')}</span>
+              </button>
+              <button
+                type="button"
+                role="tab"
+                aria-selected={heroMediaTab === 'photo'}
+                className={`hero-viewport-tab-btn ${heroMediaTab === 'photo' ? 'active' : ''}`}
+                onClick={() => setHeroMediaTab('photo')}
+              >
+                <IconArch size={14} />
+                <span>{t('bim_tab_photo')}</span>
+              </button>
             </div>
+
+            {heroMediaTab === '3d' ? (
+              <BimDigitalTwin />
+            ) : (
+              <div className="hero-image-wrap">
+                <img
+                  src="/hero-showcase.jpg"
+                  alt="Double H Architectural & Engineering Headquarters"
+                  className="hero-main-img"
+                  fetchpriority="high"
+                  onError={hideImg}
+                />
+                <div className="hero-img-overlay" />
+              </div>
+            )}
 
             {/* Architectural Specification Bar */}
             <div className="hero-arch-spec-bar">
@@ -520,6 +567,63 @@ export default function Home() {
               </div>
             );
           })}
+        </div>
+
+        {/* ================= 15-MINUTE DIAGNOSTIC AGENDA BREAKDOWN ================= */}
+        <div className="agenda-breakdown-card reveal" id="diagnostic-agenda">
+          <div className="agenda-header">
+            <div className="eyebrow">{t('agenda_kicker')}</div>
+            <h3>{t('agenda_title')}</h3>
+            <p className="agenda-subtitle">{t('agenda_subtitle')}</p>
+          </div>
+
+          <div className="agenda-timeline-grid">
+            <div className="agenda-step-card">
+              <div className="agenda-step-badge">
+                <IconShield size={16} />
+                <span>{t('agenda_step1_time')}</span>
+              </div>
+              <h4>{t('agenda_step1_title')}</h4>
+              <p>{t('agenda_step1_desc')}</p>
+              <div className="agenda-metric-tag">
+                <IconCheckBadge size={13} />
+                <span>ASCE 7 & IBC 2024 Audit</span>
+              </div>
+            </div>
+
+            <div className="agenda-step-card">
+              <div className="agenda-step-badge">
+                <IconBIM size={16} />
+                <span>{t('agenda_step2_time')}</span>
+              </div>
+              <h4>{t('agenda_step2_title')}</h4>
+              <p>{t('agenda_step2_desc')}</p>
+              <div className="agenda-metric-tag">
+                <IconCheckBadge size={13} />
+                <span>Clash & Material Savings</span>
+              </div>
+            </div>
+
+            <div className="agenda-step-card">
+              <div className="agenda-step-badge">
+                <IconClock size={16} />
+                <span>{t('agenda_step3_time')}</span>
+              </div>
+              <h4>{t('agenda_step3_title')}</h4>
+              <p>{t('agenda_step3_desc')}</p>
+              <div className="agenda-metric-tag">
+                <IconCheckBadge size={13} />
+                <span>24-Hour Formal PDF Brief</span>
+              </div>
+            </div>
+          </div>
+
+          <div className="agenda-action-row">
+            <BookButton className="btn-primary agenda-cta-btn" subject="15-Minute Complimentary Diagnostic Session">
+              <span>{t('agenda_cta')}</span>
+              <IconArrow size={18} />
+            </BookButton>
+          </div>
         </div>
 
         {/* Client Hesitations Answered (4 Institutional Guarantees) */}

@@ -232,6 +232,39 @@ function Nav() {
   );
 }
 
+function FloatingDiagnosticPill() {
+  const book = useBook();
+  const { t } = useLang();
+  const [visible, setVisible] = useState(false);
+
+  useEffect(() => {
+    const handleScroll = () => {
+      setVisible(window.scrollY > 420);
+    };
+    window.addEventListener('scroll', handleScroll, { passive: true });
+    return () => window.removeEventListener('scroll', handleScroll);
+  }, []);
+
+  if (!visible) return null;
+
+  return (
+    <aside className="floating-diagnostic-bar" aria-label="15-Minute Diagnostic Consultation">
+      <button
+        type="button"
+        className="floating-diagnostic-btn"
+        onClick={() => book({ subject: '15-Minute Complimentary Diagnostic Session' })}
+      >
+        <span className="status-pulse-dot" />
+        <div className="floating-btn-text">
+          <b>{t('floating_diagnostic_btn')}</b>
+          <small>{t('floating_diagnostic_sub')}</small>
+        </div>
+        <IconArrow size={16} />
+      </button>
+    </aside>
+  );
+}
+
 export default function App() {
   const { t } = useLang();
   const year = new Date().getFullYear();
@@ -276,6 +309,7 @@ export default function App() {
         initialSubject={modalSubject}
         initialPhase={modalPhase}
       />
+      <FloatingDiagnosticPill />
       <main className="main-content">
         <Routes>
           <Route path="/" element={<Home />} />
