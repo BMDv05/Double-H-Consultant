@@ -1,20 +1,56 @@
 import { useEffect, useState } from 'react';
 import { useLang } from '../LangContext.jsx';
-import { Counter } from '../App.jsx';
-import Icon from '../Icon.jsx';
+import { Counter, BookButton } from '../App.jsx';
+
+const hideImg = (e) => {
+  e.currentTarget.style.display = 'none';
+};
 
 const DIVISIONS = [
-  { key: 'arch', icon: 'building' },
-  { key: 'bim', icon: 'cube' },
-  { key: 'civil', icon: 'bridge' },
-  { key: 'medical', icon: 'med' },
-  { key: 'law', icon: 'scale' },
-  { key: 'elec', icon: 'bolt' },
-  { key: 'mgmt', icon: 'chart' },
-  { key: 'bd', icon: 'ruler' },
+  { key: 'bim', img: '/div-bim.jpg' },
+  { key: 'arch', img: '/div-arch.jpg' },
+  { key: 'civil', img: '/div-civil.jpg' },
+  { key: 'medical', img: '/div-medical.jpg' },
+  { key: 'law', img: '/div-law.jpg' },
+  { key: 'elec', img: '/div-elec.jpg' },
+  { key: 'mgmt', img: '/div-mgmt.jpg' },
+  { key: 'bd', img: '/div-bd.jpg' },
+  { key: 'startup', img: '/div-startup.jpg' },
 ];
 
-export default function Home({ onBook }) {
+/* hero strip — brand division names (proper nouns, same in AR/EN) */
+const HERO_DIVS = [
+  'BIM',
+  'ARCHITECTURE',
+  'CIVIL ENGINEERING',
+  'MEDICAL · LAW',
+  'ELECTRICITY · MANAGEMENT',
+  'BD',
+  'STARTUPS',
+];
+
+const ABOUT_PHOTOS = [
+  '/pic-about-standards.jpg',
+  '/pic-about-experts.jpg',
+  '/pic-about-ontime.jpg',
+  '/pic-about-people.jpg',
+];
+const VALUE_PHOTOS = [
+  '/pic-value-integrity.jpg',
+  '/pic-value-excellence.jpg',
+  '/pic-value-fast.jpg',
+  '/pic-value-longterm.jpg',
+];
+const CERT_PHOTOS = {
+  pe: '/pic-cert-pe.jpg',
+  iso: '/pic-cert-iso.jpg',
+  leed: '/pic-cert-leed.jpg',
+  osha: '/pic-cert-osha.jpg',
+  pmp: '/pic-cert-pmp.jpg',
+  autodesk: '/pic-cert-autodesk.jpg',
+};
+
+export default function Home() {
   const { t } = useLang();
   const [certs, setCerts] = useState([]);
   const [company, setCompany] = useState(null);
@@ -34,24 +70,25 @@ export default function Home({ onBook }) {
     };
   }, []);
 
-  const stats = company?.stats || { years: 18, projects: 450, clients: 300, divisions: 8 };
+  const stats = company?.stats || { years: 18, projects: 450, clients: 300, divisions: 9 };
 
   return (
     <>
-      {/* ================= HERO (clean — no blobs, no grid) ================= */}
+      {/* ================= HERO — dark architectural panel ================= */}
       <div className="hero">
+        <div className="hero-bgarch" aria-hidden="true" />
         <div className="hero-inner" id="heroInner">
-          <div>
-            <span className="free-badge">
-              {t('hero_badge')}
-            </span>
+          <div className="hero-copy">
             <h1>{t('hero_title')}</h1>
             <p className="hero-sub">{t('hero_subtitle')}</p>
-            <p style={{ opacity: 0.85 }}>{t('hero_desc')}</p>
+            <p className="hero-desc">{t('hero_desc')}</p>
             <div className="hero-btns">
-              <button className="btn btn-primary" onClick={onBook}>
+              <BookButton to="/contact" className="btn-light">
+                {t('free_btn')}
+              </BookButton>
+              <a className="btn btn-ghost" href="#about">
                 {t('cta_primary')}
-              </button>
+              </a>
             </div>
             <div className="hero-stats">
               <div>
@@ -77,17 +114,24 @@ export default function Home({ onBook }) {
             </div>
           </div>
         </div>
+        <ul className="hero-divs" aria-label="Double H divisions">
+          {HERO_DIVS.map((name) => (
+            <li key={name}>
+              <span className="hero-div-name">Double H {name}</span>
+            </li>
+          ))}
+        </ul>
       </div>
 
       {/* ================= MARQUEE ================= */}
       <div className="marquee">
         <span>
-          Double H ARCHITECTURE — Double H CIVIL ENGINEERING — Double H MEDICAL — Double H LAW — Double H ELECTRICITY —
-          Double H MANAGEMENT — Double H BD —&nbsp;
+          Double H BIM — Double H ARCHITECTURE — Double H CIVIL ENGINEERING — Double H MEDICAL — Double H LAW — Double H
+          ELECTRICITY — Double H MANAGEMENT — Double H BD — Double H STARTUPS —&nbsp;
         </span>
         <span>
-          Double H ARCHITECTURE — Double H CIVIL ENGINEERING — Double H MEDICAL — Double H LAW — Double H ELECTRICITY —
-          Double H MANAGEMENT — Double H BD —&nbsp;
+          Double H BIM — Double H ARCHITECTURE — Double H CIVIL ENGINEERING — Double H MEDICAL — Double H LAW — Double H
+          ELECTRICITY — Double H MANAGEMENT — Double H BD — Double H STARTUPS —&nbsp;
         </span>
       </div>
 
@@ -102,21 +146,23 @@ export default function Home({ onBook }) {
           </div>
           <div className="about-points">
             {[
-              ['check', 'about_point_1', 'about_point_1d'],
-              ['users', 'about_point_2', 'about_point_2d'],
-              ['clock', 'about_point_3', 'about_point_3d'],
-              ['heart', 'about_point_4', 'about_point_4d'],
-            ].map(([icon, tk, dk], i) => (
-              <div className="point reveal" key={tk} style={{ '--d': `${i * 80}ms` }}>
-                <div className="icon-line">
-                  <Icon name={icon} size={22} />
+              ['about_point_1', 'about_point_1d'],
+              ['about_point_2', 'about_point_2d'],
+              ['about_point_3', 'about_point_3d'],
+              ['about_point_4', 'about_point_4d'],
+            ].map(([tk, dk], i) => {
+              return (
+                <div className="point reveal tilt" key={tk} style={{ '--d': `${i * 80}ms` }}>
+                  <div className="point-photo">
+                    <img src={ABOUT_PHOTOS[i]} alt="" loading="lazy" onError={hideImg} />
+                  </div>
+                  <div>
+                    <h3>{t(tk)}</h3>
+                    <p>{t(dk)}</p>
+                  </div>
                 </div>
-                <div>
-                  <h3>{t(tk)}</h3>
-                  <p>{t(dk)}</p>
-                </div>
-              </div>
-            ))}
+              );
+            })}
           </div>
         </div>
       </section>
@@ -126,7 +172,7 @@ export default function Home({ onBook }) {
         <div className="eyebrow">Double H</div>
         <h2>{t('certs_title')}</h2>
         <p className="section-lead">{t('certs_desc')}</p>
-        <div className="cards">
+        <div className="cert-list">
           {(certs.length
             ? certs
             : [
@@ -138,13 +184,14 @@ export default function Home({ onBook }) {
                 { id: 'autodesk', name: 'Autodesk Certified Professional', issuer: 'Autodesk — USA' },
               ]
           ).map((c, i) => (
-            <div className="card reveal" key={c.id} style={{ '--d': `${i * 70}ms` }}>
-              <div className="icon-line">
-                <Icon name="award" size={24} />
+            <div className="cert-row reveal" key={c.id} style={{ '--d': `${i * 70}ms` }}>
+              <div className="cert-photo">
+                <img src={CERT_PHOTOS[c.id]} alt="" loading="lazy" onError={hideImg} />
               </div>
-              <h3>{c.name}</h3>
-              <p>{c.issuer}</p>
-              <div className="pill">USA</div>
+              <div className="cert-text">
+                <h3>{c.name}</h3>
+                <p>{c.issuer}</p>
+              </div>
             </div>
           ))}
         </div>
@@ -155,21 +202,25 @@ export default function Home({ onBook }) {
         <div className="eyebrow">Double H</div>
         <h2>{t('values_title')}</h2>
         <p className="section-lead">{t('values_desc')}</p>
-        <div className="cards">
+        <div className="value-grid">
           {[
-            ['gem', 'value_1', 'value_1d'],
-            ['trophy', 'value_2', 'value_2d'],
-            ['target', 'value_3', 'value_3d'],
-            ['sprout', 'value_4', 'value_4d'],
-          ].map(([icon, tk, dk], i) => (
-            <div className="card reveal" key={tk} style={{ '--d': `${i * 80}ms` }}>
-              <div className="icon-line">
-                <Icon name={icon} size={24} />
+            ['value_1', 'value_1d'],
+            ['value_2', 'value_2d'],
+            ['value_3', 'value_3d'],
+            ['value_4', 'value_4d'],
+          ].map(([tk, dk], i) => {
+            return (
+              <div className="value-item reveal" key={tk} style={{ '--d': `${i * 80}ms` }}>
+                <span className="value-check" aria-hidden="true">
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round">
+                    <path d="M20 6 9 17l-5-5" />
+                  </svg>
+                </span>
+                <h3>{t(tk)}</h3>
+                <p>{t(dk)}</p>
               </div>
-              <h3>{t(tk)}</h3>
-              <p>{t(dk)}</p>
-            </div>
-          ))}
+            );
+          })}
         </div>
       </section>
 
@@ -178,33 +229,41 @@ export default function Home({ onBook }) {
         <div className="eyebrow">Double H</div>
         <h2>{t('div_title')}</h2>
         <p className="section-lead">{t('div_desc')}</p>
-        <div className="cards">
-          {DIVISIONS.map((d, i) => (
-            <div className="card reveal" key={d.key} style={{ '--d': `${i * 60}ms` }}>
-              <div className="icon-line">
-                <Icon name={d.icon} size={24} />
+        <div className="div-list">
+          {DIVISIONS.map((d, i) => {
+            return (
+              <div className="div-row reveal" key={d.key} style={{ '--d': `${i * 60}ms` }}>
+                <div className="div-photo">
+                  <img
+                    src={d.img}
+                    alt={t(`div_${d.key}`)}
+                    loading="lazy"
+                    onError={(e) => {
+                      e.currentTarget.style.display = 'none';
+                    }}
+                  />
+                </div>
+                <div className="div-body">
+                  <span className="div-index">{String(i + 1).padStart(2, '0')}</span>
+                  <h3>{t(`div_${d.key}`)}</h3>
+                  <p>{t(`div_${d.key}d`)}</p>
+                </div>
               </div>
-              <h3>{t(`div_${d.key}`)}</h3>
-              <p>{t(`div_${d.key}d`)}</p>
-              <div className="pill">Double H</div>
-            </div>
-          ))}
+            );
+          })}
         </div>
       </section>
 
       {/* ================= CTA ================= */}
       <section className="section">
         <div className="cta-band reveal">
-          <span className="free-badge small">
-            {t('consult_free_badge')}
-          </span>
+          <span className="free-pill">{t('free_badge')}</span>
           <h2>{t('cta_title')}</h2>
           <p>{t('cta_desc')}</p>
-          <div className="cta-actions">
-            <button className="btn btn-primary" onClick={onBook}>
-              {t('cta_primary')}
-            </button>
-          </div>
+          <BookButton to="/contact" className="btn-primary">
+            {t('cta_btn')}
+          </BookButton>
+          <div className="free-note">{t('free_note')}</div>
         </div>
       </section>
     </>
