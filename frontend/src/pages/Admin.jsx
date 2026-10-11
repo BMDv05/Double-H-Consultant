@@ -1,15 +1,19 @@
 import { useCallback, useEffect, useState } from 'react';
 import { useLang } from '../LangContext.jsx';
+import Modal from '../Modal.jsx';
+import { IconEye, IconTrash, IconRefresh, IconLogout } from '../icons.jsx';
 
 /* ---------- small helpers ---------- */
 const fmtDate = (s) => (s || '').slice(0, 16).replace('T', ' ');
+const text = (v) => String(v ?? '');
 
 export default function Admin() {
-  const { t, lang } = useLang();
+  const { t } = useLang();
   const [token, setToken] = useState(() => sessionStorage.getItem('dh-admin-token'));
   /* never prefill credentials — they would ship inside the public JS bundle */
   const [creds, setCreds] = useState({ email: '', password: '' });
   const [loginErr, setLoginErr] = useState('');
+  const [loginBusy, setLoginBusy] = useState(false);
   const [tab, setTab] = useState('messages');
   const [data, setData] = useState({ messages: [], stats: { total: 0, open: 0, processed: 0 } });
   const [audit, setAudit] = useState([]);
@@ -22,11 +26,12 @@ export default function Admin() {
   const [confirmDel, setConfirmDel] = useState(null);
   const [busy, setBusy] = useState(false);
 
-  const headers = token ? { 'Content-Type': 'application/json', Authorization: `Bearer ${token}` } : {};
-
   /* ---------------- data loading ---------------- */
   const load = useCallback(async () => {
     if (!token) return;
+    const headers = token
+      ? { 'Content-Type': 'application/json', Authorization: `Bearer ${token}` }
+      : {};
     try {
       const res = await fetch('/api/admin/messages', { headers });
       if (res.status === 401) {
@@ -42,29 +47,27 @@ export default function Admin() {
     } catch {
       setNetErr(t('admin_net'));
     }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [token]);
+  }, [token, t]);
 
   useEffect(() => {
     load();
   }, [load]);
 
-  /* close modals with Escape */
-  useEffect(() => {
-    const onKey = (e) => {
-      if (e.key === 'Escape') {
-        setDetail(null);
-        setConfirmDel(null);
-      }
-    };
-    addEventListener('keydown', onKey);
-    return () => removeEventListener('keydown', onKey);
-  }, []);
+  const authHeaders = token
+    ? { 'Content-Type': 'application/json', Authorization: `Bearer ${token}` }
+    : {};
+
+  const dropSession = () => {
+    sessionStorage.removeItem('dh-admin-token');
+    setToken(null);
+  };
 
   /* ---------------- auth ---------------- */
   const login = async (e) => {
     e.preventDefault();
+    if (loginBusy) return;
     setLoginErr('');
+    setLoginBusy(true);
     try {
       const res = await fetch('/api/admin/login', {
         method: 'POST',
@@ -84,17 +87,25 @@ export default function Admin() {
       setToken(body.token);
     } catch {
       setLoginErr(t('admin_net'));
+    } finally {
+      setLoginBusy(false);
     }
   };
 
   const logout = async () => {
     try {
-      await fetch('/api/admin/logout', { method: 'POST', headers });
+      await fetch('/api/admin/logout', { method: 'POST', headers: authHeaders });
     } catch {
       /* ignore */
     }
-    sessionStorage.removeItem('dh-admin-token');
-    setToken(null);
+    dropSession();
+    setData({ messages: [], stats: { total: 0, open: 0, processed: 0 } });
+    setAudit([]);
+    setQ('');
+    setStatus('');
+    setDetail(null);
+    setConfirmDel(null);
+    setNetErr('');
   };
 
   /* ---------------- request actions ---------------- */
@@ -102,10 +113,9 @@ export default function Admin() {
     setConfirmDel(null);
     setDetail('loading');
     try {
-      const res = await fetch(`/api/admin/messages/${id}`, { headers });
+      const res = await fetch(`/api/admin/messages/${id}`, { headers: authHeaders });
       if (res.status === 401) {
-        sessionStorage.removeItem('dh-admin-token');
-        setToken(null);
+        dropSession();
         setDetail(null);
         return;
       }
@@ -123,18 +133,18 @@ export default function Admin() {
     try {
       const res = await fetch(`/api/admin/messages/${id}`, {
         method: 'PATCH',
-        headers,
+        headers: authHeaders,
         body: JSON.stringify({ status: next }),
       });
       if (res.status === 401) {
-        sessionStorage.removeItem('dh-admin-token');
-        setToken(null);
+        dropSession();
         return;
       }
+      if (!res.ok) throw new Error();
       await load();
-      setDetail((d) => (d && d.id === id ? { ...d, status: next } : d));
+      setDetail((d) => (d && d !== 'loading' && d.id === id ? { ...d, status: next } : d));
     } catch {
-      setNetErr(t('admin_net'));
+      setNetErr(t('admin_op_fail'));
     } finally {
       setBusy(false);
     }
@@ -144,17 +154,16 @@ export default function Admin() {
     if (!confirmDel) return;
     setBusy(true);
     try {
-      const res = await fetch(`/api/admin/messages/${confirmDel.id}`, { method: 'DELETE', headers });
+      const res = await fetch(`/api/admin/messages/${confirmDel.id}`, { method: 'DELETE', headers: authHeaders });
       if (res.status === 401) {
-        sessionStorage.removeItem('dh-admin-token');
-        setToken(null);
+        dropSession();
         setConfirmDel(null);
         setDetail(null);
         return;
       }
       if (!res.ok) throw new Error();
       setConfirmDel(null);
-      setDetail((d) => (d && d.id === confirmDel.id ? null : d));
+      setDetail((d) => (d && d !== 'loading' && d.id === confirmDel.id ? null : d));
       await load();
     } catch {
       setNetErr(t('admin_del_fail'));
@@ -172,24 +181,30 @@ export default function Admin() {
         <div className="form-wrap login-box">
           <img className="login-logo" src="/logo-dark.png" alt="Double H" />
           <form onSubmit={login}>
-            <label>{t('admin_email')}</label>
+            <label htmlFor="admin-email">{t('admin_email')}</label>
             <input
+              id="admin-email"
               type="email"
               dir="ltr"
               autoComplete="username"
               value={creds.email}
               onChange={(e) => setCreds({ ...creds, email: e.target.value })}
+              disabled={loginBusy}
             />
-            <label>{t('admin_password')}</label>
+            <label htmlFor="admin-password">{t('admin_password')}</label>
             <input
+              id="admin-password"
               type="password"
               dir="ltr"
               autoComplete="current-password"
               value={creds.password}
               onChange={(e) => setCreds({ ...creds, password: e.target.value })}
+              disabled={loginBusy}
             />
-            <div className="err">{loginErr}</div>
-            <button className="btn btn-dark">{t('admin_login')}</button>
+            <div className="err" role="alert">{loginErr}</div>
+            <button className="btn btn-dark" disabled={loginBusy}>
+              {loginBusy ? t('form_sending') : t('admin_login')}
+            </button>
           </form>
         </div>
       </section>
@@ -199,7 +214,8 @@ export default function Admin() {
   /* ---------------- dashboard ---------------- */
   const filtered = data.messages.filter((m) => {
     const qq = q.trim().toLowerCase();
-    const matchQ = !qq || (m.name + ' ' + m.email + ' ' + m.subject + ' ' + m.message).toLowerCase().includes(qq);
+    const hay = text(m.name) + ' ' + text(m.email) + ' ' + text(m.subject) + ' ' + text(m.message);
+    const matchQ = !qq || hay.toLowerCase().includes(qq);
     const matchS = !status || m.status === status;
     return matchQ && matchS;
   });
@@ -211,7 +227,7 @@ export default function Admin() {
       <div className="eyebrow">{t('admin_restricted')}</div>
       <h2>{t('admin_title')}</h2>
       {netErr && (
-        <p className="notice" style={{ color: '#b42318' }}>
+        <p className="notice" style={{ color: 'var(--deep1)' }} role="alert">
           {netErr}
         </p>
       )}
@@ -225,10 +241,10 @@ export default function Admin() {
             {t('admin_audit')}
           </button>
           <button onClick={load}>
-            {t('admin_refresh')}
+            <IconRefresh size={15} /> {t('admin_refresh')}
           </button>
           <button onClick={logout}>
-            {t('admin_logout')}
+            <IconLogout size={15} /> {t('admin_logout')}
           </button>
         </div>
 
@@ -275,16 +291,16 @@ export default function Admin() {
                       filtered.map((m) => (
                         <tr key={m.id}>
                           <td>
-                            <b>{m.name}</b>
+                            <b>{text(m.name)}</b>
                             <br />
                             <small dir="ltr">
-                              {m.email} [{m.lang}]
+                              {text(m.email)} [{text(m.lang)}]
                             </small>
                           </td>
                           <td>
-                            {m.subject}
+                            {text(m.subject)}
                             <br />
-                            <small>{m.message.slice(0, 90)}…</small>
+                            <small>{text(m.message).slice(0, 90)}…</small>
                           </td>
                           <td>
                             <span className={`status st-${m.status === 'Processed' ? 'processed' : 'open'}`}>
@@ -297,7 +313,7 @@ export default function Admin() {
                           <td>
                             <div className="row-actions">
                               <button className="btn-mini" onClick={() => openDetail(m.id)}>
-                                {t('admin_view')}
+                                <IconEye size={13} /> {t('admin_view')}
                               </button>
                               <button
                                 className="btn-mini"
@@ -310,7 +326,7 @@ export default function Admin() {
                                 className="btn-mini danger"
                                 onClick={() => setConfirmDel(m)}
                               >
-                                {t('admin_delete')}
+                                <IconTrash size={13} /> {t('admin_delete')}
                               </button>
                             </div>
                           </td>
@@ -331,7 +347,7 @@ export default function Admin() {
                 <thead>
                   <tr>
                     <th>{t('admin_time')}</th>
-                    <th>{t('admin_email')}</th>
+                    <th>{t('admin_actor')}</th>
                     <th>{t('admin_action')}</th>
                   </tr>
                 </thead>
@@ -360,113 +376,121 @@ export default function Admin() {
         </div>
       </div>
 
-      {/* ================= DETAILS MODAL ================= */}
+      {/* ================= DETAILS MODAL (native dialog: focus trap + Esc) ================= */}
       {detail && (
-        <div className="modal-backdrop" onClick={() => setDetail(null)}>
-          <div className="modal" onClick={(e) => e.stopPropagation()} role="dialog" aria-modal="true">
-            <div className="modal-head">
-              <div>
-                <div className="modal-eyebrow">{t('admin_details')}</div>
-                <h3>{detail === 'loading' ? '…' : detail.subject}</h3>
-              </div>
-              <button className="modal-close" onClick={() => setDetail(null)} aria-label={t('admin_close')}>
-                ×
-              </button>
+        <Modal
+          onClose={() => setDetail(null)}
+          titleId="admin-detail-title"
+          descriptionId="admin-detail-desc"
+          busy={busy}
+        >
+          <div className="modal-head">
+            <div>
+              <div className="modal-eyebrow">{t('admin_details')}</div>
+              <h3 id="admin-detail-title">{detail === 'loading' ? '…' : text(detail.subject)}</h3>
             </div>
-
-            {detail === 'loading' ? (
-              <p className="section-lead">…</p>
-            ) : (
-              <>
-                <div className="meta-grid">
-                  <div className="meta-item">
-                    <b>{t('admin_client')}</b>
-                    {detail.name}
-                  </div>
-                  <div className="meta-item">
-                    <b>{t('admin_email')}</b>
-                    <span dir="ltr">{detail.email}</span>
-                  </div>
-                  <div className="meta-item">
-                    <b>{t('admin_lang')}</b>
-                    {(detail.lang || 'en').toUpperCase()}
-                  </div>
-                  <div className="meta-item">
-                    <b>{t('admin_created')}</b>
-                    {fmtDate(detail.created_at)}
-                  </div>
-                  <div className="meta-item">
-                    <b>{t('admin_status')}</b>
-                    <span className={`status st-${detail.status === 'Processed' ? 'processed' : 'open'}`}>
-                      {detail.status === 'Processed' ? t('admin_status_processed') : t('admin_status_open')}
-                    </span>
-                  </div>
-                </div>
-
-                <div className="modal-body">
-                  <b>{t('admin_body')}</b>
-                  <p>{detail.message}</p>
-                </div>
-
-                <div className="modal-actions">
-                  <button
-                    className="btn btn-dark"
-                    disabled={busy}
-                    onClick={() =>
-                      setStatusOf(
-                        detail.id,
-                        detail.status === 'Processed' ? 'Not Processed' : 'Processed'
-                      )
-                    }
-                  >
-                    {detail.status === 'Processed' ? t('admin_mark_open') : t('admin_mark_processed')}
-                  </button>
-                  <button
-                    className="btn btn-danger"
-                    onClick={() => setConfirmDel(detail)}
-                  >
-                    {t('admin_delete')}
-                  </button>
-                  <button className="btn btn-quiet" onClick={() => setDetail(null)}>
-                    {t('admin_close')}
-                  </button>
-                </div>
-              </>
-            )}
+            <button className="modal-close" onClick={() => setDetail(null)} aria-label={t('admin_close')}>
+              ×
+            </button>
           </div>
-        </div>
+
+          {detail === 'loading' ? (
+            <p className="section-lead">…</p>
+          ) : (
+            <>
+              <div className="meta-grid">
+                <div className="meta-item">
+                  <b>{t('admin_client')}</b>
+                  {text(detail.name)}
+                </div>
+                <div className="meta-item">
+                  <b>{t('admin_email')}</b>
+                  <span dir="ltr">{text(detail.email)}</span>
+                </div>
+                <div className="meta-item">
+                  <b>{t('admin_lang')}</b>
+                  {(text(detail.lang) || 'en').toUpperCase()}
+                </div>
+                <div className="meta-item">
+                  <b>{t('admin_created')}</b>
+                  {fmtDate(detail.created_at)}
+                </div>
+                <div className="meta-item">
+                  <b>{t('admin_status')}</b>
+                  <span className={`status st-${detail.status === 'Processed' ? 'processed' : 'open'}`}>
+                    {detail.status === 'Processed' ? t('admin_status_processed') : t('admin_status_open')}
+                  </span>
+                </div>
+              </div>
+
+              <div className="modal-body" id="admin-detail-desc">
+                <b>{t('admin_body')}</b>
+                <p>{text(detail.message)}</p>
+              </div>
+
+              <div className="modal-actions">
+                <button
+                  className="btn btn-dark"
+                  disabled={busy}
+                  onClick={() =>
+                    setStatusOf(
+                      detail.id,
+                      detail.status === 'Processed' ? 'Not Processed' : 'Processed'
+                    )
+                  }
+                >
+                  {detail.status === 'Processed' ? t('admin_mark_open') : t('admin_mark_processed')}
+                </button>
+                <button
+                  className="btn btn-danger"
+                  onClick={() => setConfirmDel(detail)}
+                >
+                  {t('admin_delete')}
+                </button>
+                <button className="btn btn-quiet" onClick={() => setDetail(null)}>
+                  {t('admin_close')}
+                </button>
+              </div>
+            </>
+          )}
+        </Modal>
       )}
 
       {/* ================= DELETE CONFIRM MODAL ================= */}
       {confirmDel && (
-        <div className="modal-backdrop top" onClick={() => setConfirmDel(null)}>
-          <div className="modal modal-sm" onClick={(e) => e.stopPropagation()} role="alertdialog" aria-modal="true">
-            <div className="modal-head">
-              <div>
-                <div className="modal-eyebrow danger">{t('admin_delete')}</div>
-                <h3>{t('admin_del_title')}</h3>
-              </div>
-              <button className="modal-close" onClick={() => setConfirmDel(null)} aria-label={t('admin_cancel')}>
-                ×
-              </button>
+        <Modal
+          small
+          alert
+          busy={busy}
+          onClose={() => setConfirmDel(null)}
+          titleId="admin-del-title"
+          descriptionId="admin-del-desc"
+        >
+          <div className="modal-head">
+            <div>
+              <div className="modal-eyebrow danger">{t('admin_delete')}</div>
+              <h3 id="admin-del-title">{t('admin_del_title')}</h3>
             </div>
-            <p className="section-lead">{t('admin_del_desc')}</p>
-            <div className="del-preview">
-              <b>{confirmDel.subject}</b>
-              <small dir="ltr">
-                {confirmDel.name} · {confirmDel.email}
-              </small>
-            </div>
-            <div className="modal-actions">
-              <button className="btn btn-danger" disabled={busy} onClick={doDelete}>
-                {t('admin_confirm_delete')}
-              </button>
-              <button className="btn btn-quiet" onClick={() => setConfirmDel(null)}>
-                {t('admin_cancel')}
-              </button>
-            </div>
+            <button className="modal-close" onClick={() => setConfirmDel(null)} aria-label={t('admin_cancel')}>
+              ×
+            </button>
           </div>
-        </div>
+          <p className="section-lead" id="admin-del-desc">{t('admin_del_desc')}</p>
+          <div className="del-preview">
+            <b>{text(confirmDel.subject)}</b>
+            <small dir="ltr">
+              {text(confirmDel.name)} · {text(confirmDel.email)}
+            </small>
+          </div>
+          <div className="modal-actions">
+            <button className="btn btn-danger" disabled={busy} onClick={doDelete}>
+              {t('admin_confirm_delete')}
+            </button>
+            <button className="btn btn-quiet" onClick={() => setConfirmDel(null)}>
+              {t('admin_cancel')}
+            </button>
+          </div>
+        </Modal>
       )}
     </section>
   );

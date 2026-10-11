@@ -1,291 +1,142 @@
-# Double H Consulting — Project Documentation
+# Double H Consulting — Technical Documentation
 
-> **ملخص بالعربية:** موقع شركة Double H Consulting مبني بـ React (الواجهة) و Express مع قاعدة بيانات SQLite (الخادم).
-> الصفحة الرئيسية تعرّف بالشركة وشهاداتها الأمريكية وأقسامها التسعة، وأزرار «احجز مكالمتك المجانية» تنقل الزائر إلى صفحة التواصل.
-> رسائل نموذج التواصل تُحفظ في قاعدة البيانات وتظهر في لوحة الإدارة. اللغتان **English / العربية** فقط مع دعم RTL.
-> لوحة الإدارة مخفية: تُفتح بكتابة `/admin` في شريط العنوان (لا يوجد رابط لها في الموقع).
+This guide describes the current application in this repository. For the short setup path, see [README.md](README.md).
 
-This file is the full reference for the current version. `README.md` has the quick start.
+## 1. Architecture
 
----
+The project is a React single-page website backed by an Express JSON API. In production, Express serves the Vite build and API routes from the same origin. SQLite stores contact inquiries, administrator records, and audit events. The earlier vanilla JavaScript and ASP.NET implementation under `legacy/` is reference-only and is not served by this app.
 
-## 1. Overview
+| Layer | Technology |
+| --- | --- |
+| Frontend | React 19, Vite 6, React Router 6 `HashRouter` |
+| Backend | Node.js 24, Express 5 |
+| Persistence | SQLite with built-in `node:sqlite` |
+| Languages | English and Arabic; Arabic layout is RTL |
+| Production server | Express serves `frontend/dist` plus `/api` (default port `3001`) |
 
-| Layer      | Technology |
-|------------|------------|
-| Frontend   | React 19 · Vite 6 · react-router-dom 6 (**HashRouter**) · lucide-react icons |
-| Backend    | Node.js 24 · Express 5 |
-| Database   | **SQLite** via Node's built-in `node:sqlite` (no native modules) |
-| Languages  | English + Arabic (RTL) |
-| Deployment | Express serves the built site and the API from one origin (`:3001`) |
+## 2. Source tree
 
-The original vanilla-HTML + ASP.NET version is kept under `legacy/` for reference only.
-Nothing in the current app depends on it.
-
----
-
-## 2. Project Structure
-
-```
-Double-H-Consultant/
-├── frontend/                  → React app (Vite)
-│   ├── index.html             → meta tags, Google Fonts, favicon (/logo-dark.png)
-│   ├── vite.config.js         → dev server :5173, proxies /api → :3001
-│   ├── public/
-│   │   ├── logo-dark.png      → wordmark used in the nav and as the favicon
-│   │   └── logo-light.png     → white wordmark (currently unused)
-│   └── src/
-│       ├── main.jsx           → entry: moves typed paths into the hash route, HashRouter + LangProvider
-│       ├── App.jsx            → nav, language switch, scroll effects, counters, routes, footer
-│       ├── LangContext.jsx    → language state, <html lang/dir>, page title, localStorage 'dh-lang'
-│       ├── i18n.js            → EN + AR dictionaries (a missing key falls back to English)
-│       ├── icons.jsx          → lucide-react icons with one shared size and stroke
-│       ├── Modal.jsx          → native <dialog> wrapper used by the admin page
-│       ├── styles.css         → brand theme, layout, animations, RTL rules
-│       └── pages/
-│           ├── Home.jsx       → company, free-call offer, about, certificates, values, divisions, CTA
-│           ├── Contact.jsx    → contact cards + inquiry form
-│           └── Admin.jsx      → hidden dashboard: messages + audit log
-├── server/                    → Express API
-│   ├── index.js               → routes, rate limits, sessions, error handler, serves frontend/dist
-│   ├── db.js                  → SQLite schema + status migration, admin seed, queries, audit log
-│   └── data/doubleh.db        → created on first run (git-ignored)
-├── legacy/                    → old vanilla + .NET files (reference only)
-├── start-site.bat             → one-click Windows launcher
-├── README.md                  → quick start + API summary
-└── DOCUMENTATION.md           → this file
+```text
+frontend/
+  index.html                  Metadata, Google Fonts, favicon and app entry
+  vite.config.js              Vite development port/proxy and build configuration
+  public/                     Brand logos, photos and scroll-motion helper
+  src/
+    main.jsx                  React entry, HashRouter, language provider, typed-path redirect
+    App.jsx                   Navigation, intro, scroll effects, routes, counters and footer
+    LangContext.jsx           Language state, document lang/dir/title and persistence
+    i18n.js                   English and Arabic translation dictionaries
+    icons.jsx                 Shared SVG icons
+    Modal.jsx                 Native dialog wrapper used by admin dialogs
+    DivisionCarousel.jsx      Division showcase and carousel interactions
+    WorldDots.jsx             Decorative world map/dot visual
+    pages/Home.jsx            Hero, about, certificates, values and divisions
+    pages/Contact.jsx         Contact details and inquiry form
+    pages/Admin.jsx           Login, inquiry dashboard and audit log
+    styles.css                Palette, layouts, responsive rules, animation and RTL
+server/
+  index.js                    API routes, rate limits, sessions, headers and static hosting
+  db.js                       SQLite schema, migrations, admin seed, queries and audit log
+  data/doubleh.db             Created automatically at runtime; ignored by Git
+legacy/                       Archived implementation; not used by the current server
+start-site.bat                Windows dependency/build/start helper
+README.md                     Quick start and API overview
+DOCUMENTATION.md              This guide
 ```
 
----
+## 3. Frontend behavior
 
-## 3. Pages & Routes
+### Routes and navigation
 
-Routing is **hash-based** (`#/…`), so the app also works on static hosts without rewrite rules.
+The application uses hash-based routing, so page navigation is held after `#` and does not need server rewrite rules.
 
-| Route       | Page    | How visitors reach it |
-|-------------|---------|-----------------------|
-| `#/`        | Home    | Logo, "Home" nav link. Unknown routes also show Home. |
-| `#/contact` | Contact | Every "Claim My Free Call" button. There is no Contact nav link. |
-| `#/admin`   | Admin   | **Hidden.** No link anywhere in the UI. |
+| Route | Page |
+| --- | --- |
+| `#/` | Home |
+| `#/contact` | Contact form and company contact details |
+| `#/admin` | Hidden admin dashboard; no public navigation link |
+| `#/en/...`, `#/ar/...` | Language-prefixed routes; URL and EN/AR switch stay synchronized |
 
-### Typed paths
-The server returns `index.html` for every non-`/api` path. Before React starts, `main.jsx` moves a
-typed path into the hash: `/admin` → `#/admin`, `/admin/` → `#/admin`, `/contact` → `#/contact`.
-The Vite dev server behaves the same way.
+Unknown app routes render Home. `frontend/src/main.jsx` moves typed paths such as `/admin`, `/contact`, and `/en/contact` into the hash on startup. The header links to Home, About, and Certificates; About/Certificates scroll to home page sections. Free-call buttons navigate to Contact. The compact navigation closes on route changes, Escape, or an outside click.
 
-### Navigation
-* Nav: logo, **Home**, **About** and **Certificates** (the last two scroll to their Home section), EN / AR switch.
-* On small screens the links collapse into a burger menu. Esc, an outside click or a route change closes it.
-* Footer: company name, a short description and the copyright line.
+### Home page
 
----
+The home page has a company hero with a full-width collaboration photo, headline and statistics, a free-call CTA, about section, six certificates, company values, a nine-division carousel, and closing CTA. Company information/statistics and certificates load from the public API; the page has local fallback certificate/stat values when requests fail. The division imagery and certificate/about/value photographs are under `frontend/public/`.
 
-## 4. Home Page
+### Contact form
 
-1. **Hero**: "First Call FREE — No Commitment" badge, title, subtitle, description, then
-   **Claim My Free Call** (→ Contact) and **Discover our story** (→ About).
-   Below them are four animated counters (years, projects, clients, divisions) read from `GET /api/company`.
-   A side card lists the Double H divisions.
-2. **Free-call offer**: a card repeating the offer, with a button to the Contact page.
-3. **Marquee**: scrolling ticker of division names (decorative, hidden from screen readers).
-4. **About**: two paragraphs and four points (American standards, senior experts, on-time and on-budget, people first).
-5. **American certificates**: six rows from `GET /api/certificates`, with loading, error and empty states.
-6. **Values**: four numbered values.
-7. **Divisions**: nine numbered rows (BIM, Architecture, Civil, Medical, Law, Electricity, Management, BD, Startups).
-8. **CTA band**: the free-call offer again, with a button to the Contact page.
+The contact page reads the email, phone, and address from `GET /api/company`. It collects name, email, subject, message, and language. Client validation identifies the first invalid field, the message has a live length counter, and a hidden honeypot blocks bot submissions. The browser keeps a rolling submission guard in `localStorage['dh-rl-contact']`; the server independently limits requests by IP. Requests have a 15-second timeout and show server/network errors; the typed data is retained when a submission fails.
 
-Certificate names and the hero-card division list come from English data and are not translated.
+### Admin dashboard
 
----
+The dashboard supports authentication, message totals, search/status filtering, full message details, processing status changes, delete confirmation, and an audit tab. The browser stores the bearer token in `sessionStorage['dh-admin-token']`. Tokens expire after eight hours and are held in server memory, so restarting the server signs admins out. Admin API calls without a valid token receive `401`.
 
-## 5. Contact Page
+## 4. Internationalization and visual system
 
-* Four info cards (email, phone, hours, location). Email, phone and address come from `GET /api/company`.
-* The form has name, email, subject and message (10–3000 characters, with a live counter). All fields are required.
-* Client-side checks: field validation with inline errors and focus on the first invalid field,
-  a hidden honeypot field, a 5-per-10-minutes limit stored in `localStorage['dh-rl-contact']`,
-  a 15-second request timeout, and no double submissions.
-* The typed input is kept if sending fails. On success a confirmation box replaces the form.
-* `POST /api/contact` stores the message with status `Not Processed` and the visitor's current language.
+`frontend/src/i18n.js` contains the EN and AR dictionaries; an unknown translation key falls back to English. `LangContext.jsx` persists language in `localStorage['dh-lang']`, updates `<html lang>` and `<html dir>`, and sets a language-specific page title. Arabic uses RTL layout rules in the stylesheet.
 
----
+The brand palette is `#12393a`, `#134c4b`, `#e6ecec`, `#46766f`, and `#161919`. Cairo is used for headings and Arabic; Poppins is used for body text. Shared visual behavior includes scroll progress, reveal-on-scroll, animated statistics, intro/page transitions, carousel movement, and pointer/scroll effects from `frontend/public/scroll-motion.js`. The code respects `prefers-reduced-motion` in its page transitions, counters, and smooth scrolling; keep this support when changing animation behavior.
 
-## 6. Admin Dashboard
+## 5. API reference
 
-Open `/admin` (or `#/admin`) and sign in.
+Routes live in `server/index.js`. JSON request bodies are limited to 50 KB. Except for the public login endpoint, admin endpoints require `Authorization: Bearer <token>`.
 
-### Login and session
-* `POST /api/admin/login` checks the PBKDF2 hash and returns a bearer token valid for **8 hours**.
-* The token is kept in `sessionStorage['dh-admin-token']`, so closing the tab signs the admin out.
-* Sessions live in server memory, so **restarting the server signs every admin out**.
-* Any `401` response sends the dashboard back to the login form.
+| Method | Path | Request | Result |
+| --- | --- | --- | --- |
+| `GET` | `/api/health` | — | `{ status, time }` |
+| `GET` | `/api/company` | — | Company name, tagline, contact values and statistics |
+| `GET` | `/api/certificates` | — | Array of certificate records (`id`, `name`, `issuer`, `year`) |
+| `POST` | `/api/contact` | `{ name, email, subject, message, lang, honeypot }` | `201 { ok, id }` when stored; honeypot submissions are silently accepted |
+| `POST` | `/api/admin/login` | `{ email, password }` | `{ token, name, email }` |
+| `POST` | `/api/admin/logout` | Bearer token | Invalidates token and returns `{ ok: true }` |
+| `GET` | `/api/admin/messages` | Optional `?q=` and `?status=` | `{ messages, stats }`, up to 500 newest-first records |
+| `GET` | `/api/admin/messages/:id` | Numeric message id | `{ message }` |
+| `PATCH` | `/api/admin/messages/:id` | `{ status: "Not Processed" \| "Processed" }` | Updates status and creates an audit event |
+| `DELETE` | `/api/admin/messages/:id` | Numeric message id | Deletes the record and creates an audit event |
+| `GET` | `/api/admin/audit` | — | `{ audit }`, up to 50 newest events |
 
-### Messages tab
-* KPIs: **Total**, **Not Processed** and **Processed**.
-* Status filter and text search over name, email, subject and message. Both filter instantly in the browser.
-* Row actions: **view details**, **mark Processed / Not Processed** (both directions) and **delete**.
-* The details modal shows the client's name, email, language, received date, status and full message,
-  and has the same status and delete actions.
-* Delete always opens a confirmation dialog that previews the message. Only "Yes, delete" removes it.
-  Esc, the backdrop and Cancel all abort.
+### Validation and limits
 
-### Audit log tab
-The last 50 entries: logins, logouts, status changes, deletions and new public messages.
-Opening a message's details is not logged.
+- Contact name: 2–120 characters; email: valid pattern and at most 254 characters; subject: 2–200 characters; message: 10–3000 characters.
+- Contact is limited to 5 requests per IP in 10 minutes. Admin login is limited to 10 requests per IP in 15 minutes.
+- Login errors use the same generic response for an unknown email or incorrect password. Empty credentials are rejected before PBKDF2 verification.
+- Common response codes: `400` invalid request/validation, `401` missing or invalid admin token or credentials, `404` unknown message, `413` body exceeds the JSON limit, `429` rate limit, `500` unexpected server error.
+- Unknown `/api/*` paths return JSON `404`.
+- `X-Powered-By` is disabled. The server sets CSP, MIME sniffing/frame/referrer/permissions policies, cross-origin isolation headers, and HSTS when the request is secure.
 
-### Credentials
-The first run seeds a demo admin, `admin@doubleh.com` / `Admin123!`, unless `ADMIN_EMAIL` /
-`ADMIN_PASSWORD` are set. See §11 before deploying.
+## 6. Database and admin setup
 
----
+The server creates `server/data/doubleh.db` on startup, enables SQLite WAL mode, and uses a 5-second busy timeout.
 
-## 7. API
+| Table | Data |
+| --- | --- |
+| `messages` | Contact fields, language, status and creation time |
+| `admins` | Unique email, display name, salted password hash and login timestamps |
+| `audit_logs` | Actor, action, entity, entity id and creation time |
 
-All responses are JSON. Errors return `{ "error": "message" }`.
+Message status is constrained to `Not Processed` or `Processed`; startup migrates the earlier `New`/`Handled` schema. Indexes support status and date queries. Database operations use parameterized SQL. Admin passwords are stored as PBKDF2-SHA256 hashes with per-user salts; unknown-account logins perform a dummy hash and comparisons are constant-time.
 
-| Method | Endpoint | Auth | Purpose |
-|--------|----------|------|---------|
-| GET    | `/api/health` | — | health check |
-| GET    | `/api/company` | — | name, tagline, email, phone, address, stats |
-| GET    | `/api/certificates` | — | the six American certificates |
-| POST   | `/api/contact` | — | save a contact message (rate-limited) |
-| POST   | `/api/admin/login` | — | `{email, password}` → `{token, name, email}` (rate-limited) |
-| POST   | `/api/admin/logout` | Bearer | invalidate the token |
-| GET    | `/api/admin/messages` | Bearer | newest-first list (max 500) + stats; supports `?q=` and `?status=` |
-| GET    | `/api/admin/messages/:id` | Bearer | one message with full details |
-| PATCH  | `/api/admin/messages/:id` | Bearer | `{status}`: `Not Processed` or `Processed` |
-| DELETE | `/api/admin/messages/:id` | Bearer | delete a message |
-| GET    | `/api/admin/audit` | Bearer | last 50 audit entries |
+On an empty database, `ADMIN_EMAIL` selects the seeded account. `ADMIN_PASSWORD` is used when supplied. Otherwise development seeds `Admin123!`; production generates a random password and prints it once to the server console. Seed environment values only create an admin if that email does not already exist; changing them does not update an existing row.
 
-### Status codes
-| Code | When |
-|------|------|
-| 400 | Failed validation, or a request body that isn't valid JSON |
-| 401 | Missing, invalid or expired admin token; wrong login |
-| 404 | Message id not found |
-| 413 | Request body over 50 KB |
-| 429 | Rate limit hit: contact 5 per 10 min per IP, login 10 per 15 min per IP |
-| 500 | Unexpected server error (the details go to the server console only) |
+## 7. Configuration and run modes
 
-The company details and the certificate list are hard-coded in `server/index.js`.
-The phone number (`+1 (555) 000-0000`) and address are **placeholders** to replace.
-
----
-
-## 8. Database (SQLite)
-
-Created automatically at `server/data/doubleh.db` by `server/db.js`.
-
-| Table        | Columns |
-|--------------|---------|
-| `messages`   | name, email, subject, message, lang, status (`Not Processed` / `Processed`, enforced by `CHECK`), created_at |
-| `admins`     | name, email (unique), password_hash, salt, created_at, last_login_at |
-| `audit_logs` | actor, action, entity, entity_id, created_at |
-
-Indexes: `messages(status)` and `messages(created_at)`.
-
-**Migration:** databases from the earlier version stored `New` / `Handled`. On startup these are
-rebuilt once into `Not Processed` / `Processed`. Older databases may also still contain a
-`consultations` table from the removed booking flow. The current code never reads it.
-
-**Passwords:** PBKDF2-SHA256, 100,000 iterations, 64-byte key, random 16-byte salt per admin,
-compared in constant time.
-
----
-
-## 9. Internationalization (EN / AR)
-
-* Only English and Arabic exist. `i18n.js` holds one dictionary per language.
-* The nav switch is a 120 × 52 px toggle with a sliding highlight. Its order stays EN | AR in RTL.
-* Arabic sets `<html dir="rtl" lang="ar">` and an Arabic page title. Layout flips through CSS logical
-  properties plus a few `[dir='rtl']` rules (nav underline, arrow icons, form fields).
-* The choice persists in `localStorage['dh-lang']`.
-* Contact messages store the language used, and admins see it in the table and the details modal.
-
----
-
-## 10. Branding, Motion & Accessibility
-
-| Item | Value |
-|------|-------|
-| Palette | `#12393a` (deep1) · `#134c4b` (deep2) · `#e6ecec` (mist) · `#46766f` (sage) · `#161919` (ink), plus transparent blends |
-| Fonts | **Cairo** (headings / Arabic) · **Poppins** (body), from Google Fonts |
-| Logo | Double H wordmark, `frontend/public/logo-dark.png` (nav + favicon) |
-| Icons | lucide-react, one family, wrapped in `icons.jsx` |
-
-**Motion**
-* A slim scroll-progress bar at the top of the page.
-* The nav gains a shadow after 24 px of scroll.
-* Section headings, cards and rows fade in as they enter the view, staggered per group with the `--d` CSS variable.
-  Content fetched later (the certificates) is picked up automatically.
-* Hero entrance, page-change transition, marquee ticker, modal open animation and number counters.
-* `prefers-reduced-motion: reduce` turns all of this off and shows the final counter values immediately.
-
-**Accessibility**
-* A skip link, focus moved to the main content on route change, and focusable section targets for the About and Certificates links.
-* Labelled form fields with inline errors linked through `aria-describedby`.
-* The admin modals use the native `<dialog>`, which traps focus and returns it to the button that opened it.
-
----
-
-## 11. Running the Project
-
-### One click (Windows)
-Double-click **`start-site.bat`**. It checks for Node.js, runs `npm install` and builds the frontend
-**only on the first run**, then starts the server and opens `http://localhost:3001/#/`.
-After editing anything in `frontend/src`, rebuild before restarting (see below).
-
-### Production (single server)
-```powershell
-npm.cmd --prefix frontend run build   # → frontend/dist
-npm.cmd --prefix server start         # → http://localhost:3001 (site + API)
-```
-
-### Development (two processes)
-```powershell
-npm.cmd --prefix server run dev       # API on :3001, restarts on change
-npm.cmd --prefix frontend run dev     # Vite on :5173, proxies /api → :3001
-```
-Open `http://localhost:5173/#/`.
-
-### Environment variables
 | Variable | Default | Purpose |
-|----------|---------|---------|
-| `PORT` | `3001` | server port |
-| `ADMIN_EMAIL` | `admin@doubleh.com` | admin seeded on startup if that email isn't in the database yet |
-| `ADMIN_PASSWORD` | `Admin123!` | password for that seeded admin |
+| --- | --- | --- |
+| `PORT` | `3001` | Express listening port and production site port |
+| `ADMIN_EMAIL` | `admin@doubleh.com` | Email for a newly seeded admin |
+| `ADMIN_PASSWORD` | Development demo password; generated in production when empty | Password for a newly seeded admin |
+| `NODE_ENV` | `development` when unset | Enables production seed behavior when set to `production` |
+| `TRUST_PROXY` | `0` | Number of trusted proxies for `req.ip` behind a reverse proxy |
 
-⚠️ The seed only **adds** an admin. If the demo `admin@doubleh.com` account already exists, setting new
-variables leaves it in place with the demo password. For production, either start with a fresh
-database with the variables set, or delete the demo row from `admins`.
+For two-process development, run `npm.cmd --prefix server run dev` and `npm.cmd --prefix frontend run dev` in separate PowerShell terminals. Vite listens on port `5173` and proxies `/api` to port `3001`.
 
-### Notes for this machine
-* Use **`npm.cmd`** in PowerShell (the execution policy blocks `npm.ps1`).
-* The `esbuild` postinstall script is allowed in `frontend/package.json` (`allowScripts`).
+For a production-style local run, build with `npm.cmd --prefix frontend run build`, then start the backend with `npm.cmd --prefix server start`. Express serves the output in `frontend/dist`. The Windows `start-site.bat` helper performs dependency installation and only builds when that output is absent; rebuild manually after frontend edits.
 
----
+## 8. Production operations
 
-## 12. Production Checklist
-
-- [ ] Replace the demo admin (see §11) and the placeholder phone and address in `server/index.js`
-- [ ] Serve over HTTPS behind a reverse proxy, and set Express `trust proxy` so rate limits see real client IPs
-- [ ] Move sessions and rate limits to a shared store if running more than one instance
-- [ ] Back up `server/data/doubleh.db` daily
-- [ ] Add automated tests (API + end-to-end)
-
----
-
-## 13. Verification Log (2026-10-05)
-
-| Check | Result |
-|-------|--------|
-| `vite build` | ✅ no errors (main bundle 312 KB, 97 KB gzipped) |
-| Browser console on Home / Contact / Admin | ✅ no errors or warnings |
-| Certificates and divisions render | ✅ 6 and 9 |
-| Typing `/admin`, `/admin/`, `/contact` | ✅ redirects to `#/admin` (login form), `#/admin`, `#/contact` (form) |
-| Launcher URL `#/` | ✅ Home, with the "Home" nav link active |
-| EN → AR switch | ✅ `dir=rtl`, Arabic title and nav; switching back restores English |
-| Phone width (375 px), Arabic | ✅ no horizontal overflow |
-| Malformed JSON / 60 KB body to `/api/contact` | ✅ `400` / `413` (previously `500`) |
-| Admin API without a token | ✅ `401` |
-| Every translation key used by the UI exists in both EN and AR | ✅ |
+- Set production admin credentials before the first database initialization. If an account already exists, update it through a controlled database/admin process or use a fresh database; environment variables do not rotate existing credentials.
+- Replace placeholder phone/address values in `server/index.js` before publishing the contact details.
+- Serve over HTTPS. When behind a reverse proxy, set `TRUST_PROXY` to the number of trusted proxy hops so IP-based limits use the client address.
+- Back up `server/data/doubleh.db` regularly and keep it outside Git.
+- Sessions and rate-limit buckets are in process memory. A restart clears both, and multiple application instances do not share state; use shared storage before scaling horizontally.
+- Do not deploy `legacy/`; it contains a separate, older implementation and does not use the current backend authentication.

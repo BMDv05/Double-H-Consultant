@@ -46,6 +46,13 @@ db.exec(`
   CREATE INDEX IF NOT EXISTS idx_messages_created ON messages(created_at);
 `);
 
+/* writes are single-process here, but guard against SQLITE_BUSY on overlap */
+try {
+  db.exec(`PRAGMA journal_mode = WAL; PRAGMA busy_timeout = 5000;`);
+} catch {
+  /* in-memory / read-only mounts: keep defaults */
+}
+
 /* ---------------- status migration: New/Handled → Not Processed/Processed ----------------
    Old databases carry CHECK (status IN ('New','Handled')). Rebuild once. */
 const msgSchema = db
@@ -116,22 +123,20 @@ if (!existingAdmin) {
   }
 }
 
-/* dummy hash used to equalise timing when an email does not exist */
+/* dummy salt used to equalise timing when an email does not exist */
 const DUMMY_SALT = crypto.randomBytes(16).toString('hex');
-const DUMMY_HASH = hashPassword(crypto.randomBytes(24).toString('base64url'), DUMMY_SALT);
 
 /* ---------------- queries ---------------- */
 export function verifyAdmin(email, password) {
   const row = db.prepare('SELECT * FROM admins WHERE email = ?').get(String(email || '').toLowerCase().trim());
   if (!row) {
     /* burn the same PBKDF2 work so response time does not reveal whether the account exists */
-    crypto.timingSafeEqual(Buffer.from(DUMMY_HASH, 'utf8'), Buffer.from(DUMMY_HASH, 'utf8'));
     hashPassword(String(password || ''), DUMMY_SALT);
     return null;
   }
   const candidate = hashPassword(String(password || ''), row.salt);
-  const a = Buffer.from(candidate, 'utf8');
-  const b = Buffer.from(row.password_hash, 'utf8');
+  const a = Buffer.from(candidate, 'hex');
+  const b = Buffer.from(row.password_hash, 'hex');
   if (a.length !== b.length || !crypto.timingSafeEqual(a, b)) return null;
   db.prepare('UPDATE admins SET last_login_at = datetime(\'now\') WHERE id = ?').run(row.id);
   return { id: row.id, name: row.name, email: row.email };
@@ -154,7 +159,7 @@ export function listMessages({ status = '', q = '' } = {}) {
     where.push(`(name LIKE ? ESCAPE '\\' OR email LIKE ? ESCAPE '\\' OR subject LIKE ? ESCAPE '\\' OR message LIKE ? ESCAPE '\\')`);
     params.push(like, like, like, like);
   }
-  const sql = `SELECT * FROM messages ${where.length ? 'WHERE ' + where.join(' AND ') : ''} ORDER BY datetime(created_at) DESC LIMIT 500`;
+  const sql = `SELECT * FROM messages ${where.length ? 'WHERE ' + where.join(' AND ') : ''} ORDER BY datetime(created_at) DESC, id DESC LIMIT 500`;
   return db.prepare(sql).all(...params);
 }
 

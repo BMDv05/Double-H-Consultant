@@ -1,125 +1,114 @@
-# Double H Consulting — React Full-Stack Platform
+# Double H Consulting
 
-Corporate site rebuilt with **React 19 + Vite** frontend and **Node.js + Express + SQLite** backend.
-The consultation booking flow has been removed — the **Home page now presents the company**, its
-**American certificates**, and a positive description of the firm. 4 languages (AR/TR/EN/FR, RTL-ready).
+Responsive company website for Double H Consulting, built with React and Vite and served with an Express API. The API stores contact inquiries and admin audit events in SQLite. The old vanilla and ASP.NET implementation remains under `legacy/` for reference; it is not part of the current runtime.
 
-## What's new vs the old build
-| | Old (legacy) | New (current) |
-|---|---|---|
-| Frontend | Vanilla HTML/CSS/JS | **React 19 + Vite** (`frontend/`) |
-| Backend | ASP.NET Core 6 | **Node.js + Express** (`server/`) |
-| Database | SQL Server schema | **SQLite** via built-in `node:sqlite` (`server/data/doubleh.db`) |
-| Pages | Home, Categories, Request, Consultants, Contact, Admin | **Home (company + certificates), Contact, Admin** |
-| Consultation flow | ✅ present | ❌ removed (per requirements) |
+## Stack
 
-## Run it (development — two terminals)
+- React 19, Vite 6, React Router 6 (`HashRouter`)
+- Node.js 24, Express 5
+- SQLite through Node's built-in `node:sqlite`
+- English and Arabic, including RTL layout
 
-```powershell
-# 1) API  → http://localhost:3001
-cd server
-npm install
-npm run dev
+## Requirements
 
-# 2) React → http://localhost:5173  (proxies /api to :3001)
-cd frontend
-npm install
-npm run dev
-```
-Open **http://localhost:5173/#/en/home**
+- Node.js 24 or later
+- npm
 
-## Run it (production — single port)
+## Start the site
+
+### Windows launcher
+
+Run `start-site.bat`. It installs missing dependencies, builds the frontend if its production output is missing, opens `http://localhost:3001`, and starts the Express server. Keep the terminal open while using the site. Rebuild the frontend after changing its source files.
+
+### Development mode
+
+Start the API in one PowerShell terminal:
 
 ```powershell
-cd frontend && npm run build     # → frontend/dist
-cd ../server && npm start        # → http://localhost:3001 (serves the React build + API)
+npm.cmd --prefix server install
+npm.cmd --prefix server run dev
 ```
 
-## Home page content
-- **Hero** — company intro, animated stats (18+ years, 450+ projects, 300+ clients, 8 divisions)
-- **About** — positive description of Double H Consulting (integrity, senior experts, on-time delivery, people-first)
-- **American certificates** — PE, ISO 9001, LEED AP, OSHA, PMP, Autodesk Certified Professional (from `GET /api/certificates`)
-- **Values** — "Positive by design" section
-- **Divisions** — Architecture / Civil / BIM / Medical / Law / Electricity / Management / BD
-- **CTA** → Contact page
+Start Vite in another:
 
-## Pages & routes (HashRouter)
-- `#/en/home` — company presentation (also `ar`, `tr`, `fr`; `ar` switches `dir="rtl"` automatically)
-- `#/en/contact` — contact info + inquiry form (validated, honeypot, rate-limited 5/10 min)
-- `#/en/admin` — hidden admin (footer "Admin" link only): messages, KPIs, mark-handled, audit log
+```powershell
+npm.cmd --prefix frontend install
+npm.cmd --prefix frontend run dev
+```
+
+Open `http://localhost:5173/#/`. Vite proxies `/api` requests to the API at `http://localhost:3001`.
+
+### Production-style local run
+
+```powershell
+npm.cmd --prefix frontend install
+npm.cmd --prefix frontend run build
+npm.cmd --prefix server install
+npm.cmd --prefix server start
+```
+
+Express serves `frontend/dist` and the API from port `3001` by default. Set `PORT` to use a different port.
+
+## Pages
+
+| Route | Page |
+| --- | --- |
+| `#/` | Home: company introduction, statistics, certificates, values and divisions |
+| `#/contact` | Contact details and inquiry form |
+| `#/admin` | Hidden admin sign-in, inquiry management and audit log |
+
+The language switch supports EN and AR; Arabic uses RTL direction. Language is persisted in `localStorage['dh-lang']`. Typed paths such as `/admin` are redirected to their hash routes on startup.
 
 ## API
-| Method | Endpoint | Auth | Purpose |
-|---|---|---|---|
-| GET | `/api/health` | — | health check |
-| GET | `/api/company` | — | company info + stats |
-| GET | `/api/certificates` | — | American certificates list |
-| POST | `/api/contact` | — | save contact message (rate-limited) |
-| POST | `/api/admin/login` | — | get bearer token (PBKDF2 verify) |
-| POST | `/api/admin/logout` | Bearer | invalidate token |
-| GET | `/api/admin/messages` | Bearer | list requests + stats (`?q=` `?status=`) |
-| GET | `/api/admin/messages/:id` | Bearer | single request with full client details |
-| PATCH | `/api/admin/messages/:id` | Bearer | set status `Not Processed` / `Processed` |
-| DELETE | `/api/admin/messages/:id` | Bearer | delete a request (audit-logged) |
-| GET | `/api/admin/audit` | Bearer | audit trail |
 
-**Admin sign-in:** development seeds `admin@doubleh.com` / `Admin123!` (local only).
-With `NODE_ENV=production` a **random password is generated and printed once** on the first
-run, or set `ADMIN_EMAIL` / `ADMIN_PASSWORD` yourself — see `.env.example`.
-Failed logins always return the generic `Invalid email or password.` (no credential hints).
+| Method | Endpoint | Purpose |
+| --- | --- | --- |
+| `GET` | `/api/health` | Health check |
+| `GET` | `/api/company` | Company contact details and statistics |
+| `GET` | `/api/certificates` | Certificates and accreditations |
+| `POST` | `/api/contact` | Validate and store an inquiry |
+| `POST` | `/api/admin/login` | Authenticate and issue a bearer token |
+| `POST` | `/api/admin/logout` | Invalidate the bearer token |
+| `GET` | `/api/admin/messages` | List inquiries and totals (`?q=`, `?status=`) |
+| `GET` | `/api/admin/messages/:id` | Read one inquiry |
+| `PATCH` | `/api/admin/messages/:id` | Set status to `Not Processed` or `Processed` |
+| `DELETE` | `/api/admin/messages/:id` | Delete an inquiry |
+| `GET` | `/api/admin/audit` | Read recent audit events |
 
-## Admin requests — acceptance criteria
-| # | Criterion | How it is met |
-|---|---|---|
-| 1 | Admin can see **all** requests | `GET /api/admin/messages` (Bearer) returns newest-first list + KPIs (Total / Not Processed / Processed) |
-| 2 | Admin can **open a request and see full client details** | "Details" button → `GET /api/admin/messages/:id` opens a modal with client name, email, language, received date, status and the full message |
-| 3 | Admin can mark a request **Processed / Not Processed** | `PATCH /api/admin/messages/:id` `{status}` (validated against the DB `CHECK` constraint) — toggle from the table row or the details modal; both directions |
-| 4 | Admin can **search / filter** | Text search over name, email, subject and message + status dropdown filter (client-side, instant); server also supports `?q=&status=` |
-| 5 | Admin can **delete with confirmation** | Delete button opens a confirm dialog (shows the request preview); only "Yes, delete" calls `DELETE /api/admin/messages/:id`; Esc / backdrop / Cancel abort |
-| 6 | **Only the authorized admin** can view / edit / delete | Every admin route is behind `requireAuth` (PBKDF2 login → bearer token, 8 h expiry) — unauthenticated calls get `401`; all view/status/delete actions are written to the audit log |
+Admin routes except login require `Authorization: Bearer <token>`. See [DOCUMENTATION.md](DOCUMENTATION.md) for request schemas, data storage, security controls and deployment notes.
 
-Status values: `Not Processed` (default) / `Processed` — enforced by SQLite `CHECK`; legacy `New`/`Handled` rows are migrated automatically on first run.
+## Admin account and local data
 
-## Brand (from your documentation)
-- Palette: `#12393a` `#134c4b` `#e6ecec` `#46766f` `#161919`
-- Fonts: **Cairo** (headings/AR) · **Poppins** (body) — loaded from Google Fonts
-- Logo: **Double H — CONSULTING**, custom crosshair cursor, intro splash, scroll reveals, tilt cards, click particles, marquee, parallax hero
+On a fresh development database, the default account is `admin@doubleh.com` / `Admin123!`. In production, the server generates and logs a one-time random password if `ADMIN_PASSWORD` is unset, or uses `ADMIN_EMAIL` and `ADMIN_PASSWORD` provided before the first run. Seeding only creates an account when that email does not already exist; changing environment values does not replace an existing row.
 
-## Structure
-```
-frontend/               → React app (Vite)
-  index.html
-  src/main.jsx          → entry (HashRouter + LangProvider)
-  src/App.jsx           → nav, footer, cursor FX, intro, counters, routes
-  src/i18n.js           → 4-language dictionary (AR/TR/EN/FR)
-  src/LangContext.jsx   → language state + RTL switching (persists to localStorage)
-  src/pages/Home.jsx    → company + certificates + values (consultation removed)
-  src/pages/Contact.jsx → inquiry form → POST /api/contact
-  src/pages/Admin.jsx   → hidden dashboard (Bearer auth)
-  src/styles.css        → brand theme + animations + RTL
-server/                 → Express API
-  index.js              → routes, rate limit, sessions, static serving
-  db.js                 → SQLite (node:sqlite) + PBKDF2 admin seed
-  data/doubleh.db       → created automatically on first run
-legacy/                 → old vanilla + .NET files kept for reference
-README.md
+SQLite creates `server/data/doubleh.db` at startup. This runtime data is ignored by Git. Back it up before deployment or database maintenance.
+
+## Project map
+
+```text
+frontend/                   React/Vite client
+  src/App.jsx                Shared layout, navigation, routes and motion
+  src/pages/Home.jsx         Company home page and content sections
+  src/pages/Contact.jsx      Inquiry form
+  src/pages/Admin.jsx        Admin dashboard
+  src/DivisionCarousel.jsx   Division showcase carousel
+  src/WorldDots.jsx          Decorative dot-map visual
+  src/Modal.jsx              Accessible native-dialog wrapper
+  src/i18n.js                English and Arabic dictionaries
+  src/styles.css             Brand palette, responsive layout, motion and RTL
+  public/                    Logos, photos and scroll-motion helper
+server/                     Express API and SQLite persistence
+  index.js                   Routes, security headers, sessions and static serving
+  db.js                      Schema, migrations, seed and persistence queries
+legacy/                     Archived implementation; not served by current app
+start-site.bat               Windows setup/build/start launcher
+DOCUMENTATION.md             Full technical guide
 ```
 
-## Notes
-- Node.js LTS (v24) required — installed via winget if missing.
-- SQLite uses Node's built-in `node:sqlite` — **no native modules, no SQL Server needed**.
-- `legacy/` is **reference-only**: it is never served by the Express app and uses
-  client-side-only demo auth. **Do not deploy it** — real authentication lives in
-  `server/index.js` + `server/db.js` (PBKDF2, hashed + salted, bearer tokens).
-- Security: per-IP rate limiting (login + contact), honeypot, strict field validation with
-  length caps, PBKDF2 password hashing with per-user salt, constant-time compare plus a
-  dummy hash on unknown accounts (no user enumeration), bearer tokens with 8 h expiry,
-  audit trail, parameterized queries with `LIKE` wildcard escaping.
-- Security headers on every response: `Content-Security-Policy`, `X-Content-Type-Options`,
-  `X-Frame-Options: DENY`, `Referrer-Policy: no-referrer`, `Permissions-Policy`,
-  `Cross-Origin-Opener-Policy`, `Cross-Origin-Resource-Policy`, and HSTS when served over TLS.
-- Login failures never reveal which credential was wrong, and no demo credentials ship in
-  the API response or the frontend bundle.
-- Behind nginx set `TRUST_PROXY=1` so rate limiting keys on the real client IP.
-- Production checklist: HTTPS, `NODE_ENV=production` (random admin password on first run
-  or `ADMIN_EMAIL` / `ADMIN_PASSWORD` via env — see `.env.example`), daily DB backups.
+## Deployment checklist
+
+- Set `NODE_ENV=production` and configure the admin email/password before the first database seed.
+- Replace placeholder phone and location values in `server/index.js`.
+- Serve the application over HTTPS. If a reverse proxy is used, set `TRUST_PROXY` to its hop count.
+- Back up `server/data/doubleh.db` regularly.
+- Sessions and rate-limit counters are held in process memory. Restarts invalidate sessions, and multi-instance deployments need a shared session/rate-limit store.

@@ -1,6 +1,7 @@
 import { useEffect, useState } from 'react';
 import { useLang } from '../LangContext.jsx';
 import { Counter, BookButton } from '../App.jsx';
+import DivisionCarousel from '../DivisionCarousel.jsx';
 
 const hideImg = (e) => {
   e.currentTarget.style.display = 'none';
@@ -39,6 +40,17 @@ const CERT_PHOTOS = {
   autodesk: '/pic-cert-autodesk.jpg',
 };
 
+/* hero division squares — one line under the hero (short English labels, like the old side panel) */
+const HERO_DIVS = [
+  'Double H BIM',
+  'Double H ARCHITECTURE',
+  'Double H CIVIL ENGINEERING',
+  'Double H MEDICAL · LAW',
+  'Double H ELECTRICITY · MANAGEMENT',
+  'Double H BD',
+  'Double H STARTUPS',
+];
+
 export default function Home() {
   const { t } = useLang();
   const [certs, setCerts] = useState([]);
@@ -61,16 +73,19 @@ export default function Home() {
 
   const stats = company?.stats || { years: 18, projects: 450, clients: 300, divisions: 9 };
 
+  const scrollToAbout = (e) => {
+    e.preventDefault();
+    const reduced = window.matchMedia?.('(prefers-reduced-motion: reduce)').matches;
+    document.getElementById('about')?.scrollIntoView({ behavior: reduced ? 'auto' : 'smooth' });
+  };
+
   return (
     <>
       {/* ================= HERO ================= */}
       <div className="hero">
         <div className="hero-wash" aria-hidden="true" />
-        <div className="hero-inner" id="heroInner">
+        <div className="hero-inner hero-inner--solo" id="heroInner">
           <div>
-            <div className="hero-kicker">
-              <span className="free-badge">{t('hero_badge')}</span>
-            </div>
             <h1>{t('hero_title')}</h1>
             <p className="hero-sub">{t('hero_subtitle')}</p>
             <p className="hero-desc">{t('hero_desc')}</p>
@@ -78,7 +93,7 @@ export default function Home() {
               <BookButton to="/contact" className="btn-primary">
                 {t('free_btn')}
               </BookButton>
-              <a className="btn btn-ghost" href="#free-call">
+              <a className="btn btn-ghost" href="#about" onClick={scrollToAbout}>
                 {t('cta_primary')}
               </a>
             </div>
@@ -105,63 +120,22 @@ export default function Home() {
               </div>
             </div>
           </div>
-          <div className="hero-card">
-            <div className="row">
-              <span>Double H BIM</span>
+          <div className="hero-visual" aria-hidden="true">
+            <img src="/hero-collaboration.jpg" alt="" />
+            <div className="hero-visual-caption">
+              <span>01 / 09</span>
+              <span>ENGINEERING · ARCHITECTURE · DELIVERY</span>
             </div>
-            <div className="row">
-              <span>Double H ARCHITECTURE</span>
-            </div>
-            <div className="row">
-              <span>Double H CIVIL ENGINEERING</span>
-            </div>
-            <div className="row">
-              <span>Double H MEDICAL · LAW</span>
-            </div>
-            <div className="row">
-              <span>Double H ELECTRICITY · MANAGEMENT</span>
-            </div>
-            <div className="row">
-              <span>Double H BD</span>
-            </div>
-            <div className="row">
-              <span>Double H STARTUPS</span>
-            </div>
-            <p
-              className="notice"
-              style={{ background: 'rgba(255,255,255,.12)', borderColor: 'rgba(255,255,255,.3)', color: '#fff' }}
-            >
-              {t('free_note')}
-            </p>
           </div>
         </div>
-      </div>
-
-      {/* ================= FIRST FREE CALL — ticket offer ================= */}
-      <section className="section" id="free-call">
-        <div className="free-call reveal">
-          <div className="free-call-inner">
-            <span className="free-pill">{t('free_badge')}</span>
-            <h2>{t('free_title')}</h2>
-            <p>{t('free_desc')}</p>
-            <BookButton to="/contact" className="btn-light">
-              {t('free_btn')}
-            </BookButton>
-            <div className="free-note">{t('free_note')}</div>
-          </div>
+        <div className="hero-divs" aria-label="Double H divisions">
+          {HERO_DIVS.map((label, i) => (
+            <div className="hero-div" key={label} style={{ '--d': `${i * 70}ms` }}>
+              <span className="hero-div-n">{String(i + 1).padStart(2, '0')}</span>
+              <span>{label}</span>
+            </div>
+          ))}
         </div>
-      </section>
-
-      {/* ================= MARQUEE ================= */}
-      <div className="marquee">
-        <span>
-          Double H BIM — Double H ARCHITECTURE — Double H CIVIL ENGINEERING — Double H MEDICAL — Double H LAW — Double H
-          ELECTRICITY — Double H MANAGEMENT — Double H BD — Double H STARTUPS —&nbsp;
-        </span>
-        <span>
-          Double H BIM — Double H ARCHITECTURE — Double H CIVIL ENGINEERING — Double H MEDICAL — Double H LAW — Double H
-          ELECTRICITY — Double H MANAGEMENT — Double H BD — Double H STARTUPS —&nbsp;
-        </span>
       </div>
 
       {/* ================= ABOUT ================= */}
@@ -254,32 +228,11 @@ export default function Home() {
 
       {/* ================= DIVISIONS ================= */}
       <section className="section">
-        <div className="eyebrow">Double H</div>
-        <h2>{t('div_title')}</h2>
-        <p className="section-lead">{t('div_desc')}</p>
-        <div className="div-list">
-          {DIVISIONS.map((d, i) => {
-            return (
-              <div className="div-row reveal" key={d.key} style={{ '--d': `${i * 60}ms` }}>
-                <span className="div-index">{String(i + 1).padStart(2, '0')}</span>
-                <div className="div-icon">
-                  <img
-                    src={d.img}
-                    alt={t(`div_${d.key}`)}
-                    loading="lazy"
-                    onError={(e) => {
-                      e.currentTarget.style.display = 'none';
-                    }}
-                  />
-                </div>
-                <div className="div-text">
-                  <h3>{t(`div_${d.key}`)}</h3>
-                  <p>{t(`div_${d.key}d`)}</p>
-                </div>
-              </div>
-            );
-          })}
-        </div>
+        <DivisionCarousel divisions={DIVISIONS}>
+          <div className="eyebrow">Double H</div>
+          <h2>{t('div_title')}</h2>
+          <p className="section-lead">{t('div_desc')}</p>
+        </DivisionCarousel>
       </section>
 
       {/* ================= CTA ================= */}

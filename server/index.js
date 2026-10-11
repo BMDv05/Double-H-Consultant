@@ -1,7 +1,8 @@
 /**
  * Double H Consulting — Express API
  * Public: GET /api/health, GET /api/company, GET /api/certificates, POST /api/contact
- * Admin:  POST /api/admin/login|logout, GET /api/admin/messages, PATCH /api/admin/messages/:id, GET /api/admin/audit
+ * Admin:  POST /api/admin/login|logout, GET /api/admin/messages, GET /api/admin/messages/:id,
+ *         PATCH /api/admin/messages/:id, DELETE /api/admin/messages/:id, GET /api/admin/audit
  */
 import express from 'express';
 import crypto from 'node:crypto';
@@ -14,6 +15,7 @@ import {
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 const app = express();
+app.disable('x-powered-by');
 const PORT = process.env.PORT || 3001;
 
 app.use(express.json({ limit: '50kb' }));
@@ -103,6 +105,10 @@ setInterval(() => {
 /* ---------- validation helpers ---------- */
 const isEmail = (e) => /^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/.test(String(e || ''));
 const str = (v) => String(v ?? '').trim();
+const msgId = (v) => {
+  const n = Number(v);
+  return Number.isInteger(n) && n > 0 ? n : null;
+};
 
 /* =======================================================================
  * PUBLIC API
@@ -151,7 +157,7 @@ app.post('/api/contact', (req, res) => {
 
   const id = createMessage({ name, email, subject, message, lang });
   addAudit('public', 'create', 'message', id);
-  console.log(`[contact] new message #${id} from ${email}`);
+  console.log(`[contact] new message #${id}`);
   res.status(201).json({ ok: true, id });
 });
 
@@ -163,7 +169,13 @@ app.post('/api/admin/login', (req, res) => {
   if (!rateLimit(`login:${ip}`, 10, 15 * 60 * 1000)) {
     return res.status(429).json({ error: 'Too many attempts — try again later.' });
   }
-  const admin = verifyAdmin(str(req.body?.email), str(req.body?.password));
+  const email = str(req.body?.email);
+  const password = str(req.body?.password);
+  /* reject empty credentials before the expensive PBKDF2 work */
+  if (!email || !password) {
+    return res.status(401).json({ error: 'Invalid email or password.' });
+  }
+  const admin = verifyAdmin(email, password);
   /* generic message — never disclose which field is wrong or any demo credentials */
   if (!admin) return res.status(401).json({ error: 'Invalid email or password.' });
   const token = issueToken(admin);
@@ -183,7 +195,8 @@ app.get('/api/admin/messages', requireAuth, (req, res) => {
 });
 
 app.patch('/api/admin/messages/:id', requireAuth, (req, res) => {
-  const id = Number(req.params.id);
+  const id = msgId(req.params.id);
+  if (id === null) return res.status(400).json({ error: 'Invalid message id' });
   const status = str(req.body?.status);
   if (!['Not Processed', 'Processed'].includes(status)) {
     return res.status(400).json({ error: 'Status must be Not Processed or Processed' });
@@ -196,13 +209,16 @@ app.patch('/api/admin/messages/:id', requireAuth, (req, res) => {
 });
 
 app.get('/api/admin/messages/:id', requireAuth, (req, res) => {
-  const msg = getMessage(Number(req.params.id));
+  const id = msgId(req.params.id);
+  if (id === null) return res.status(400).json({ error: 'Invalid message id' });
+  const msg = getMessage(id);
   if (!msg) return res.status(404).json({ error: 'Message not found' });
   res.json({ message: msg });
 });
 
 app.delete('/api/admin/messages/:id', requireAuth, (req, res) => {
-  const id = Number(req.params.id);
+  const id = msgId(req.params.id);
+  if (id === null) return res.status(400).json({ error: 'Invalid message id' });
   const msg = getMessage(id);
   if (!msg) return res.status(404).json({ error: 'Message not found' });
   deleteMessage(id);
@@ -212,6 +228,11 @@ app.delete('/api/admin/messages/:id', requireAuth, (req, res) => {
 
 app.get('/api/admin/audit', requireAuth, (req, res) => {
   res.json({ audit: recentAudit(50) });
+});
+
+/* unknown /api paths return JSON (not the Express HTML error page) */
+app.use('/api', (req, res) => {
+  res.status(404).json({ error: 'Not found' });
 });
 
 /* =======================================================================
