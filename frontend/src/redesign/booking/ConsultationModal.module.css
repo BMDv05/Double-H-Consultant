@@ -3,26 +3,26 @@
 .dialog {
   margin: auto;
   padding: 0;
-  border: 1px solid rgba(255, 255, 255, 0.12);
+  border: 1px solid rgba(70, 118, 111, 0.45);
   border-radius: 8px;
-  background: #121216;
-  color: #f7f5f0;
+  background: var(--dh-deep-olive, #12393a);
+  color: var(--dh-alabaster, #e6ecec);
   inline-size: min(580px, calc(100vw - 32px));
   max-inline-size: 580px;
   max-block-size: calc(100vh - 48px);
   overflow-y: auto;
-  box-shadow: 0 24px 64px rgba(0, 0, 0, 0.75), 0 0 0 1px rgba(255, 255, 255, 0.05);
+  box-shadow: 0 24px 64px rgba(22, 25, 25, 0.85), 0 0 0 1px rgba(70, 118, 111, 0.2);
   font-family: var(--dh-font-en, 'Poppins', system-ui, sans-serif);
 }
 
 .dialog[dir='rtl'],
 .dialog:lang(ar) {
   font-family: var(--dh-font-ar, 'Cairo', system-ui, sans-serif);
-  letter-spacing: 0;
+  letter-spacing: 0 !important;
 }
 
 .dialog::backdrop {
-  background: rgba(0, 0, 0, 0.78);
+  background: rgba(22, 25, 25, 0.85);
   backdrop-filter: blur(8px);
   -webkit-backdrop-filter: blur(8px);
 }
@@ -57,7 +57,7 @@
   justify-content: space-between;
   gap: 16px;
   padding-block-end: 16px;
-  border-block-end: 1px solid rgba(255, 255, 255, 0.08);
+  border-block-end: 1px solid rgba(70, 118, 111, 0.35);
 }
 
 .titleArea {
@@ -67,17 +67,26 @@
 
 .title {
   margin: 0;
+  font-family: var(--dh-font-en, 'Poppins', sans-serif);
   font-size: 1.375rem;
-  font-weight: 600;
+  font-weight: 800;
   line-height: 1.25;
-  color: #f7f5f0;
+  color: #e6ecec;
+}
+
+.dialog[dir='rtl'] .title,
+.dialog:lang(ar) .title {
+  font-family: var(--dh-font-ar, 'Cairo', sans-serif);
+  font-weight: 900;
+  letter-spacing: 0 !important;
 }
 
 .subtitle {
   margin: 6px 0 0 0;
   font-size: 0.875rem;
   line-height: 1.5;
-  color: #9a9aa4;
+  color: #46766f;
+  font-weight: 500;
 }
 
 .closeButton {
@@ -88,10 +97,10 @@
   block-size: 40px;
   min-inline-size: 40px;
   min-block-size: 40px;
-  border: 1px solid rgba(255, 255, 255, 0.12);
+  border: 1px solid rgba(70, 118, 111, 0.4);
   border-radius: 9999px;
-  background: rgba(255, 255, 255, 0.04);
-  color: #f7f5f0;
+  background: rgba(70, 118, 111, 0.15);
+  color: #e6ecec;
   cursor: pointer;
   transition: background-color 0.15s ease, border-color 0.15s ease, transform 0.15s ease;
   padding: 0;
@@ -100,8 +109,8 @@
 }
 
 .closeButton:hover:not(:disabled) {
-  background-color: rgba(255, 255, 255, 0.1);
-  border-color: rgba(255, 255, 255, 0.25);
+  background-color: rgba(70, 118, 111, 0.35);
+  border-color: #46766f;
 }
 
 .closeButton:disabled {
@@ -110,7 +119,7 @@
 }
 
 .closeButton:focus-visible {
-  outline: 2px solid var(--dh-accent, #c5a880);
+  outline: 2px solid var(--dh-accent, #46766f);
   outline-offset: 3px;
 }
 
@@ -132,8 +141,8 @@
   align-items: center;
   justify-content: space-between;
   font-size: 0.875rem;
-  font-weight: 500;
-  color: #f7f5f0;
+  font-weight: 600;
+  color: #e6ecec;
 }
 
 .requiredMark {
@@ -144,7 +153,7 @@
 .optionalBadge {
   font-size: 0.75rem;
   font-weight: 400;
-  color: #9a9aa4;
+  color: #46766f;
 }
 
 .input,
@@ -154,17 +163,17 @@
   inline-size: 100%;
   font: inherit;
   font-size: 0.9375rem;
-  color: #f7f5f0;
-  background: #18181e;
-  border: 1px solid rgba(255, 255, 255, 0.14);
+  color: #e6ecec;
+  background: var(--dh-dark-petroleum, #134c4b);
+  border: 1px solid rgba(70, 118, 111, 0.4);
   border-radius: 4px;
   padding-inline: 14px;
   transition: border-color 0.15s ease, box-shadow 0.15s ease;
 }
 
 .select option {
-  background: #18181e;
-  color: #f7f5f0;
+  background: #134c4b;
+  color: #e6ecec;
 }
 
 .input,
@@ -183,9 +192,9 @@
 .input:focus-visible,
 .select:focus-visible,
 .textarea:focus-visible {
-  outline: 2px solid var(--dh-accent, #c5a880);
+  outline: 2px solid var(--dh-accent, #46766f);
   outline-offset: 2px;
-  border-color: var(--dh-accent, #c5a880);
+  border-color: var(--dh-accent, #46766f);
 }
 
 .inputError {
@@ -195,8 +204,8 @@
 .input:disabled,
 .select:disabled,
 .textarea:disabled {
-  background-color: rgba(255, 255, 255, 0.04);
-  color: #70707a;
+  background-color: rgba(70, 118, 111, 0.1);
+  color: #46766f;
   cursor: not-allowed;
 }
 
@@ -214,7 +223,7 @@
   justify-content: space-between;
   align-items: center;
   font-size: 0.75rem;
-  color: #9a9aa4;
+  color: #46766f;
 }
 
 .charCount {
@@ -240,12 +249,12 @@
   align-items: flex-start;
   gap: 12px;
   padding: 12px 14px;
-  background: #181820;
-  border-inline-start: 3px solid var(--dh-accent, #c5a880);
+  background: var(--dh-dark-petroleum, #134c4b);
+  border-inline-start: 3px solid var(--dh-accent, #46766f);
   border-radius: 4px;
   font-size: 0.8125rem;
   line-height: 1.5;
-  color: #c4c4cc;
+  color: #e6ecec;
 }
 
 .noticeText {
@@ -295,10 +304,10 @@
   padding-inline: 20px;
   font: inherit;
   font-size: 0.9375rem;
-  font-weight: 600;
-  color: #09090b;
-  background: #f7f5f0;
-  border: 1px solid rgba(197, 168, 128, 0.4);
+  font-weight: 700;
+  color: #161919;
+  background: #e6ecec;
+  border: 1px solid rgba(70, 118, 111, 0.5);
   border-radius: 9999px;
   cursor: pointer;
   transition: background-color 0.15s ease, opacity 0.15s ease, box-shadow 0.15s ease, transform 0.15s ease;
@@ -306,7 +315,7 @@
 
 .submitButton:hover:not(:disabled) {
   background: #ffffff;
-  box-shadow: 0 4px 20px rgba(197, 168, 128, 0.4);
+  box-shadow: 0 4px 20px rgba(70, 118, 111, 0.45);
   transform: translateY(-1px);
 }
 
@@ -316,7 +325,7 @@
 }
 
 .submitButton:focus-visible {
-  outline: 2px solid var(--dh-accent, #c5a880);
+  outline: 2px solid var(--dh-accent, #46766f);
   outline-offset: 3px;
 }
 
@@ -324,8 +333,8 @@
   display: inline-block;
   inline-size: 18px;
   block-size: 18px;
-  border: 2px solid rgba(9, 9, 11, 0.25);
-  border-inline-start-color: #09090b;
+  border: 2px solid rgba(22, 25, 25, 0.25);
+  border-inline-start-color: #161919;
   border-radius: 50%;
   animation: spin 0.75s linear infinite;
 }
@@ -366,8 +375,9 @@
   margin: 0;
   font-size: 0.75rem;
   line-height: 1.4;
-  color: #9a9aa4;
+  color: #46766f;
   text-align: center;
+  font-weight: 500;
 }
 
 /* Success Confirmation Panel */
@@ -384,39 +394,47 @@
   inline-size: 56px;
   block-size: 56px;
   border-radius: 50%;
-  background: rgba(16, 185, 129, 0.15);
-  border: 1px solid rgba(16, 185, 129, 0.4);
+  background: rgba(70, 118, 111, 0.2);
+  border: 1px solid rgba(70, 118, 111, 0.5);
   display: flex;
   align-items: center;
   justify-content: center;
   font-size: 24px;
-  color: #10b981;
+  color: #46766f;
 }
 
 .successTitle {
   margin: 0;
   font-size: 1.375rem;
-  font-weight: 600;
-  color: #f7f5f0;
+  font-weight: 800;
+  color: #e6ecec;
+}
+
+.dialog[dir='rtl'] .successTitle,
+.dialog:lang(ar) .successTitle {
+  font-family: var(--dh-font-ar, 'Cairo', sans-serif);
+  font-weight: 900;
+  letter-spacing: 0 !important;
 }
 
 .successMessage {
   margin: 0;
   font-size: 0.9375rem;
   line-height: 1.6;
-  color: #a0a0aa;
+  color: #e6ecec;
+  opacity: 0.85;
   max-inline-size: 460px;
 }
 
 .referenceBadge {
   margin-block-start: 4px;
   padding: 8px 16px;
-  background: #181820;
-  border: 1px solid rgba(197, 168, 128, 0.35);
+  background: var(--dh-dark-petroleum, #134c4b);
+  border: 1px solid rgba(70, 118, 111, 0.45);
   border-radius: 4px;
   font-size: 0.875rem;
-  font-weight: 600;
-  color: var(--dh-accent, #c5a880);
+  font-weight: 700;
+  color: var(--dh-accent, #46766f);
   letter-spacing: 0.5px;
 }
 
@@ -430,10 +448,10 @@
   min-block-size: 48px;
   font: inherit;
   font-size: 0.9375rem;
-  font-weight: 600;
-  color: #09090b;
-  background: #f7f5f0;
-  border: 1px solid rgba(197, 168, 128, 0.4);
+  font-weight: 700;
+  color: #161919;
+  background: #e6ecec;
+  border: 1px solid rgba(70, 118, 111, 0.5);
   border-radius: 9999px;
   cursor: pointer;
   transition: background-color 0.15s ease, box-shadow 0.15s ease, transform 0.15s ease;
@@ -441,12 +459,12 @@
 
 .successButton:hover {
   background: #ffffff;
-  box-shadow: 0 4px 20px rgba(197, 168, 128, 0.4);
+  box-shadow: 0 4px 20px rgba(70, 118, 111, 0.45);
   transform: translateY(-1px);
 }
 
 .successButton:focus-visible {
-  outline: 2px solid var(--dh-accent, #c5a880);
+  outline: 2px solid var(--dh-accent, #46766f);
   outline-offset: 3px;
 }
 

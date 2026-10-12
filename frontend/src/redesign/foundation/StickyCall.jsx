@@ -3,11 +3,17 @@ import styles from './StickyCall.module.css';
 function scrollTo(event, id) {
   event.preventDefault();
   const target = document.getElementById(id);
-  const quiet = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
-  target?.scrollIntoView({ behavior: quiet ? 'auto' : 'smooth' });
+  const quiet =
+    window.matchMedia('(prefers-reduced-motion: reduce)').matches ||
+    target?.closest('[data-reduced-motion="true"]');
+  if (window.__lenis && !quiet) {
+    window.__lenis.scrollTo(target, { offset: -88 });
+  } else {
+    target?.scrollIntoView({ behavior: quiet ? 'auto' : 'smooth' });
+  }
 }
 
-export default function StickyCall({ lang, onBook, visible, disabled = false }) {
+export default function StickyCall({ lang, onBook, visible, disabled = false, activeSection = 'divisions' }) {
   if (!visible || disabled) return null;
   const ar = lang === 'ar';
   return (
@@ -18,13 +24,28 @@ export default function StickyCall({ lang, onBook, visible, disabled = false }) 
       aria-label={ar ? 'شريط التنقل السريع' : 'Quick navigation dock'}
     >
       <nav className={styles.dockNav} aria-label={ar ? 'أقسام الصفحة' : 'Page sections'}>
-        <a href="#divisions" onClick={(e) => scrollTo(e, 'divisions')} className={styles.dockLink}>
+        <a
+          href="#divisions"
+          onClick={(e) => scrollTo(e, 'divisions')}
+          className={styles.dockLink}
+          data-active={activeSection === 'divisions'}
+        >
           {ar ? 'التخصصات' : 'Disciplines'}
         </a>
-        <a href="#about" onClick={(e) => scrollTo(e, 'about')} className={styles.dockLink}>
+        <a
+          href="#about"
+          onClick={(e) => scrollTo(e, 'about')}
+          className={styles.dockLink}
+          data-active={activeSection === 'about'}
+        >
           {ar ? 'عنّا' : 'About'}
         </a>
-        <a href="#journey" onClick={(e) => scrollTo(e, 'journey')} className={styles.dockLink}>
+        <a
+          href="#journey"
+          onClick={(e) => scrollTo(e, 'journey')}
+          className={styles.dockLink}
+          data-active={activeSection === 'journey'}
+        >
           {ar ? 'مسار الاستشارة' : 'Journey'}
         </a>
       </nav>

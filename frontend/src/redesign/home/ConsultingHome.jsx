@@ -1,8 +1,16 @@
 import { useEffect, useId, useRef, useState } from "react";
+import { gsap } from "gsap";
+import { ScrollTrigger } from "gsap/ScrollTrigger";
 import { DIVISION_GROUPS, UI_LABELS } from "./fixtures.js";
 import { resolveContent } from "./content.js";
 import styles from "./ConsultingHome.module.css";
 import PerspectiveScene from "../scene/PerspectiveScene.jsx";
+import CadBlueprintDrafting from "./CadBlueprintDrafting.jsx";
+import ArchitecturalHud from "./ArchitecturalHud.jsx";
+
+if (typeof window !== "undefined") {
+  gsap.registerPlugin(ScrollTrigger);
+}
 
 const images = {
   hero: "/consulting-images/perspective.webp",
@@ -89,11 +97,109 @@ const ACCREDITATIONS = [
 ];
 
 const PROVEN_METRICS = [
-  { val: "18+", lblEn: "Years of Excellence", lblAr: "عاماً من التميز الهندسي" },
-  { val: "450+", lblEn: "Delivered Developments", lblAr: "مشروعاً عمرانياً منجزاً" },
-  { val: "85%+", lblEn: "Institutional Client Retention", lblAr: "نسبة استمرارية العملاء" },
-  { val: "0", lblEn: "Schedule Drift (CPM Rigor)", lblAr: "انحراف زمني (حوكمة CPM)" },
+  { val: "18+", target: 18, suffix: "+", lblEn: "Years of Excellence", lblAr: "عاماً من التميز الهندسي" },
+  { val: "450+", target: 450, suffix: "+", lblEn: "Delivered Developments", lblAr: "مشروعاً عمرانياً منجزاً" },
+  { val: "85%+", target: 85, suffix: "%+", lblEn: "Institutional Client Retention", lblAr: "نسبة استمرارية العملاء" },
+  { val: "0", target: 0, suffix: "", lblEn: "Schedule Drift (CPM Rigor)", lblAr: "انحراف زمني (حوكمة CPM)" },
 ];
+
+const DOUBLE_H_SUB_ENTITIES = [
+  { key: "studio", en: "STUDIO", ar: "استوديو" },
+  { key: "technology", en: "TECHNOLOGY", ar: "التكنولوجيا" },
+  { key: "real_estate", en: "REAL ESTATE", ar: "العقارات" },
+  { key: "academy", en: "ACADEMY", ar: "الأكاديمية" },
+  { key: "bim", en: "BIM SERVICES", ar: "خدمات BIM" },
+  { key: "chance", en: "CHANCE", ar: "فرصة" },
+];
+
+const ARCHITECTURAL_STUDY_TOURS_AND_AWARDS = [
+  {
+    kicker: "Jordan Architectural Tour",
+    kickerAr: "جولات العمارة الأردنية",
+    title: "Amman & Petra Architectural Vernacular Immersion",
+    titleAr: "استكشاف التراث المعماري: عمان والبترا",
+    desc: "Curated field study examining vernacular stone masonry, climatic courtyard physics, and Nabataean water conservation engineering.",
+    descAr: "دراسة ميدانية متخصصة في العمارة الحجرية وفيزياء الأفنية وتطبيقات الحصاد المائي النبطي التراثية.",
+    badge: "Field Exploration",
+    badgeAr: "استكشاف ميداني",
+  },
+  {
+    kicker: "Design Jury & Competitions",
+    kickerAr: "مسابقات التصميم ولجان التحكيم",
+    title: "Regional Architectural Design Panels & Competitive Leaderboard",
+    titleAr: "تحكيم المسابقات المعمارية ولوحة المتصدرين التنافسية",
+    desc: "Regular competitions overseen by advanced judging panels, professional thesis defenses, and competitive leaderboards across the Levant and GCC.",
+    descAr: "مسابقات دورية بإشراف لجان تحكيم متقدمة، مناقشات مهنية لمشاريع التخرج، ولوحة شرف تنافسية في المشرق العربي والخليج.",
+    badge: "Jury Panels",
+    badgeAr: "لجان تحكيم",
+  },
+  {
+    kicker: "Industry Link & Career Pipeline",
+    kickerAr: "شراكات المكاتب والتوظيف المباشر",
+    title: "Direct Engineering Firm Partnerships & Career Placement",
+    titleAr: "شراكات مباشرة مع المكاتب الهندسية وفرص توظيف حقيقية",
+    desc: "Direct employment and apprenticeship pipelines with premier local and international consultancies for outstanding talent in the program.",
+    descAr: "مسارات تدريب وتوظيف حقيقية وشراكات مباشرة مع مكاتب هندسية محلية ودولية للمتميزين في البرامج المعتمدة.",
+    badge: "Career Pipeline",
+    badgeAr: "مسار مهني",
+  },
+  {
+    kicker: "Excellence Awards & Prizes",
+    kickerAr: "جوائز التفوق والأجهزة المتقدمة",
+    title: "Technological Hardware Grants & Real In-Kind Awards",
+    titleAr: "منح أجهزة حاسوبية متقدمة وجوائز مادية وعينية",
+    desc: "Desktop workstations, high-spec laptops, cash prizes, and corporate sponsorships awarded to top-ranking architectural and engineering innovators.",
+    descAr: "أجهزة حاسوب متطورة، محطات عمل هندسية، مكافآت مالية وعينية، ورعايات استراتيجية من الشركات الكبرى للفائزين.",
+    badge: "Hardware & Awards",
+    badgeAr: "جوائز وأجهزة",
+  },
+];
+
+function MetricCounter({ val, target, suffix = "", lbl }) {
+  const countRef = useRef(null);
+
+  useEffect(() => {
+    if (typeof window === "undefined" || !countRef.current) return;
+    if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) return;
+
+    const obj = { value: 0 };
+    const el = countRef.current;
+
+    const tween = gsap.to(obj, {
+      value: target,
+      duration: 1.8,
+      ease: "power2.out",
+      scrollTrigger: {
+        trigger: el,
+        start: "top 88%",
+        once: true,
+      },
+      onUpdate: () => {
+        if (el) {
+          el.textContent = `${Math.round(obj.value)}${suffix}`;
+        }
+      },
+    });
+
+    return () => {
+      tween.scrollTrigger?.kill();
+      tween.kill();
+    };
+  }, [target, suffix]);
+
+  return (
+    <div className={styles.metricItem}>
+      <span
+        ref={countRef}
+        className={styles.metricVal}
+        style={{ fontVariantNumeric: "tabular-nums" }}
+      >
+        {val}
+      </span>
+      <span className={styles.metricLbl}>{lbl}</span>
+    </div>
+  );
+}
 
 function EditorialImage({ src, className, eager = false, sizes = "100vw" }) {
   return (
@@ -221,18 +327,6 @@ function useEditorialMotion(root) {
           `${(progress - 0.5) * (quiet ? 0 : mobile.matches ? 28 : 126)}px`,
         );
       });
-      const cards = [...element.querySelectorAll("[data-chapter]")];
-      cards.forEach((card, index) => {
-        const next = cards[index + 1];
-        const progress =
-          quiet || mobile.matches || !next
-            ? 0
-            : clamp(
-                (window.innerHeight - next.getBoundingClientRect().top) /
-                  window.innerHeight,
-              );
-        card.style.setProperty("--card-scale", `${1 - progress * 0.085}`);
-      });
     }
     function schedule() {
       if (quietMotion()) animations.forEach((animation) => animation.cancel());
@@ -278,15 +372,119 @@ export default function ConsultingHome({
   const labels = UI_LABELS[locale];
   const id = useId();
   const root = useRef(null);
+  const [mounted, setMounted] = useState(false);
   const [selected, setSelected] = useState({
     engineering: "bim",
     strategy: "mgmt",
     specialist: "medical",
   });
   const [step, setStep] = useState(0);
-  const cursorRef = useRef(null);
+
+  useEffect(() => {
+    setMounted(true);
+  }, []);
 
   useEditorialMotion(root);
+
+  useEffect(() => {
+    if (typeof window === "undefined" || !root.current) return;
+    if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) return;
+    if (window.matchMedia("(max-width: 760px)").matches) return;
+
+    const ctx = gsap.context(() => {
+      // 1. Pinned 3D Chapter Stacking Deck with Perspective Depth Scaling
+      const chapters = root.current?.querySelectorAll("[data-chapter]");
+      if (chapters && chapters.length >= 2) {
+        chapters.forEach((chapter, i) => {
+          if (i < chapters.length - 1) {
+            ScrollTrigger.create({
+              trigger: chapter,
+              start: "top top+=104",
+              endTrigger: chapters[i + 1],
+              end: "top top+=104",
+              scrub: true,
+              onUpdate: (self) => {
+                const scale = 1 - self.progress * 0.075;
+                const rotX = self.progress * -3;
+                const opacity = 1 - self.progress * 0.2;
+                chapter.style.setProperty("--card-scale", `${scale}`);
+                chapter.style.setProperty("--tilt-x", `${rotX}deg`);
+                chapter.style.opacity = `${opacity}`;
+              },
+            });
+          }
+        });
+      }
+
+      // 2. Dual-Tone Canvas Inversion: Dark Petroleum (#134c4b) to Light Alabaster (#e6ecec)
+      const journey = root.current?.querySelector("#journey");
+      if (journey) {
+        gsap.fromTo(
+          journey,
+          {
+            backgroundColor: "#134c4b",
+            color: "#e6ecec",
+          },
+          {
+            backgroundColor: "#e6ecec",
+            color: "#161919",
+            ease: "none",
+            scrollTrigger: {
+              trigger: journey,
+              start: "top 90%",
+              end: "top 35%",
+              scrub: true,
+            },
+          }
+        );
+      }
+
+      // 3. Dual-Tone Canvas Inversion: Light Alabaster (#e6ecec) back to Deep Olive Canvas (#12393a)
+      const values = root.current?.querySelector("#values");
+      if (values) {
+        gsap.fromTo(
+          values,
+          {
+            backgroundColor: "#e6ecec",
+            color: "#161919",
+          },
+          {
+            backgroundColor: "#12393a",
+            color: "#e6ecec",
+            ease: "none",
+            scrollTrigger: {
+              trigger: values,
+              start: "top 90%",
+              end: "top 35%",
+              scrub: true,
+            },
+          }
+        );
+      }
+
+      // 4. Kinetic Line Reveal with Line-Masked Container Clipping
+      const kineticLines = root.current?.querySelectorAll("[data-kinetic-line]");
+      kineticLines?.forEach((line) => {
+        gsap.fromTo(
+          line,
+          { y: 35, opacity: 0 },
+          {
+            y: 0,
+            opacity: 1,
+            duration: 1.2,
+            ease: "power3.out",
+            scrollTrigger: {
+              trigger: line,
+              start: "top 88%",
+              once: true,
+            },
+          }
+        );
+      });
+    }, root);
+
+    return () => ctx.revert();
+  }, [mounted]);
 
   function book(source, division) {
     onBook?.(division ? { source, division } : { source });
@@ -298,18 +496,11 @@ export default function ConsultingHome({
     const y = ((e.clientY - rect.top) / rect.height - 0.5) * -12;
     e.currentTarget.style.setProperty("--tilt-x", `${y}deg`);
     e.currentTarget.style.setProperty("--tilt-y", `${x}deg`);
-    if (cursorRef.current) {
-      cursorRef.current.style.transform = `translate3d(${e.clientX}px, ${e.clientY}px, 0) translate(-50%, -130%)`;
-      cursorRef.current.style.opacity = "1";
-    }
   }
 
   function handleCardPointerLeave(e) {
     e.currentTarget.style.setProperty("--tilt-x", "0deg");
     e.currentTarget.style.setProperty("--tilt-y", "0deg");
-    if (cursorRef.current) {
-      cursorRef.current.style.opacity = "0";
-    }
   }
 
   const chapterCopy = ar
@@ -340,22 +531,8 @@ export default function ConsultingHome({
       dir={ar ? "rtl" : "ltr"}
       lang={locale}
     >
-      {/* Magnetic Cursor Follower Badge (from the video experience) */}
-      <div
-        ref={cursorRef}
-        className={styles.cursorBadge}
-        style={{
-          position: "fixed",
-          top: 0,
-          left: 0,
-          opacity: 0,
-          pointerEvents: "none",
-        }}
-        aria-hidden="true"
-      >
-        <span>{ar ? "معاينة المشروع" : "VIEW CASE"}</span>
-        <span className={styles.cursorArrow}>↗</span>
-      </div>
+      {/* Architectural HUD & Magnetic Cursor Follower */}
+      <ArchitecturalHud mounted={mounted} ar={ar} />
 
       {/* 1. HERO SECTION */}
       <section
@@ -395,12 +572,12 @@ export default function ConsultingHome({
 
         <div className={styles.heroContent}>
           <h1 id={`${id}-hero`} className={styles.heroKineticTitle}>
-            <span className={styles.heroKineticLead}>
+            <span className={styles.heroKineticLead} data-kinetic-line>
               {ar
                 ? "هندسة وعمارة استثنائية لمشاريع طموحة"
                 : "ARCHITECTURE & ENGINEERING FOR VISIONARY SCALE"}
             </span>
-            <span className={styles.heroKineticMain}>{data.hero.title}</span>
+            <span className={styles.heroKineticMain} data-kinetic-line>{data.hero.title}</span>
           </h1>
 
           <div className={styles.heroBottom}>
@@ -434,6 +611,19 @@ export default function ConsultingHome({
             <PerspectiveScene lang={locale} />
           </div>
         )}
+
+        {/* CAD Blueprint drafting technical dimension lines */}
+        <CadBlueprintDrafting mounted={mounted} ar={ar} />
+
+        {/* Brand Sub-Entities Strip (Brand Manual Page 08) with signature parallel lines motif */}
+        <div className={styles.subEntitiesStrip} aria-label={ar ? "الكيانات التابعة" : "Double H Sub-Entities"}>
+          {DOUBLE_H_SUB_ENTITIES.map((sub) => (
+            <span key={sub.key} className={styles.parallelMotif}>
+              {ar ? sub.ar : sub.en}
+            </span>
+          ))}
+        </div>
+
         <span className={styles.imageNote}>
           {ar ? "صورة تصورية" : "Illustrative imagery"}
         </span>
@@ -476,7 +666,12 @@ export default function ConsultingHome({
               {/* Verified Accreditations Strip */}
               <div className={styles.accreditationGrid}>
                 {ACCREDITATIONS.map((acc) => (
-                  <div key={acc.code} className={styles.accreditationCard}>
+                  <div
+                    key={acc.code}
+                    className={styles.accreditationCard}
+                    data-hud-inspect
+                    data-hud-label={ar ? "معاينة الاعتماد" : "INSPECT STANDARD"}
+                  >
                     <div className={styles.accBadgeRow}>
                       <span className={styles.accCode}>{acc.code}</span>
                       <span className={styles.accStatusTag}>{acc.badge}</span>
@@ -490,13 +685,54 @@ export default function ConsultingHome({
               {/* Proven Metric Indicators */}
               <div className={styles.provenMetricsRow}>
                 {PROVEN_METRICS.map((m, idx) => (
-                  <div key={idx} className={styles.metricItem}>
-                    <span className={styles.metricVal}>{m.val}</span>
-                    <span className={styles.metricLbl}>
-                      {ar ? m.lblAr : m.lblEn}
-                    </span>
-                  </div>
+                  <MetricCounter
+                    key={idx}
+                    val={m.val}
+                    target={m.target}
+                    suffix={m.suffix}
+                    lbl={ar ? m.lblAr : m.lblEn}
+                  />
                 ))}
+              </div>
+
+              {/* Jordan Architectural Study Tours & Competitions (Brand Manual Pages 06-07) */}
+              <div className={styles.studyToursSection}>
+                <div className={styles.studyToursHeader}>
+                  <span className={styles.parallelMotif}>
+                    {ar ? "جولات العمارة والجوائز الإقليمية" : "ARCHITECTURAL STUDY TOURS & JURY AWARDS"}
+                  </span>
+                  <h3
+                    id={`${id}-tours-title`}
+                    className={styles.resultsHeadline}
+                    style={{ fontSize: "clamp(24px, 3vw, 36px)", marginTop: "8px" }}
+                  >
+                    {ar ? "خبرات معمارية متجذرة وتكريم دولي" : "Rooted Vernacular Context & Regional Recognition"}
+                  </h3>
+                </div>
+                <div className={styles.studyToursGrid}>
+                  {ARCHITECTURAL_STUDY_TOURS_AND_AWARDS.map((tour, tIdx) => (
+                    <div
+                      key={tIdx}
+                      className={styles.studyTourCard}
+                      data-tour-card
+                      data-hud-inspect
+                      data-hud-label={ar ? "معاينة الجولة" : "INSPECT STUDY"}
+                    >
+                      <span className={styles.studyTourKicker}>
+                        {ar ? tour.kickerAr : tour.kicker}
+                      </span>
+                      <strong className={styles.studyTourTitle}>
+                        {ar ? tour.titleAr : tour.title}
+                      </strong>
+                      <p className={styles.studyTourDesc}>
+                        {ar ? tour.descAr : tour.desc}
+                      </p>
+                      <span className={styles.studyTourBadge}>
+                        {ar ? tour.badgeAr : tour.badge}
+                      </span>
+                    </div>
+                  ))}
+                </div>
               </div>
             </div>
           </div>
@@ -565,14 +801,14 @@ export default function ConsultingHome({
             {ar ? "[ مجالات التميز الهندسي والاستشاري ]" : "[ WHAT WE EXCEL AT ]"}
           </span>
           <div className={styles.capabilitiesPills}>
-            <span className={styles.capPill}>LOD 400 BIM</span>
-            <span className={styles.capPill}>Structural FEA</span>
-            <span className={styles.capPill}>AIA Masterplanning</span>
-            <span className={styles.capPill}>FIDIC Contracts</span>
-            <span className={styles.capPill}>Critical Path CPM</span>
-            <span className={styles.capPill}>Healthcare Compliance</span>
-            <span className={styles.capPill}>Power Grid Systems</span>
-            <span className={styles.capPill}>Venture Due Diligence</span>
+            <span className={styles.capPill} data-hud-inspect data-hud-label={ar ? "فحص القدرات" : "VIEW CAPABILITY"}>LOD 400 BIM</span>
+            <span className={styles.capPill} data-hud-inspect data-hud-label={ar ? "فحص القدرات" : "VIEW CAPABILITY"}>Structural FEA</span>
+            <span className={styles.capPill} data-hud-inspect data-hud-label={ar ? "فحص القدرات" : "VIEW CAPABILITY"}>AIA Masterplanning</span>
+            <span className={styles.capPill} data-hud-inspect data-hud-label={ar ? "فحص القدرات" : "VIEW CAPABILITY"}>FIDIC Contracts</span>
+            <span className={styles.capPill} data-hud-inspect data-hud-label={ar ? "فحص القدرات" : "VIEW CAPABILITY"}>Critical Path CPM</span>
+            <span className={styles.capPill} data-hud-inspect data-hud-label={ar ? "فحص القدرات" : "VIEW CAPABILITY"}>Healthcare Compliance</span>
+            <span className={styles.capPill} data-hud-inspect data-hud-label={ar ? "فحص القدرات" : "VIEW CAPABILITY"}>Power Grid Systems</span>
+            <span className={styles.capPill} data-hud-inspect data-hud-label={ar ? "فحص القدرات" : "VIEW CAPABILITY"}>Venture Due Diligence</span>
           </div>
         </div>
       </section>
@@ -618,6 +854,8 @@ export default function ConsultingHome({
                 aria-labelledby={`${id}-${group}`}
                 onPointerMove={handleCardPointerMove}
                 onPointerLeave={handleCardPointerLeave}
+                data-hud-inspect
+                data-hud-label={ar ? "استكشاف التخصص" : "EXPLORE PRACTICE"}
               >
                 {/* 3D Perspective card background image */}
                 <img
@@ -640,7 +878,11 @@ export default function ConsultingHome({
                   <p className={styles.chapterIntro}>{chapterCopy[index][1]}</p>
 
                   {/* 3D Perspective Showcase Spec Card */}
-                  <div className={styles.perspectiveSpecCard}>
+                  <div
+                    className={styles.perspectiveSpecCard}
+                    data-hud-inspect
+                    data-hud-label={ar ? "المواصفات الفنية" : "TECHNICAL SPEC"}
+                  >
                     <div className={styles.specHeaderRow}>
                       <span className={styles.specBadgeTag}>
                         {ar ? (specs.badgeAr || specs.badge) : specs.badge}
@@ -837,10 +1079,10 @@ export default function ConsultingHome({
         <div className={styles.finalContent}>
           <span className={styles.eyebrow}>{labels.final}</span>
           <div className={styles.finalKineticBlock}>
-            <span className={styles.finalKineticKicker}>
+            <span className={styles.finalKineticKicker} data-kinetic-line>
               {ar ? "طموح لا محدود" : "ENGINEERING HORIZONS"}
             </span>
-            <h2 id={`${id}-final`}>{data.final.title}</h2>
+            <h2 id={`${id}-final`} data-kinetic-line>{data.final.title}</h2>
           </div>
           <p>{data.final.body}</p>
           <CallAction light onClick={() => book("final")}>

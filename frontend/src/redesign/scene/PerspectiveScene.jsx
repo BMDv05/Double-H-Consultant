@@ -1,4 +1,5 @@
 import { useEffect, useRef, useState } from "react";
+import { ScrollTrigger } from "gsap/ScrollTrigger";
 import { perspectivePose } from "./perspectivePose.js";
 import styles from "./PerspectiveScene.module.css";
 
@@ -73,11 +74,13 @@ export default function PerspectiveScene({ lang = "en" }) {
       syncFallback();
     }
     wake.current = resume;
+    let scrollTrigger = null;
+
     function onScroll() {
       const s = state.current,
         hero = element.closest("#hero");
       const height = hero?.offsetHeight || window.innerHeight;
-      if (!s.paused && !s.quiet) {
+      if (!s.paused && !s.quiet && !scrollTrigger) {
         s.scrollProgress = Math.max(
           0,
           Math.min(1, window.scrollY / (height * 0.72)),
@@ -155,9 +158,36 @@ export default function PerspectiveScene({ lang = "en" }) {
     window.addEventListener("resize", onScroll);
     document.addEventListener("visibilitychange", resume);
     reduced.addEventListener("change", preference);
+
+    if (typeof window !== "undefined") {
+      try {
+        const hero = element.closest("#hero");
+        if (hero) {
+          scrollTrigger = ScrollTrigger.create({
+            trigger: hero,
+            start: "top top",
+            end: "bottom top",
+            scrub: 0.5,
+            onUpdate: (self) => {
+              const s = state.current;
+              if (!s.paused && !s.quiet) {
+                s.scrollProgress = Math.max(0, Math.min(1, self.progress * 1.3));
+                s.yaw = (self.progress - 0.5) * 0.45;
+                if (s.manualProgress === null) {
+                  setActive(Math.round(s.scrollProgress * 2));
+                }
+                resume();
+              }
+            },
+          });
+        }
+      } catch (_) {}
+    }
+
     preference();
     return () => {
       disposed = true;
+      scrollTrigger?.kill();
       cancelAnimationFrame(frame);
       visibility.disconnect();
       lazy.disconnect();

@@ -1,11 +1,23 @@
 /* Import once inside the public composition. Nothing targets :root or admin. */
 .dh-public {
-  --dh-ink: #f7f5f0;
-  --dh-canvas: #09090b;
-  --dh-surface: #121216;
-  --dh-muted: #96969e;
-  --dh-border: rgba(255, 255, 255, 0.08);
-  --dh-accent: #c5a880;
+  /* Official 5-Color Brand Palette from Double H Brand Manual */
+  --dh-deep-olive: #12393a;
+  --dh-dark-petroleum: #134c4b;
+  --dh-alabaster: #e6ecec;
+  --dh-sage-cad: #46766f;
+  --dh-obsidian: #161919;
+
+  /* Strict Brand Mappings */
+  --dh-canvas: #12393a;
+  --dh-surface: #134c4b;
+  --dh-ink: #e6ecec;
+  --dh-ink-dark: #161919;
+  --dh-muted: #46766f;
+  --dh-border: rgba(70, 118, 111, 0.35);
+  --dh-border-subtle: rgba(230, 236, 236, 0.12);
+  --dh-accent: #46766f;
+  --dh-accent-glow: rgba(70, 118, 111, 0.4);
+
   --dh-font-en: 'Poppins', system-ui, sans-serif;
   --dh-font-ar: 'Cairo', system-ui, sans-serif;
   --dh-radius: 4px;
@@ -28,12 +40,48 @@
 .dh-public[dir='rtl'],
 .dh-public:lang(ar) {
   font-family: var(--dh-font-ar);
-  letter-spacing: 0;
+  letter-spacing: 0 !important;
 }
 
 .dh-public :where(*, *::before, *::after) { box-sizing: border-box; }
 :where(.dh-public) :where(button, input, select, textarea) { font: inherit; }
-.dh-public :where(h1, h2, h3, h4, h5, h6) { font-family: inherit; }
+
+/* Enforce Poppins 800 for Latin headlines */
+.dh-public :where(h1, h2, h3, h4, h5, h6) {
+  font-family: var(--dh-font-en);
+  font-weight: 800;
+}
+
+/* Enforce Cairo Black (900) for Arabic headlines and preserve Arabic cursive ligatures */
+.dh-public[dir='rtl'] :where(h1, h2, h3, h4, h5, h6),
+.dh-public:lang(ar) :where(h1, h2, h3, h4, h5, h6) {
+  font-family: var(--dh-font-ar);
+  font-weight: 900;
+  letter-spacing: 0 !important;
+  font-feature-settings: "liga" 1, "calt" 1;
+}
+
+/* Arabic ligature protection: eliminate letter-spacing that disrupts cursive joints */
+.dh-public[dir='rtl'] :where(p, span, a, button, li, small, strong, label),
+.dh-public:lang(ar) :where(p, span, a, button, li, small, strong, label) {
+  letter-spacing: 0 !important;
+  font-feature-settings: "liga" 1, "calt" 1;
+}
+
+/* Line-masked container clipping without breaking cursive joints */
+.dh-public [data-line-mask],
+.dh-public [data-kinetic-line] {
+  overflow: hidden;
+  clip-path: inset(0 0 0 0);
+}
+.dh-public[dir='rtl'] [data-line-mask],
+.dh-public:lang(ar) [data-line-mask],
+.dh-public[dir='rtl'] [data-kinetic-line],
+.dh-public:lang(ar) [data-kinetic-line] {
+  letter-spacing: 0 !important;
+  font-feature-settings: "liga" 1, "calt" 1;
+}
+
 .dh-public :where(img, svg) { max-inline-size: 100%; }
 .dh-public :where([id]) { scroll-margin-block-start: calc(var(--dh-header-height) + 24px); }
 .dh-public :where(a, button, input, select, textarea, [tabindex]):focus-visible {
