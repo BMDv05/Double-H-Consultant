@@ -316,6 +316,8 @@ export default function LegacyApp() {
       <main className="main-content">
         <Routes>
           <Route path="/" element={<Home />} />
+          <Route path="/legacy" element={<Home />} />
+          <Route path="/legacy/*" element={<Home />} />
           <Route path="/contact" element={<Contact />} />
           <Route path="/admin" element={<Admin />} />
           <Route path="*" element={<Home />} />

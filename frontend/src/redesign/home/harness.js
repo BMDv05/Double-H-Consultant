@@ -212,3 +212,57 @@ test('Phase 2 Acceptance: Component survives completely empty content without th
     assert.ok(html.includes('id="divisions"'), 'Divisions section must render');
   });
 });
+
+test('App routing: / and /contact route to redesign; /admin and /legacy route to LegacyApp', () => {
+  if (typeof globalThis.localStorage === 'undefined') {
+    globalThis.localStorage = { getItem: () => null, setItem: () => {}, removeItem: () => {} };
+  }
+
+  const appEntry = fileURLToPath(new URL('../../App.jsx', import.meta.url));
+  const langEntry = fileURLToPath(new URL('../../LangContext.jsx', import.meta.url));
+
+  const langBundle = esbuild.buildSync({
+    entryPoints: [langEntry],
+    bundle: true,
+    write: false,
+    format: 'cjs',
+    external: ['react', 'react/jsx-runtime']
+  });
+  const langMod = { exports: {} };
+  new Function('module', 'exports', 'require', 'React', langBundle.outputFiles[0].text)(langMod, langMod.exports, require, React);
+  const { LangProvider } = langMod.exports;
+
+  const appBundle = esbuild.buildSync({
+    entryPoints: [appEntry],
+    bundle: true,
+    write: false,
+    format: 'cjs',
+    loader: { '.module.css': 'empty', '.css': 'empty' },
+    external: ['react', 'react/jsx-runtime', 'react-router-dom', './LangContext.jsx', '../LangContext.jsx']
+  });
+  const appMod = { exports: {} };
+  new Function('module', 'exports', 'require', 'React', appBundle.outputFiles[0].text)(appMod, appMod.exports, (mod) => {
+    if (mod.endsWith('LangContext.jsx')) return langMod.exports;
+    return require(mod);
+  }, React);
+  const App = appMod.exports.default;
+  const { MemoryRouter } = require('react-router-dom');
+
+  const renderRoute = (path) => ReactDOMServer.renderToStaticMarkup(
+    React.createElement(MemoryRouter, { initialEntries: [path] },
+      React.createElement(LangProvider, null, React.createElement(App))
+    )
+  );
+
+  const homeHtml = renderRoute('/');
+  assert.ok(homeHtml.includes('id="hero"'), 'Route / must render redesign hero');
+
+  const contactHtml = renderRoute('/contact');
+  assert.ok(contactHtml.includes('type="submit"') || contactHtml.includes('name'), 'Route /contact must render contact inquiry');
+
+  const adminHtml = renderRoute('/admin');
+  assert.ok(adminHtml.includes('role="status"'), 'Route /admin must mount LegacyApp under Suspense');
+
+  const legacyHtml = renderRoute('/legacy');
+  assert.ok(legacyHtml.includes('role="status"'), 'Route /legacy must mount LegacyApp under Suspense');
+});

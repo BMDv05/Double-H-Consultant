@@ -239,10 +239,13 @@ function useEditorialMotion(root) {
       if (!frame) frame = requestAnimationFrame(update);
     }
     const observer = new MutationObserver(schedule);
-    observer.observe(element.closest(".dh-public") ?? element.parentElement, {
-      attributes: true,
-      attributeFilter: ["data-reduced-motion"],
-    });
+    const motionTarget = element.closest(".dh-public") ?? element.parentElement;
+    if (motionTarget) {
+      observer.observe(motionTarget, {
+        attributes: true,
+        attributeFilter: ["data-reduced-motion"],
+      });
+    }
     window.addEventListener("scroll", schedule, { passive: true });
     window.addEventListener("resize", schedule);
     preference.addEventListener("change", schedule);
@@ -599,9 +602,12 @@ export default function ConsultingHome({
               (item) => item.group === group,
             );
             const current =
-              items.find((item) => item.id === selected[group]) ?? items[0];
-            const currentImg = divisionImages[current.id] || images[group === "engineering" ? "hero" : group];
-            const specs = divisionSpecs[current.id] || {};
+              items.find((item) => item.id === selected[group]) ??
+              items[0] ?? { id: "", title: "", body: "" };
+            const currentImg =
+              (current.id && divisionImages[current.id]) ||
+              images[group === "engineering" ? "hero" : group];
+            const specs = (current.id && divisionSpecs[current.id]) || {};
 
             return (
               <article

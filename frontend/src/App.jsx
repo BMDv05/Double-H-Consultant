@@ -7,7 +7,12 @@ export default function App() {
   const { pathname } = useLocation();
   const { lang } = useLang();
   const route = pathname.replace(/\/+$/, "") || "/";
-  if (route === "/admin") {
+  if (
+    route === "/admin" ||
+    route.startsWith("/admin/") ||
+    route === "/legacy" ||
+    route.startsWith("/legacy/")
+  ) {
     return (
       <Suspense
         fallback={
