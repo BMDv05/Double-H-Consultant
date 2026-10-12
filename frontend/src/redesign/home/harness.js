@@ -213,6 +213,39 @@ test('Phase 2 Acceptance: Component survives completely empty content without th
   });
 });
 
+test('Phase 2 Acceptance: Brand Manual & Benchmark HUD contracts (sub-entities, study tours, HUD inspect)', () => {
+  const enHtml = ReactDOMServer.renderToStaticMarkup(React.createElement(ConsultingHome, { lang: 'en' }));
+  const arHtml = ReactDOMServer.renderToStaticMarkup(React.createElement(ConsultingHome, { lang: 'ar' }));
+
+  // 1. Sub-entities strip with parallel lines motif (Brand Manual Page 08)
+  const subEntitiesEn = ['STUDIO', 'TECHNOLOGY', 'REAL ESTATE', 'ACADEMY', 'BIM SERVICES', 'CHANCE'];
+  for (const entity of subEntitiesEn) {
+    assert.ok(enHtml.includes(entity), `English page must render sub-entity: ${entity}`);
+  }
+  const subEntitiesAr = ['استوديو', 'التكنولوجيا', 'العقارات', 'الأكاديمية', 'خدمات BIM', 'فرصة'];
+  for (const entity of subEntitiesAr) {
+    assert.ok(arHtml.includes(entity), `Arabic page must render sub-entity: ${entity}`);
+  }
+
+  // 2. Study tours, competitions, workstations/cash prizes, firm partnerships (Brand Manual Pages 06-07)
+  assert.ok(enHtml.includes('ARCHITECTURAL STUDY TOURS'), 'English page must include study tours header');
+  assert.ok(enHtml.includes('Jordan Architectural Tour'), 'Study tour kicker present');
+  assert.ok(enHtml.includes('Amman &amp; Petra Architectural Vernacular Immersion'), 'Study tour title present');
+  assert.ok(enHtml.includes('Regional Architectural Design Panels &amp; Competitive Leaderboard'), 'Competition awards present');
+  assert.ok(enHtml.includes('Direct Engineering Firm Partnerships &amp; Career Placement'), 'Engineering firm pipeline present');
+  assert.ok(enHtml.includes('Technological Hardware Grants &amp; Real In-Kind Awards'), 'Workstations and prizes present');
+  assert.ok(arHtml.includes('جولات العمارة والجوائز الإقليمية'), 'Arabic study tours header present');
+  assert.ok(arHtml.includes('استكشاف التراث المعماري: عمان والبترا'), 'Arabic tour title present');
+  assert.ok(arHtml.includes('تحكيم المسابقات المعمارية ولوحة المتصدرين التنافسية'), 'Arabic competitions present');
+  assert.ok(arHtml.includes('شراكات مباشرة مع المكاتب الهندسية وفرص توظيف حقيقية'), 'Arabic partnerships present');
+  assert.ok(arHtml.includes('منح أجهزة حاسوبية متقدمة وجوائز مادية وعينية'), 'Arabic hardware awards present');
+
+  // 3. HUD inspect attributes and kinetic line hooks
+  assert.ok(enHtml.includes('data-hud-inspect'), 'Markup must include data-hud-inspect hooks');
+  assert.ok(enHtml.includes('data-hud-label'), 'Markup must include data-hud-label hooks');
+  assert.ok(enHtml.includes('data-kinetic-line'), 'Markup must include data-kinetic-line hooks');
+});
+
 test('App routing: / and /contact route to redesign; /admin and /legacy route to LegacyApp', () => {
   if (typeof globalThis.localStorage === 'undefined') {
     globalThis.localStorage = { getItem: () => null, setItem: () => {}, removeItem: () => {} };
