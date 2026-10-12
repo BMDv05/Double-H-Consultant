@@ -1,7 +1,7 @@
 import { useEffect, useState, useMemo } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useLang } from '../LangContext.jsx';
-import { Counter, BookButton, useBook } from '../App.jsx';
+import { Counter, BookButton, useBook } from '../LegacyApp.jsx';
 import BimDigitalTwin from '../BimDigitalTwin.jsx';
 import {
   IconArch,

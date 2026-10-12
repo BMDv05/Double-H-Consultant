@@ -1,0 +1,181 @@
+.scene {
+  position: relative;
+  color: #edf4ee;
+  margin: 0;
+  width: 100%;
+}
+.scene figcaption {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0 20px;
+  font-size: 11px;
+  letter-spacing: 0.09em;
+  text-transform: uppercase;
+}
+.badge {
+  border: 1px solid #9ab4a8;
+  border-radius: 20px;
+  padding: 3px 9px;
+  font-size: 10px;
+}
+.viewport {
+  position: relative;
+  height: 360px;
+  touch-action: pan-y;
+  cursor: grab;
+  outline-offset: -8px;
+  perspective: 950px;
+}
+.viewport:active {
+  cursor: grabbing;
+}
+.viewport:focus-visible {
+  outline: 2px solid #d8f4de;
+}
+.canvas,
+.fallback {
+  position: absolute;
+  inset: 0;
+}
+.canvas canvas {
+  width: 100%;
+  height: 100%;
+  display: block;
+}
+.scene[data-renderer="webgl"] .fallback {
+  visibility: hidden;
+}
+.fallback {
+  display: grid;
+  place-items: center;
+  perspective: 850px;
+}
+.sculpture {
+  position: relative;
+  width: 190px;
+  height: 140px;
+  transform-style: preserve-3d;
+  transform: rotateX(-12deg) rotateY(calc(-24deg + var(--turn, 0deg)))
+    rotateZ(-6deg);
+}
+.plane {
+  position: absolute;
+  inset: 0;
+  border: 12px solid #b6cec6;
+  border-radius: 15px;
+  background: linear-gradient(135deg, #3c7b6555, #153b3033);
+  box-shadow:
+    3px 3px 0 #718e84,
+    9px 9px 14px #061d1b77,
+    inset 2px 2px 8px #bbdfcc44;
+  transform-style: preserve-3d;
+  transition: transform 700ms cubic-bezier(0.2, 0.8, 0.2, 1);
+}
+.plane:nth-child(even) {
+  border-color: #46766f;
+}
+.plane span {
+  position: absolute;
+  inset: -12px;
+  border: 2px solid #edfff277;
+  border-radius: 15px;
+  transform: translateZ(8px);
+}
+.stages {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 8px;
+  padding: 0 16px;
+}
+.stages button {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 10px;
+  background: #143c36b3;
+  border: 1px solid #91b5a966;
+  color: #f0f5ef;
+  min-height: 46px;
+  font: inherit;
+  font-size: 12px;
+  cursor: pointer;
+  border-radius: 3px;
+  transition:
+    background 200ms,
+    transform 200ms,
+    border-color 200ms;
+}
+.stages button span {
+  opacity: 0.6;
+  font-size: 10px;
+}
+.stages button[aria-pressed="true"] {
+  background: #dceade;
+  color: #12393a;
+  border-color: #dceade;
+}
+.stages button:hover {
+  transform: translateY(-3px);
+  border-color: #dceade;
+}
+.tools {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 8px;
+  margin-top: 8px;
+}
+.tools button {
+  min-height: 44px;
+  min-width: 40px;
+  padding: 6px 9px;
+  border: 0;
+  background: transparent;
+  color: #e4efe7;
+  font: inherit;
+  font-size: 10px;
+  cursor: pointer;
+}
+.tools button[aria-pressed="true"] {
+  text-decoration: underline;
+  text-underline-offset: 4px;
+}
+.scene button:focus-visible {
+  outline: 2px solid #fff;
+  outline-offset: 3px;
+}
+.hint {
+  text-align: center;
+  font-size: 10px;
+  margin: 5px 0 0 !important;
+  color: #cee1d7;
+}
+.scene[data-render-state="offscreen"] .sculpture,
+.scene[data-render-state="hidden"] .sculpture {
+  animation-play-state: paused;
+}
+@media (max-width: 1199px) {
+  .viewport {
+    height: 300px;
+  }
+  .scene {
+    max-width: 500px;
+    margin-inline: auto;
+  }
+  .scene figcaption {
+    padding-inline: 16px;
+  }
+  .tools button {
+    min-height: 44px;
+  }
+}
+@media (prefers-reduced-motion: reduce) {
+  .plane,
+  .stages button {
+    transition: none;
+  }
+}
+.scene[data-quiet="true"] .plane {
+  transition: none;
+}

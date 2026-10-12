@@ -1,0 +1,12 @@
+:global(html) {
+  margin: 0;
+  scroll-behavior: smooth;
+}
+:global(body) {
+  margin: 0;
+}
+@media (prefers-reduced-motion: reduce) {
+  :global(html) {
+    scroll-behavior: auto;
+  }
+}

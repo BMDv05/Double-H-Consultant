@@ -1,0 +1,41 @@
+/* Fixtures, not production home-page styles. */
+.hero { display: grid; grid-template-columns: 1.1fr 1fr; align-items: center; gap: 72px; max-inline-size: var(--dh-max-width); margin-inline: auto; padding: 80px 32px 96px; min-block-size: 640px; }
+.eyebrow { font-size: 10px; text-transform: uppercase; letter-spacing: .16em; margin: 0 0 24px; color: var(--dh-muted); }
+.hero h1 { margin: 0; white-space: pre-line; font-family: inherit; font-size: clamp(40px, 4.2vw, 62px); font-weight: 400; line-height: 1.17; letter-spacing: -.045em; }
+.intro { max-inline-size: 440px; font-size: 14px; line-height: 1.85; color: var(--dh-muted); margin: 28px 0; }
+.explore { display: inline-flex; gap: 24px; align-items: center; min-block-size: 44px; color: inherit; font-size: 12px; text-decoration: none; border-block-end: 1px solid var(--dh-ink); }
+.study { margin: 0; inline-size: 100%; }
+.study svg { display: block; inline-size: 100%; }
+.study figcaption { font-size: 10px; color: var(--dh-muted); text-align: center; margin-block-start: 10px; }
+.target { max-inline-size: calc(var(--dh-max-width) - 64px); margin-inline: auto; padding-block: 36px; border-block-start: 1px solid var(--dh-border); display: grid; grid-template-columns: 52px 1fr 1fr; align-items: baseline; gap: 20px; }
+.index { font-size: 11px; color: var(--dh-muted); }
+.target h2 { font-family: inherit; font-weight: 400; font-size: 24px; margin: 0; }
+.target p { font-size: 11px; color: var(--dh-muted); margin: 0; }
+.tools { margin: 32px auto 64px; padding: 24px 32px; max-inline-size: var(--dh-max-width); }
+.tools h2 { font: inherit; font-size: 16px; margin: 0 0 12px; }
+.tools label { display: flex; align-items: center; gap: 12px; min-block-size: 44px; font-size: 12px; }
+.tools input { inline-size: 20px; block-size: 20px; accent-color: var(--dh-ink); }
+.tools a { display: inline-flex; align-items: center; color: inherit; min-block-size: 44px; font-size: 12px; }
+.dialog { border: 1px solid var(--dh-border); border-radius: var(--dh-radius); color: var(--dh-ink); background: var(--dh-canvas); padding: 32px; max-inline-size: min(480px, calc(100vw - 40px)); font-family: inherit; }
+.dialog::backdrop { background: #12393a65; }
+.dialog h2 { font: inherit; font-size: 22px; margin: 0; }
+.dialog p { font-size: 13px; }
+.dialog output { display: block; font: 14px monospace; margin-block: 16px; }
+.dialog button { min-block-size: 44px; background: var(--dh-ink); color: #fff; border: 0; border-radius: var(--dh-radius); font: inherit; font-size: 13px; padding-inline: 20px; cursor: pointer; }
+.skip { position: fixed; inset-inline-start: 20px; inset-block-start: -100px; z-index: 60; padding: 12px 20px; background: var(--dh-ink); color: #fff; font-size: 13px; }
+.skip:focus { inset-block-start: 12px; }
+.tools textarea { min-block-size: 72px; max-inline-size: 100%; border: 1px solid var(--dh-border); border-radius: var(--dh-radius); background: var(--dh-surface); color: var(--dh-ink); padding: 12px; }
+:global(.dh-public[dir='rtl']) .eyebrow { letter-spacing: 0; font-size: 12px; }
+:global(.dh-public[dir='rtl']) .hero h1 { letter-spacing: 0; line-height: 1.5; }
+@media (max-width: 1059px) { .hero { gap: 32px; padding-inline: 24px; } .target { margin-inline: 24px; } }
+@media (max-width: 700px) {
+  .hero { grid-template-columns: 1fr; gap: 28px; min-block-size: 0; padding: 48px 20px; }
+  .hero h1 { font-size: 40px; }
+  .intro { font-size: 13px; margin-block: 24px; }
+  .eyebrow { margin-block-end: 20px; font-size: 9px; }
+  .study { max-inline-size: 330px; justify-self: center; }
+  .target { margin-inline: 20px; grid-template-columns: 28px 1fr; gap: 8px 16px; padding-block: 28px; }
+  .target p { grid-column: 2; }
+  .target h2 { font-size: 22px; }
+  .tools { padding-inline: 20px; }
+}

@@ -1,0 +1,194 @@
+/* preview.module.css — Phase 4 Preview Environment */
+
+.previewContainer {
+  min-block-size: 100vh;
+  padding: 40px 24px;
+  background-color: var(--dh-canvas, #f6f4ee);
+  color: var(--dh-ink, #12393a);
+  font-family: var(--dh-font-en, 'Poppins', system-ui, sans-serif);
+  box-sizing: border-box;
+}
+
+.previewContainer[dir='rtl'],
+.previewContainer:lang(ar) {
+  font-family: var(--dh-font-ar, 'Cairo', system-ui, sans-serif);
+  letter-spacing: 0;
+}
+
+.shell {
+  max-inline-size: 960px;
+  margin-inline: auto;
+  display: flex;
+  flex-direction: column;
+  gap: 32px;
+}
+
+.header {
+  border-block-end: 2px solid var(--dh-border, #d7ddd8);
+  padding-block-end: 20px;
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  flex-wrap: wrap;
+  gap: 16px;
+}
+
+.title {
+  margin: 0;
+  font-size: 1.75rem;
+  font-weight: 700;
+  color: var(--dh-ink, #12393a);
+}
+
+.subtitle {
+  margin: 6px 0 0 0;
+  font-size: 0.9375rem;
+  color: var(--dh-muted, #52625e);
+}
+
+.topControls {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.langButton {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  block-size: 44px;
+  min-inline-size: 80px;
+  padding-inline: 16px;
+  font: inherit;
+  font-weight: 600;
+  font-size: 0.875rem;
+  color: var(--dh-ink, #12393a);
+  background: var(--dh-surface, #ffffff);
+  border: 1px solid var(--dh-border, #d7ddd8);
+  border-radius: var(--dh-radius, 4px);
+  cursor: pointer;
+  transition: all 0.15s ease;
+}
+
+.langButton:hover {
+  background: var(--dh-canvas, #f6f4ee);
+  border-color: var(--dh-ink, #12393a);
+}
+
+.panel {
+  background: var(--dh-surface, #ffffff);
+  border: 1px solid var(--dh-border, #d7ddd8);
+  border-radius: var(--dh-radius, 4px);
+  padding: 24px;
+  box-shadow: 0 4px 12px rgba(18, 57, 58, 0.04);
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.panelTitle {
+  margin: 0;
+  font-size: 1.125rem;
+  font-weight: 600;
+  color: var(--dh-ink, #12393a);
+}
+
+.buttonGrid {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 12px;
+}
+
+.actionButton {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  block-size: 44px;
+  min-block-size: 44px;
+  padding-inline: 16px;
+  font: inherit;
+  font-size: 0.875rem;
+  font-weight: 600;
+  color: #ffffff;
+  background: var(--dh-ink, #12393a);
+  border: none;
+  border-radius: var(--dh-radius, 4px);
+  cursor: pointer;
+  transition: background-color 0.15s ease;
+}
+
+.actionButton:hover {
+  background: #194d4e;
+}
+
+.actionButtonSecondary {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  block-size: 44px;
+  min-block-size: 44px;
+  padding-inline: 16px;
+  font: inherit;
+  font-size: 0.875rem;
+  font-weight: 600;
+  color: var(--dh-ink, #12393a);
+  background: var(--dh-canvas, #f6f4ee);
+  border: 1px solid var(--dh-border, #d7ddd8);
+  border-radius: var(--dh-radius, 4px);
+  cursor: pointer;
+  transition: all 0.15s ease;
+}
+
+.actionButtonSecondary:hover {
+  border-color: var(--dh-ink, #12393a);
+}
+
+.mockSelector {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  flex-wrap: wrap;
+}
+
+.selectInput {
+  block-size: 44px;
+  padding-inline: 12px;
+  font: inherit;
+  font-size: 0.875rem;
+  border: 1px solid var(--dh-border, #d7ddd8);
+  border-radius: var(--dh-radius, 4px);
+  background: #ffffff;
+  color: var(--dh-ink, #12393a);
+}
+
+.logBox {
+  font-family: monospace;
+  font-size: 0.8125rem;
+  background: #1e293b;
+  color: #f1f5f9;
+  padding: 16px;
+  border-radius: 4px;
+  overflow-x: auto;
+  max-block-size: 200px;
+}
+
+.testRow {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 10px 14px;
+  border-radius: 4px;
+  font-size: 0.875rem;
+  background: var(--dh-canvas, #f6f4ee);
+  margin-block-end: 8px;
+}
+
+.testPass {
+  color: #065f46;
+  font-weight: 600;
+}
+
+.testFail {
+  color: #991b1b;
+  font-weight: 600;
+}

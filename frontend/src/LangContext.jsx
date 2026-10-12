@@ -16,8 +16,8 @@ export function LangProvider({ children }) {
     localStorage.setItem('dh-lang', lang);
     document.title =
       lang === 'ar'
-        ? 'دبل إتش للاستشارات — استشارات بشهادات أمريكية'
-        : 'Double H Consulting — American-Certified Expertise';
+        ? 'دبل إتش للاستشارات — رؤية أوضح وخطوة مدروسة'
+        : 'Double H Consulting — A clearer way forward';
   }, [lang]);
 
   const value = useMemo(

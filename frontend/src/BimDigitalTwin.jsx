@@ -1,7 +1,7 @@
 import { useEffect, useRef, useState, useCallback } from 'react';
 import * as THREE from 'three';
 import { useLang } from './LangContext.jsx';
-import { useBook } from './App.jsx';
+import { useBook } from './LegacyApp.jsx';
 import {
   IconBIM,
   IconShield,

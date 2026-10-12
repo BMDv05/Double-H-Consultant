@@ -8,6 +8,7 @@ obj/
 
 # build output (rebuilt via `npm run build` in frontend/)
 frontend/dist/
+work/
 
 # local database (auto-created + seeded on first run)
 server/data/

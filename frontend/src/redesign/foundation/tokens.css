@@ -1,0 +1,54 @@
+/* Import once inside the public composition. Nothing targets :root or admin. */
+.dh-public {
+  --dh-ink: #f7f5f0;
+  --dh-canvas: #09090b;
+  --dh-surface: #121216;
+  --dh-muted: #96969e;
+  --dh-border: rgba(255, 255, 255, 0.08);
+  --dh-accent: #c5a880;
+  --dh-font-en: 'Poppins', system-ui, sans-serif;
+  --dh-font-ar: 'Cairo', system-ui, sans-serif;
+  --dh-radius: 4px;
+  --dh-max-width: 1280px;
+  --dh-header-height: 88px;
+  --dh-sticky-clearance: 104px;
+  box-sizing: border-box;
+  min-inline-size: 0;
+  background: var(--dh-canvas);
+  color: var(--dh-ink);
+  font-family: var(--dh-font-en);
+  line-height: 1.6;
+  -webkit-font-smoothing: antialiased;
+}
+
+.dh-public[data-sticky-call='true'] {
+  padding-block-end: calc(var(--dh-sticky-clearance) + env(safe-area-inset-bottom, 0px));
+}
+
+.dh-public[dir='rtl'],
+.dh-public:lang(ar) {
+  font-family: var(--dh-font-ar);
+  letter-spacing: 0;
+}
+
+.dh-public :where(*, *::before, *::after) { box-sizing: border-box; }
+:where(.dh-public) :where(button, input, select, textarea) { font: inherit; }
+.dh-public :where(h1, h2, h3, h4, h5, h6) { font-family: inherit; }
+.dh-public :where(img, svg) { max-inline-size: 100%; }
+.dh-public :where([id]) { scroll-margin-block-start: calc(var(--dh-header-height) + 24px); }
+.dh-public :where(a, button, input, select, textarea, [tabindex]):focus-visible {
+  outline: 2px solid currentColor;
+  outline-offset: 5px;
+}
+
+@media (max-width: 1059px) {
+  .dh-public { --dh-header-height: 72px; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .dh-public *, .dh-public *::before, .dh-public *::after {
+    animation: none !important;
+    transition: none !important;
+    scroll-behavior: auto !important;
+  }
+}
